@@ -12,10 +12,7 @@ def logout():
     return '<p> logout </p>'
 
 
-@auth.route('/sign-up')
-def sign_up():
-    return '<p> sign up </p>'
+@auth.route('/signUp')
+def signUp():
+    return render_template("signup.html")
 
-@auth.route('/inventory')
-def inventory_button():
-    return '<p> inventory </p>'
