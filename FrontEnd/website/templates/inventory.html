@@ -3,8 +3,29 @@
 {% block title %} Fabulous Inventory {% endblock%}
 
 {% block content %}
+<br>
+<br>
 
-<h1>{{payload }}</h1>
+<p>{{payload }}</p> 
+
+<label for name = "All makes of Cars"> choose a car:</label>
+<select name  ="cars" id= "CARS">  
+    <optgroup label = ford>
+    <option> mustang</option>
+    <option> f-250</optgroup>
+    <option> feista</option>
+    <option> focus</optgroup>
+</optgroup>
+<optgroup label = chevy>
+    <option> 2500</option>
+    <option> corvette</optgroup>
+    <option> impala</option>
+    <option> bellair</optgroup>
+</optgroup>
+</select> 
+
+<br>
+<br>
 <img src="/static/Car.png" width="200" height="100">
 
 <br><br>
@@ -19,9 +40,14 @@
 
         </ol>
     </li>
-    <li> </li>
-    <li> </li>
-    <li> </li>
+    <li > 
+        <ol>
+            <li>mustang</li>
+            <Li>F-250</Li>
+        </ol>
+    </li>
+    <li> lexus</li>
+    <li>honda </li>
     
 
 </ul>
