@@ -3,8 +3,52 @@
 {% block title %} Fabulous Inventory {% endblock%}
 
 {% block content %}
+<br>
+  </style>
+  </head>
+  <body>
+  
+  <p>search bar</p>
+  
+  <search>
+    <form>
+      <input name="fsrch" id="fsrch" placeholder="Search Inventory">
+    </form>
+  </search>
+  
 
-<h1>{{payload }}</h1>
+<br>
+
+<p>{{payload }}</p> 
+
+<label for name = "All makes of Cars"> choose a car:</label>
+<select name  ="cars" id= "CARS">  
+    <optgroup label = ford>
+    <option> mustang</option>
+    <option> f-250</optgroup>
+    <option> feista</option>
+    <option> focus</optgroup>
+</optgroup>
+<optgroup label = chevy>
+    <option> 2500</option>
+    <option> corvette</optgroup>
+    <option> impala</option>
+    <option> bellair</optgroup>
+</optgroup>
+</select> 
+
+<br>
+
+<menu typee="text", id = "myssearch" aria-placeholder="searching...">
+
+    <ul>
+        <li><a><img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUA AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO 9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" /> </a></li>    
+        <li><a> </a></li>    
+        <li><a> </a></li>   
+        <li><a> </a></li>
+    
+    </ul>
+<br>
 <img src="/static/Car.png" width="200" height="100">
 
 <br><br>
@@ -19,9 +63,14 @@
 
         </ol>
     </li>
-    <li> </li>
-    <li> </li>
-    <li> </li>
+    <li > 
+        <ol>
+            <li>mustang</li>
+            <Li>F-250</Li>
+        </ol>
+    </li>
+    <li> lexus</li>
+    <li>honda </li>
     
 
 </ul>

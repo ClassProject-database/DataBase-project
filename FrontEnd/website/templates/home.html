@@ -2,6 +2,52 @@
 
 {% block title %} Overridden!! {% endblock%}
 
+
+
+
 {% block content %}
 <p>the home page</p>
+<br>
+
+<head>
+    <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+    </style>
+    </head>
+    <body>
+    
+    <h1>Table with Collapsed Borders</h1>
+    
+    <table style="background-color:#00FF00">
+      <tr>
+        <th>Month</th>
+        <th>Savings</th>
+      </tr>
+      <tr>
+        <td>January</td>
+        <td>$100</td>
+      </tr>
+      <tr>
+        <td>February</td>
+        <td>$80</td>
+      </tr>
+    </table>
+    
+    </body>
+
+
+<br> 
+<table>
+    <tr>
+        <th>model</th>
+        <th>year</th>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+</table>
 {% endblock %}

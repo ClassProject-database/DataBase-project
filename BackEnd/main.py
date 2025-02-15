@@ -7,15 +7,15 @@ mydb = mysql.connector.connect(
   host='127.0.0.1',
   user="root",
   password="root",
-  database="database_practice",
-  port=3306
+  database="Inventory",
+  port=8889
 )
 
 @app.route("/Getinventory")
 def inventoryPage():
     cursor = mydb.cursor()
 
-    cursor.execute("select * from cars")
+    cursor.execute("select Name from Actors")
 
     rows = cursor.fetchall()
     return rows

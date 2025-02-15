@@ -16,3 +16,6 @@ def logout():
 def signUp():
     return render_template("signup.html")
 
+@auth.route('/UserCart')
+def Cart():
+    return render_template("UserCart.html")
