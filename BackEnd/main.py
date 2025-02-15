@@ -15,7 +15,7 @@ mydb = mysql.connector.connect(
 def inventoryPage():
     cursor = mydb.cursor()
 
-    cursor.execute("select * from movies")
+    cursor.execute("select Name from Actors")
 
     rows = cursor.fetchall()
     return rows
