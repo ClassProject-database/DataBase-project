@@ -14,7 +14,7 @@ def logout():
 
 @auth.route('/signUp')
 def signUp():
-    return render_template("signup.html")
+    return render_template("signUp.html")
 
 @auth.route('/UserCart')
 def Cart():

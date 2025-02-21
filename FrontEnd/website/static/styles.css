@@ -1,12 +1,12 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 60px;
   }
   
   table {
     width: 80%;
     border-collapse: collapse;
-    margin-top: 20px;
+    margin-top: 40px;
   }
   
   table, th, td {

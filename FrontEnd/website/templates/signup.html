@@ -1,7 +1,52 @@
 {% extends "base.html" %}
 
-{% block title %} SignUp {% endblock%}
+{% block title %}Sign Up{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='signUp.css') }}">
+{% endblock %}
 
 {% block content %}
-<p>the sign up page</p>
+<div class="row justify-content-center mt-5">
+  <div class="col-md-4">
+    <form action="/signup" method="POST" class="form-signin">
+      <h1 class="h3 mb-3 fw-normal text-center">Sign Up</h1>
+      <!-- Email Field -->
+      <div class="form-floating mb-3">
+        <input 
+          type="email" 
+          name="email" 
+          class="form-control" 
+          id="floatingEmail" 
+          placeholder="name@example.com" 
+          required 
+          autofocus>
+        <label for="floatingEmail">Email address</label>
+      </div>
+      <!-- Password Field -->
+      <div class="form-floating mb-3">
+        <input 
+          type="password" 
+          name="password" 
+          class="form-control" 
+          id="floatingPassword" 
+          placeholder="Password" 
+          required>
+        <label for="floatingPassword">Password</label>
+      </div>
+      <!-- Confirm Password Field -->
+      <div class="form-floating mb-3">
+        <input 
+          type="password" 
+          name="confirm_password" 
+          class="form-control" 
+          id="floatingConfirmPassword" 
+          placeholder="Confirm Password" 
+          required>
+        <label for="floatingConfirmPassword">Confirm Password</label>
+      </div>
+      <button class="w-50 btn-lg btn-primary" type="submit">Sign Up</button>
+    </form>
+  </div>
+</div>
 {% endblock %}
