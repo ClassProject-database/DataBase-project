@@ -1,6 +1,6 @@
 console.log("cart.js loaded!");
 
-// ✅ Define `addToCart` globally so it's accessible everywhere
+// adds to cart
 window.addToCart = function (name, price) {
     try {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -13,14 +13,14 @@ window.addToCart = function (name, price) {
         if (document.getElementById("cart-items")) {
             updateCartList();
         }
-        alert(`${name} has been added to your cart!`);
+        customAlert(`${name} has been added to your cart!`);
     } catch (error) {
         console.error("Error adding item to cart:", error);
     }
 };
 
 
-// ✅ Update Cart Badge Count
+//  Update Cart Badge Count
 function updateCartBadge() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartBadge = document.querySelector(".cart-badge");
@@ -29,12 +29,12 @@ function updateCartBadge() {
     }
 }
 
-// ✅ Update Cart List Display
+//  Update Cart List Display
 function updateCartList() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartList = document.getElementById("cart-items");
     if (!cartList) {
-        // Optionally, simply return if the element is not found
+        
         return;
     }
     cartList.innerHTML = ""; // Clear existing content
@@ -63,7 +63,7 @@ function updateCartList() {
 }
 
 
-// ✅ Remove Item from Cart
+// Remove Item from Cart
 document.addEventListener("click", function (event) {
     if (event.target.classList.contains("remove-btn")) {
         let index = event.target.getAttribute("data-index");
@@ -72,10 +72,11 @@ document.addEventListener("click", function (event) {
         localStorage.setItem("cart", JSON.stringify(cart));
         updateCartList();
         updateCartBadge();
+        customAlert2(` Item remvoed from your cart!`);
     }
 });
 
-// ✅ Clear Cart Function
+// Clear Cart Function
 document.addEventListener("DOMContentLoaded", function () {
     let clearCartBtn = document.getElementById("clear-cart-btn");
     if (clearCartBtn) {
@@ -87,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// ✅ Load Cart Display on Page Load
+//  Load Cart Display on Page Load
 document.addEventListener("DOMContentLoaded", function () {
     console.log("cart.js script initialized...");
     updateCartBadge();

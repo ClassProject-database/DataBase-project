@@ -16,6 +16,9 @@ def inventory():
         {"name": "Interstellar", "price": 18.99, "image": "movie2.jpg"},
         {"name": "The Dark Knight", "price": 12.99, "image": "movie3.jpg"},
         {"name": "The Matrix", "price": 10.99, "image": "movie4.jpg"},
+        {"name": "Frozen", "price": 18.99, "image": "movie2.jpg"},
+        {"name": "50 first datest", "price": 12.99, "image": "movie3.jpg"},
+        {"name": "The Matrix :Reloaded", "price": 10.99, "image": "movie4.jpg"},
     ]
     return render_template("inventory.html", movies=movies)
 
