@@ -1,0 +1,15 @@
+.list-group-item {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    padding: 15px;
+    font-size: 16px;
+}
+
+.list-group-item strong {
+    font-size: 18px;
+}
+
+.remove-btn {
+    font-size: 14px;
+    padding: 5px 10px;
+}

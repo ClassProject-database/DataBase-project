@@ -10,7 +10,7 @@ def login():
 
 @auth.route('/logout')
 def logout():
-    return '<p> logout </p>'
+    return render_template("logout.html")
 
 @auth.route('/signUp')
 def signUp():
