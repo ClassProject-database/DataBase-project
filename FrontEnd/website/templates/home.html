@@ -1,53 +1,73 @@
-{% extends "base.html" %}
+{% extends 'base2.html' %}
 
-{% block title %} Overridden!! {% endblock%}
-
-
-
+{% block title %}Home - Movie Rental{% endblock %}
 
 {% block content %}
-<p>the home page</p>
-<br>
+<!-- Hero Section -->
+<header class="bg-dark text-white py-5">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold">Rent Your Favorite Movies Anytime</h1>
+        <p class="lead fw-normal text-white-50">Discover a vast collection of movies available for instant rental.</p>
+        <a href="{{ url_for('views.inventory') }}" class="btn btn-primary btn-lg mt-3">Browse Movies</a>
+    </div>
+</header>
 
-<head>
-    <style>
-    table, th, td {
-      border: 1px solid black;
-      border-collapse: collapse;
-    }
-    </style>
-    </head>
-    <body>
-    
-    <h1>Table with Collapsed Borders</h1>
-    
-    <table style="background-color:#00FF00">
-      <tr>
-        <th>Month</th>
-        <th>Savings</th>
-      </tr>
-      <tr>
-        <td>January</td>
-        <td>$100</td>
-      </tr>
-      <tr>
-        <td>February</td>
-        <td>$80</td>
-      </tr>
-    </table>
-    
-    </body>
+<!-- Featured Movies Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-4 fw-bold">Featured Movies</h2>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <!-- Movie 1 -->
+            <div class="col">
+                <div class="card h-100">
+                    <img class="card-img-top movie-img" src="{{ url_for('static', filename='images/movie1.jpg') }}" alt="Inception">
+                    <div class="card-body text-center">
+                        <h5 class="fw-bolder">Inception</h5>
+                        <p>$3.99 / 24h</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">Rent Now</a>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Movie 2 -->
+            <div class="col">
+                <div class="card h-100">
+                    <img class="card-img-top movie-img" src="{{ url_for('static', filename='images/movie2.jpg') }}" alt="Interstellar">
+                    <div class="card-body text-center">
+                        <h5 class="fw-bolder">Interstellar</h5>
+                        <p>$4.99 / 24h</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">Rent Now</a>
+                    </div>
+                </div>
+            </div>
 
-<br> 
-<table>
-    <tr>
-        <th>model</th>
-        <th>year</th>
-    </tr>
-    <tr>
-        <td></td>
-        <td></td>
-    </tr>
-</table>
+            <!-- Movie 3 -->
+            <div class="col">
+                <div class="card h-100">
+                    <img class="card-img-top movie-img" src="{{ url_for('static', filename='images/movie3.jpg') }}" alt="The Dark Knight">
+                    <div class="card-body text-center">
+                        <h5 class="fw-bolder">The Dark Knight</h5>
+                        <p>$3.49 / 24h</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">Rent Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="bg-light py-5">
+    <div class="container text-center">
+        <h2 class="fw-bold">Ready to Watch?</h2>
+        <p>Sign up and start renting movies instantly.</p>
+        <a href="{{ url_for('auth.signUp') }}" class="btn btn-primary btn-lg">Sign Up Now</a>
+    </div>
+</section>
 {% endblock %}
