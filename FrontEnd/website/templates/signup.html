@@ -3,13 +3,12 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{{ url_for('static', filename='signUp.css') }}">
-{% endblock %}
+<link rel="stylesheet" href="http://127.0.0.1:5000/static/css/signUp.css">{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-  <div class="col-md-4">
-    <form action="/signup" method="POST" class="form-signin">
+<body class="signup-page">
+  <div class="signup-container">
+    <form action="/signup" method="POST" class="form-signUp">
       <h1 class="h3 mb-3 fw-normal text-center">Sign Up</h1>
       <!-- Email Field -->
       <div class="form-floating mb-3">
@@ -20,7 +19,8 @@
           id="floatingEmail" 
           placeholder="name@example.com" 
           required 
-          autofocus>
+          autofocus
+          autocomplete="email">
         <label for="floatingEmail">Email address</label>
       </div>
       <!-- Password Field -->
@@ -48,5 +48,5 @@
       <button class="w-50 btn-lg btn-primary" type="submit">Sign Up</button>
     </form>
   </div>
-</div>
+</body>
 {% endblock %}

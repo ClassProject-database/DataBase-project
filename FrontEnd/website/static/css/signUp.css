@@ -1,14 +1,37 @@
-
+/* Ensure full height but do not apply flexbox to body */
 html, body {
   height: 100%;
   background: linear-gradient(to bottom right, #1a1d21, #121416);
+  color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Apply flexbox only to the signup page */
+body.signup-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #f0f0f0; 
+  min-height: 100vh;
+  flex-direction: column;
 }
 
+/* Ensure navbar stays at the top */
+nav.navbar {
+  position: relative; /* Change to fixed if you want it always visible */
+  width: 100%;
+  z-index: 1000;
+}
 
+/* Container for centering the sign-up form */
+.signup-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Style for the sign-up form */
 .form-signUp {
   max-width: 400px;
   padding: 2rem;
@@ -19,19 +42,20 @@ html, body {
   text-align: center;
 }
 
-/* headings */
+/* Headings */
 .form-signUp h1 {
   color: #ffffff;
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
 }
 
+/* Labels inside floating input fields */
 .form-signUp .form-floating label {
   color: #aaa;
 }
 
 /* Input fields */
-.form-signUp input {
+.form-signUp input.form-control {
   background-color: #222 !important;
   color: #ffffff !important;
   border: 1px solid #444;
@@ -51,7 +75,7 @@ html, body {
 /* Sign-up button */
 .form-signUp button {
   width: 100%;
-  background-color: #494849;
+  background-color: #494849 !important;
   border: none;
   padding: 12px;
   font-size: 1.1rem;
@@ -66,13 +90,20 @@ html, body {
   transform: scale(1.03);
 }
 
-
+/* Margin for floating form elements */
 .form-signUp .form-floating {
   margin-bottom: 15px;
 }
 
-
+/* Ensure inputs have rounded corners */
 .form-signUp input[type="email"],
 .form-signUp input[type="password"] {
   border-radius: 5px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-signUp {
+    width: 90%;
+  }
 }

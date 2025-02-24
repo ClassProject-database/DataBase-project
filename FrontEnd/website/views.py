@@ -10,7 +10,7 @@ mydb = mysql.connector.connect(
     user='root',
     password='root',
     database='movie_rental',
-    port=3306
+    port=8889
 )
 
 @views.route('/inventory2')
@@ -32,19 +32,32 @@ def inventory2():
 @views.route('/api/movies')
 def get_movies():
     cursor = mydb.cursor(dictionary=True)
+
+    try:
+        genre_id = request.args.get('genre_id', type=int)
+        
+        if genre_id:
+            query = """
+                SELECT DISTINCT Movies.*
+                FROM Movies
+                JOIN MovieGenres ON Movies.movie_id = MovieGenres.movie_id
+                WHERE MovieGenres.genre_id = %s;
+            """
+            cursor.execute(query, (genre_id,))
+        else:
+            query = "SELECT * FROM Movies;"
+            cursor.execute(query)
+        
+        movies = cursor.fetchall()
+        return jsonify(movies)
     
-    # Check if filtering by genre
-    genre_id = request.args.get('genre_id', type=int)
-    if genre_id:
-        query = "SELECT * FROM movies WHERE genre_id = %s;"
-        cursor.execute(query, (genre_id,))
-    else:
-        query = "SELECT * FROM movies;"
-        cursor.execute(query)
-    
-    movies = cursor.fetchall()
-    cursor.close()
-    return jsonify(movies)
+    except mysql.connector.Error as err:
+        print(f"Database error: {err}")
+        return jsonify({"error": "Database query failed"}), 500
+
+    finally:
+        cursor.close()
+
 
 @views.route('/')
 def HomePage():
