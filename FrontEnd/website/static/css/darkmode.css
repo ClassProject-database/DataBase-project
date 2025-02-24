@@ -1,0 +1,130 @@
+/* Apply Dark Mode to Entire Page */
+.dark-mode {
+  background-color: #12121b !important;
+  color: #dcdcdc !important;
+}
+
+/* Navbar */
+.dark-mode nav {
+  background: linear-gradient(to bottom, #1c1c2e, #1a1a2e) !important; /* Subtle gradient */
+  border-bottom: 1px solid #29293d !important;
+}
+
+/* Navbar Links */
+.dark-mode .navbar-nav .nav-link {
+  color: #ffffff !important;
+  transition: color 0.3s ease-in-out;
+}
+
+.dark-mode .navbar-nav .nav-link:hover {
+  color: #bbbbbb !important;
+}
+
+/* Header */
+.dark-mode header {
+  background-color: #25253a !important;
+  color: white !important;
+  border-bottom: 2px solid #3a3a52 !important;
+}
+
+/* Cards */
+.dark-mode .card {
+  background-color: #29293d !important;
+  border: 1px solid #3a3a52 !important;
+  color: white !important;
+  transition: background 0.3s ease-in-out;
+}
+
+.dark-mode .card:hover {
+  background-color: #32324a !important;
+}
+
+/* Buttons */
+.dark-mode .btn-primary {
+  background-color: #007bff !important;
+  border-color: #0056b3 !important;
+  color: white !important;
+  transition: background 0.2s ease-in-out;
+}
+
+.dark-mode .btn-primary:hover {
+  background-color: #0056b3 !important;
+  border-color: #004494 !important;
+}
+
+/* Secondary & Outline Buttons */
+.dark-mode .btn-outline-dark, 
+.dark-mode .btn-secondary {
+  background-color: #2d2d45 !important;
+  border: 1px solid #4a4a6a !important;
+  color: white !important;
+}
+
+.dark-mode .btn-outline-dark:hover, 
+.dark-mode .btn-secondary:hover {
+  background-color: #4a4a6a !important;
+  border-color: #707090 !important;
+}
+
+/* Footer */
+.dark-mode footer {
+  background: linear-gradient(to bottom, #1a1a2e, #12121b) !important;
+  color: #dcdcdc !important;
+  border-top: 2px solid #3a3a52 !important;
+}
+
+/* Sections */
+.dark-mode section {
+  background-color: #1e1e2f !important;
+  color: #dcdcdc !important;
+}
+
+
+.dark-mode .list-group-item {
+  background-color: #29293d !important;
+  border-color: #3a3a52 !important;
+  color: white !important;
+}
+
+/* Modals */
+.dark-mode .custom-modal {
+  background: #202030 !important;
+  color: white !important;
+  border: 1px solid #3a3a52 !important;
+}
+
+.dark-mode .custom-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Form Dropdowns */
+.dark-mode input, 
+.dark-mode select, 
+.dark-mode textarea {
+  background-color: #29293d !important;
+  color: white !important;
+  border: 1px solid #4a4a6a !important;
+  padding: 8px;
+}
+
+.dark-mode input:focus, 
+.dark-mode select:focus, 
+.dark-mode textarea:focus {
+  outline: none;
+  border-color: #707090 !important;
+  background-color: #32324a !important;
+}
+
+/* Scrollbar Customization */
+.dark-mode ::-webkit-scrollbar {
+  width: 10px;
+}
+
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #4a4a6a;
+  border-radius: 5px;
+}
+
+.dark-mode ::-webkit-scrollbar-track {
+  background: #1e1e2f;
+}

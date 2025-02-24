@@ -3,12 +3,14 @@
 {% block title %}Home - Movie Rental{% endblock %}
 
 {% block content %}
-<!-- HEADER  -->>
+<!-- Hero / Header Section -->
 <header class="bg-dark text-white py-5">
     <div class="container text-center">
         <h1 class="display-4 fw-bold">Rent Your Favorite Movies Anytime</h1>
-        <p class="lead fw-normal text-white-50">Discover a vast collection of movies available for instant rental.</p>
-        <a href="{{ url_for('views.inventory') }}" class="btn btn-primary btn-lg mt-3">Browse Movies</a>
+        <p class="lead fw-normal text-white-50">Discover new releases and timeless classics right at your fingertips.</p>
+        <a href="{{ url_for('views.inventory2') }}" class="btn btn-primary btn-lg mt-3">
+            Browse Movies
+        </a>
     </div>
 </header>
 
@@ -20,13 +22,19 @@
             <!-- Movie 1 -->
             <div class="col">
                 <div class="card h-100">
-                    <img class="card-img-top movie-img" src="{{ url_for('static', filename='images/movie1.jpg') }}" alt="Inception">
+                    <img 
+                        class="card-img-top movie-img" 
+                        src="{{ url_for('static', filename='images/movie1.jpg') }}" 
+                        alt="Inception"
+                    >
                     <div class="card-body text-center">
                         <h5 class="fw-bolder">Inception</h5>
                         <p>$3.99 / 24h</p>
                     </div>
                     <div class="card-footer text-center">
-                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">Rent Now</a>
+                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
+                            Rent Now
+                        </a>
                     </div>
                 </div>
             </div>
@@ -34,13 +42,19 @@
             <!-- Movie 2 -->
             <div class="col">
                 <div class="card h-100">
-                    <img class="card-img-top movie-img" src="{{ url_for('static', filename='images/movie2.jpg') }}" alt="Interstellar">
+                    <img 
+                        class="card-img-top movie-img" 
+                        src="{{ url_for('static', filename='images/movie2.jpg') }}" 
+                        alt="Interstellar"
+                    >
                     <div class="card-body text-center">
                         <h5 class="fw-bolder">Interstellar</h5>
                         <p>$4.99 / 24h</p>
                     </div>
                     <div class="card-footer text-center">
-                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">Rent Now</a>
+                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
+                            Rent Now
+                        </a>
                     </div>
                 </div>
             </div>
@@ -48,25 +62,56 @@
             <!-- Movie 3 -->
             <div class="col">
                 <div class="card h-100">
-                    <img class="card-img-top movie-img" src="{{ url_for('static', filename='images/movie3.jpg') }}" alt="The Dark Knight">
+                    <img 
+                        class="card-img-top movie-img" 
+                        src="{{ url_for('static', filename='images/movie3.jpg') }}" 
+                        alt="The Dark Knight"
+                    >
                     <div class="card-body text-center">
                         <h5 class="fw-bolder">The Dark Knight</h5>
                         <p>$3.49 / 24h</p>
                     </div>
                     <div class="card-footer text-center">
-                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">Rent Now</a>
+                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
+                            Rent Now
+                        </a>
                     </div>
                 </div>
             </div>
+
+            <!-- Example for a 4th Column -->
+            <!-- 
+            <div class="col">
+                <div class="card h-100">
+                    <img 
+                        class="card-img-top movie-img" 
+                        src="{{ url_for('static', filename='images/movie4.jpg') }}"
+                        alt="Movie Title"
+                    >
+                    <div class="card-body text-center">
+                        <h5 class="fw-bolder">Movie Title</h5>
+                        <p>$X.XX / 24h</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
+                            Rent Now
+                        </a>
+                    </div>
+                </div>
+            </div>
+            -->
         </div>
     </div>
 </section>
 
+<!-- CTA / Sign-Up Section -->
 <section class="bg-light py-5">
     <div class="container text-center">
         <h2 class="fw-bold">Ready to Watch?</h2>
         <p>Sign up and start renting movies instantly.</p>
-        <a href="{{ url_for('auth.signUp') }}" class="btn btn-primary btn-lg">Sign Up Now</a>
+        <a href="{{ url_for('auth.signUp') }}" class="btn btn-primary btn-lg">
+            Sign Up Now
+        </a>
     </div>
 </section>
 {% endblock %}

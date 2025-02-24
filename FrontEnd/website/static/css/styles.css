@@ -1,0 +1,255 @@
+
+/* ========== GENERAL STYLES ============== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Tahoma, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: #000;
+  background-color: #f8f9fa; /* Light gray background */
+  line-height: 1.6;
+}
+
+/* Wrapper to Center Main Content */
+#wrapper {
+  background-color: #fff;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 1200px; /* Restrict width for better readability */
+}
+
+
+/* ========== NAVBAR & HEADER ============== */
+
+
+.navbar {
+  background-color: #181828 !important; /* Dark navy */
+  color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.navbar-nav .nav-link {
+  color: white !important;
+  margin-left: 1rem;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #dcdcdc !important;
+}
+
+header {
+  background-color: #25253a;
+  color: white;
+  padding: 3rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #3a3a52;
+}
+
+header h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  font-size: 1.2rem;
+  color: #bbb;
+}
+
+/* ========== MOVIE CARDS ================= */
+
+.movie-img {
+  width: 100%;
+  height: 425px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.card {
+  border: 1px solid #ddd;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+  text-align: center;
+}
+
+/* Card Footer (for buttons) */
+.card-footer {
+  background: transparent;
+  border-top: none;
+  text-align: center;
+}
+
+/* ========== FILTER BUTTONS =============== */
+.container .btn {
+  margin-bottom: 10px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.container .btn:hover {
+  transform: translateY(-2px);
+}
+
+.container .btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.container .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004494;
+}
+
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+.row > * {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 100%;
+  padding-right: calc(15px / 2);
+  padding-left: calc(15px / 2);
+  margin-top: 1rem;
+}
+
+/*  Grid for Movies */
+@media (min-width: 576px) {
+  .row-cols-md-2 > * {
+    flex: 0 0 auto;
+    width: 50%;
+  }
+}
+
+@media (min-width: 768px) {
+  .row-cols-md-3 > * {
+    flex: 0 0 auto;
+    width: 33.3333%;
+  }
+}
+
+@media (min-width: 992px) {
+  .row-cols-lg-4 > * {
+    flex: 0 0 auto;
+    width: 25%;
+  }
+}
+
+/* ========== FOOTER ====================== */
+
+
+footer {
+  background-color: #46484b;
+  color: rgb(53, 51, 51);
+  padding: 1rem 2rem;
+  text-align: center;
+  margin-top: 2rem;
+  border-top: 2px solid #3a3a52;
+}
+
+footer p {
+  margin: 0;
+}
+
+
+/* ========== MODALS ====================== */
+
+
+.custom-modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+}
+
+/* Show modal overlay */
+.custom-modal-overlay.show {
+  display: block;
+}
+
+
+/* DARK MODE  */
+
+
+.dark-mode {
+  background-color: #12121b !important;
+  color: #dcdcdc !important;
+}
+
+/* Navbar */
+.dark-mode nav {
+  background: linear-gradient(to bottom, #1c1c2e, #1a1a2e) !important;
+  border-bottom: 1px solid #29293d !important;
+}
+
+/* Navbar Links */
+.dark-mode .navbar-nav .nav-link {
+  color: #ffffff !important;
+}
+
+.dark-mode .navbar-nav .nav-link:hover {
+  color: #bbbbbb !important;
+}
+
+/* Cards */
+.dark-mode .card {
+  background-color: #29293d !important;
+  border: 1px solid #3a3a52 !important;
+  color: white !important;
+  transition: background 0.3s ease-in-out;
+}
+
+.dark-mode .card:hover {
+  background-color: #32324a !important;
+}
+
+/* Buttons */
+.dark-mode .btn-primary {
+  background-color: #007bff !important;
+  border-color: #0056b3 !important;
+  color: white !important;
+}
+
+.dark-mode .btn-primary:hover {
+  background-color: #0056b3 !important;
+  border-color: #004494 !important;
+}
+
+/* Footer */
+.dark-mode footer {
+  background: linear-gradient(to bottom, #1a1a2e, #12121b) !important;
+  color: #dcdcdc !important;
+  border-top: 2px solid #3a3a52 !important;
+}

@@ -1,0 +1,61 @@
+{% extends 'base2.html' %}
+
+{% block title %}
+    Inventory - Movie Store
+{% endblock %}
+
+{% block content %}
+<header class="bg-dark py-5">
+    <div class="container text-center text-white">
+        <h1 class="display-4 fw-bolder">Rent in Style</h1>
+        <p class="lead fw-normal text-white-50 mb-0">Movies and More</p>
+    </div>
+</header>
+
+<!-- Genre Filter Buttons -->
+<div class="container text-center my-4">
+    <button class="btn btn-secondary mx-2" onclick="fetchMovies()">All</button>
+    {% for genre in genres %}
+        <button class="btn btn-primary mx-2" onclick="fetchMovies({{ genre.genre_id }})">
+            {{ genre.genre_name }}
+        </button>
+    {% endfor %}
+</div>
+
+<!-- Movie Display -->
+<section class="py-5">
+    <div class="container">
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4" id="movies-container">
+            {% for movie in movies %}
+            <div class="col movie-card" data-genre="{{ movie.genre_id }}">
+                <div class="card h-100">
+                    <img 
+                         class="card-img-top movie-img"
+                         src="{{ url_for('static', filename='images/' ~ (movie.image if movie.image else 'keyboard.jpg')) }}"
+                         alt="{{ movie.title }}"
+                    >
+                    <div class="card-body text-center">
+                        <h5 class="fw-bolder">{{ movie.title }}</h5>
+                        <p>Year: {{ movie.year }}</p>
+                        <p>Rating: {{ movie.rating }}</p>
+                        <p>Price: ${{ movie.price }}</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button 
+                            class="btn btn-outline-dark" 
+                            onclick="addToCart('{{ movie.title|escape }}', {{ movie.price }})">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/filters.js') }}" defer></script>
+{% endblock %}

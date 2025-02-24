@@ -1,0 +1,78 @@
+
+html, body {
+  height: 100%;
+  background: linear-gradient(to bottom right, #1a1d21, #121416);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #f0f0f0; 
+}
+
+
+.form-signUp {
+  max-width: 400px;
+  padding: 2rem;
+  background: rgba(44, 47, 51, 0.9); /* Dark semi-transparent background */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px); /* Glassmorphism effect */
+  text-align: center;
+}
+
+/* headings */
+.form-signUp h1 {
+  color: #ffffff;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-signUp .form-floating label {
+  color: #aaa;
+}
+
+/* Input fields */
+.form-signUp input {
+  background-color: #222 !important;
+  color: #ffffff !important;
+  border: 1px solid #444;
+  padding: 10px;
+}
+
+.form-signUp input::placeholder {
+  color: #888;
+}
+
+.form-signUp input:focus {
+  border-color: #007bff;
+  background-color: #2c2f33 !important;
+  color: #fff !important;
+}
+
+/* Sign-up button */
+.form-signUp button {
+  width: 100%;
+  background-color: #494849;
+  border: none;
+  padding: 12px;
+  font-size: 1.1rem;
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+.form-signUp button:hover {
+  background-color: #0056b3;
+  transform: scale(1.03);
+}
+
+
+.form-signUp .form-floating {
+  margin-bottom: 15px;
+}
+
+
+.form-signUp input[type="email"],
+.form-signUp input[type="password"] {
+  border-radius: 5px;
+}
