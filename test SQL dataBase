@@ -1,130 +1,189 @@
--- Create the database and switch to it
-CREATE DATABASE IF NOT EXISTS movie_rental;
+-- 1. Drop Database if it exists & Recreate it
+DROP DATABASE IF EXISTS movie_rental;
+CREATE DATABASE movie_rental;
 USE movie_rental;
 
--- 1. Genres Table
+-- 2. Genres Table
 CREATE TABLE Genres (
-  genre_id INT AUTO_INCREMENT PRIMARY KEY,
-  genre_name VARCHAR(50) NOT NULL
+    genre_id INT AUTO_INCREMENT PRIMARY KEY,
+    genre_name VARCHAR(50) NOT NULL UNIQUE
 );
 
--- 2. Movies Table
+-- 3. Movies Table
 CREATE TABLE Movies (
-  movie_id INT AUTO_INCREMENT PRIMARY KEY,
-  title VARCHAR(100) NOT NULL,
-  year INT,
-  rating VARCHAR(10),
-  price DECIMAL(5,2),
-  genre_id INT,
-  FOREIGN KEY (genre_id) REFERENCES Genres(genre_id)
+    movie_id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    year INT,
+    rating VARCHAR(10),
+    price DECIMAL(5,2),
+    image VARCHAR(100) DEFAULT 'default.jpg'
 );
 
--- 3. Logins Table (for user authentication)
+-- 4. MovieGenres Table (Many-to-Many Relationship)
+CREATE TABLE MovieGenres (
+    movie_id INT,
+    genre_id INT,
+    PRIMARY KEY (movie_id, genre_id),
+    FOREIGN KEY (movie_id) REFERENCES Movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY (genre_id) REFERENCES Genres(genre_id) ON DELETE CASCADE
+);
+
+-- 5. Logins Table (User Authentication)
 CREATE TABLE Logins (
-  login_id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(50) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL  -- It is recommended to store hashed passwords
+    login_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'user') DEFAULT 'user'
 );
 
--- 4. Customers Table
+-- 6. User Accounts Table
+CREATE TABLE User_Accounts (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    login_id INT UNIQUE NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    phone VARCHAR(15),
+    FOREIGN KEY (login_id) REFERENCES Logins(login_id) ON DELETE CASCADE
+);
+
+-- 7. Customers Table
 CREATE TABLE Customers (
-  customer_id INT AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(50),
-  last_name VARCHAR(50),
-  email VARCHAR(100) UNIQUE,
-  phone VARCHAR(15),
-  login_id INT,
-  FOREIGN KEY (login_id) REFERENCES Logins(login_id)
+    customer_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_account_id INT NOT NULL,
+    total_spent DECIMAL(8,2) DEFAULT 0.00,
+    FOREIGN KEY (user_account_id) REFERENCES User_Accounts(account_id) ON DELETE CASCADE
 );
 
--- 5. Rentals Table (tracks movie rentals by customers)
+-- 8. Rentals Table
 CREATE TABLE Rentals (
-  rental_id INT AUTO_INCREMENT PRIMARY KEY,
-  customer_id INT,
-  movie_id INT,
-  rental_date DATE,
-  return_date DATE,
-  FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
-  FOREIGN KEY (movie_id) REFERENCES Movies(movie_id)
+    rental_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    movie_id INT NOT NULL,
+    rental_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    return_date DATE,
+    status ENUM('rented', 'returned') DEFAULT 'rented',
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (movie_id) REFERENCES Movies(movie_id) ON DELETE CASCADE
 );
 
--- 6. Reviews Table (optional, additional relation for customer feedback)
+-- 9. Payments Table
+CREATE TABLE Payments (
+    payment_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    rental_id INT NOT NULL,
+    amount DECIMAL(6,2) NOT NULL,
+    payment_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    payment_method ENUM('Credit Card', 'Debit Card', 'PayPal') NOT NULL,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (rental_id) REFERENCES Rentals(rental_id) ON DELETE CASCADE
+);
+
+-- 10. Watchlist Table
+CREATE TABLE Watchlist (
+    watchlist_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    movie_id INT NOT NULL,
+    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (movie_id) REFERENCES Movies(movie_id) ON DELETE CASCADE
+);
+
+-- 11. Favorites Table
+CREATE TABLE Favorites (
+    favorite_id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    movie_id INT NOT NULL,
+    added_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) ON DELETE CASCADE,
+    FOREIGN KEY (movie_id) REFERENCES Movies(movie_id) ON DELETE CASCADE
+);
+
+-- 12. Reviews Table
 CREATE TABLE Reviews (
-  review_id INT AUTO_INCREMENT PRIMARY KEY,
-  movie_id INT,
-  customer_id INT,
-  review_date DATE,
-  rating TINYINT,  -- e.g., scale of 1 to 5 stars
-  comment TEXT,
-  FOREIGN KEY (movie_id) REFERENCES Movies(movie_id),
-  FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    movie_id INT NOT NULL,
+    account_id INT NOT NULL,
+    review_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    rating TINYINT NOT NULL,
+    comment TEXT,
+    FOREIGN KEY (movie_id) REFERENCES Movies(movie_id) ON DELETE CASCADE,
+    FOREIGN KEY (account_id) REFERENCES User_Accounts(account_id) ON DELETE CASCADE
 );
+
+-- ✅ Reset AUTO_INCREMENT values (not needed for fresh DB, but useful in case of old data)
+ALTER TABLE Genres AUTO_INCREMENT = 1;
+ALTER TABLE Movies AUTO_INCREMENT = 1;
+ALTER TABLE Logins AUTO_INCREMENT = 1;
+ALTER TABLE User_Accounts AUTO_INCREMENT = 1;
+ALTER TABLE Customers AUTO_INCREMENT = 1;
+ALTER TABLE Rentals AUTO_INCREMENT = 1;
+ALTER TABLE Payments AUTO_INCREMENT = 1;
+ALTER TABLE Watchlist AUTO_INCREMENT = 1;
+ALTER TABLE Favorites AUTO_INCREMENT = 1;
+ALTER TABLE Reviews AUTO_INCREMENT = 1;
+
+Insert Genres Data
 INSERT INTO Genres (genre_name) VALUES
-('Sci-Fi'),         -- should get genre_id = 1
-('Action'),         -- should get genre_id = 2
-('Animation'),      -- should get genre_id = 3
-('Romance'),        -- should get genre_id = 4
-('Adventure'),      -- should get genre_id = 5
-('Fantasy'),        -- should get genre_id = 6
-('Drama');          -- should get genre_id = 7
-update Genres set genre_name = 'Family' where genre_id = 3;
+('Sci-Fi'), ('Action'), ('Family'), ('Romance'), ('Comedy'), ('Fantasy');
 
-INSERT INTO Movies (title, year, rating, price, genre_id,image) VALUES
-('Harry Potter and the Deathly Hallows_2', 2015, 'PG-13', 3.99, 6),
-('Interstellar', 2014, 'PG-13', 3.99, 1),
-('The Matrix', 1999, 'R', 2.99, 1),
-('The Matrix Reloaded', 2003, 'R', 2.99, 1),
-('The Dark Knight', 2008, 'PG-13', 3.99, 2),
-('Inception', 2010, 'PG-13', 3.99, 1),
-('Frozen', 2013, 'PG', 3.99, 3),
-('50 First Dates', 2004, 'PG-13', 2.99, 4),
-('Holes', 2003, 'PG', 2.99, 5),
-('Harry Potter and the Sorcerer''s Stone', 2001, 'PG', 3.99, 6),
-('Harry Potter and the Chamber of Secrets', 2002, 'PG', 3.99, 6),
-('Harry Potter and the Prisoner of Azkaban', 2004, 'PG', 3.99, 6),
-('Harry Potter and the Goblet of Fire', 2005, 'PG-13', 3.99, 6),
-('Harry Potter and the Order of the Phoenix', 2007, 'PG-13', 3.99, 6),
-('Harry Potter and the Half-Blood Prince', 2009, 'PG-13', 3.99, 6),
-('Harry Potter and the Deathly Hallows', 2010, 'PG-13', 3.99, 6),
-('Harry Potter and the Deathly Hallows', 2010, 'PG-13', 3.99, 6),
-('Forrest Gump', 1994, 'PG-13', 2.99, 7),
-('Spongebob the Movie', 2004, 'PG', 2.99, 3),
-('Tangled', 2010, 'PG', 3.99, 3),
-('Despicable Me', 2010, 'PG', 3.99, 3),
-('Avatar', 2009, 'PG-13', 3.99, 1);
+INSERT IGNORE INTO Movies (title, year, rating, price, image) VALUES
+('Interstellar', 2014, 'PG-13', 13.99, 'interstellar.jpg'),
+('The Matrix', 1999, 'R', 12.99, 'the_matrix.jpg'),
+('The Matrix Reloaded', 2003, 'R', 2.99, 'the_matrix_reloaded.jpg'),
+('The Dark Knight', 2008, 'PG-13', 13.99, 'the_dark_knight.jpg'),
+('Inception', 2010, 'PG-13', 13.99, 'inception.jpg'),
+('Frozen', 2013, 'PG', 3.99, 'frozen.jpg'),
+('50 First Dates', 2004, 'PG-13', 12.99, '50_first_dates.jpg'),
+('Holes', 2003, 'PG', 12.99, 'holes.jpg'),
+('Harry Potter and the Sorcerer\'s Stone', 2001, 'PG', 13.99, 'harry_potter_sorcerers_stone.jpg'),
+('Harry Potter and the Chamber of Secrets', 2002, 'PG', 13.99, 'harry_potter_chamber.jpg'),
+('Harry Potter and the Prisoner of Azkaban', 2004, 'PG', 13.99, 'harry_potter_prisoner.jpg'),
+('Harry Potter and the Goblet of Fire', 2005, 'PG-13', 13.99, 'harry_potter_goblet.jpg'),
+('Harry Potter and the Order of the Phoenix', 2007, 'PG-13', 13.99, 'harry_potter_order.jpg'),
+('Harry Potter and the Half-Blood Prince', 2009, 'PG-13', 13.99, 'harry_potter_half_blood.jpg'),
+('Harry Potter and the Deathly Hallows Part 1', 2010, 'PG-13', 13.99, 'harry_potter_deathly_hallows_1.jpg'),
+('Harry Potter and the Deathly Hallows Part 2', 2015, 'PG-13', 13.99, 'harry_potter_deathly_hallows_2.jpg'),
+('Spongebob the Movie', 2004, 'PG', 12.99, 'spongebob_movie.jpg'),
+('Tangled', 2010, 'PG', 13.99, 'tangled.jpg'),
+('Despicable Me', 2010, 'PG', 13.99, 'despicable_me.jpg'),
+('Avatar', 2009, 'PG-13', 13.99, 'avatar.jpg'),
+('Forrest Gump', 1994, 'PG-13', 12.99, 'forrest_gump.jpg');
 
-INSERT INTO Logins (username, password) VALUES
-('jsmith', 'hashed_password1'),
-('jdoe', 'hashed_password2'),
-('awilliams', 'hashed_password3'),
-('mbrown', 'hashed_password4'),
-('ljohnson', 'hashed_password5');
-INSERT INTO Customers (first_name, last_name, email, phone, login_id) VALUES
-('John', 'Smith', 'john.smith@example.com', '1234567890', 1),
-('Jane', 'Doe', 'jane.doe@example.com', '2345678901', 2),
-('Alice', 'Williams', 'alice.williams@example.com', '3456789012', 3),
-('Michael', 'Brown', 'michael.brown@example.com', '4567890123', 4),
-('Linda', 'Johnson', 'linda.johnson@example.com', '5678901234', 5);
-  
 
-UPDATE Movies SET image = 'interstellar.jpg' WHERE movie_id = 1;
-UPDATE Movies SET image = 'the_matrix.jpg' WHERE movie_id = 2;
-UPDATE Movies SET image = 'the_dark_knight.jpg' WHERE movie_id = 3;
-UPDATE Movies SET image = 'inception.jpg' WHERE movie_id = 4;
-UPDATE Movies SET image = 'the_matrix_reloaded.jpg' WHERE movie_id = 5;
-UPDATE Movies SET image = 'frozen.jpg' WHERE movie_id = 6;
-UPDATE Movies SET image = '50_first_dates.jpg' WHERE movie_id = 7;
-UPDATE Movies SET image = 'holes.jpg' WHERE movie_id = 8;
-UPDATE Movies SET image = 'harry_potter_sorcerers_stone.jpg' WHERE movie_id = 9;
-UPDATE Movies SET image = 'harry_potter_chamber.jpg' WHERE movie_id = 10;
-UPDATE Movies SET image = 'harry_potter_prisoner.jpg' WHERE movie_id = 11;
-UPDATE Movies SET image = 'harry_potter_goblet.jpg' WHERE movie_id = 12;
-UPDATE Movies SET image = 'harry_potter_order.jpg' WHERE movie_id = 13;
-UPDATE Movies SET image = 'harry_potter_half_blood.jpg' WHERE movie_id = 14;
-UPDATE Movies SET image = 'harry_potter_deathly_hallows_1.jpg' WHERE movie_id = 15;
-UPDATE Movies SET image = 'harry_potter_deathly_hallows_2.jpg' WHERE movie_id = 16;
-UPDATE Movies SET image = 'forest_gump.jpg' WHERE movie_id = 17;
-UPDATE Movies SET image = 'spongebob_movie.jpg' WHERE movie_id = 18;
-UPDATE Movies SET image = 'tangled.jpg' WHERE movie_id = 19;
-UPDATE Movies SET image = 'despicable_me.jpg' WHERE movie_id = 20;
-UPDATE Movies SET image = 'avatar.jpg' WHERE movie_id = 21;
+
+INSERT IGNORE INTO MovieGenres (movie_id, genre_id) VALUES
+(1, 1), (1, 6),    -- Interstellar (Sci-Fi, Fantasy)
+(2, 1), (2, 2),    -- The Matrix (Sci-Fi, Action)
+(3, 1), (3, 2),    -- The Matrix Reloaded (Sci-Fi, Action)
+(4, 2),            -- The Dark Knight (Action)
+(5, 1), (5, 2),    -- Inception (Sci-Fi, Action)
+(6, 3), (6, 6),    -- Frozen (Family, Fantasy)
+(7, 4), (7, 5),    -- 50 First Dates (Romance, Comedy)
+(8, 3), (8, 5),    -- Holes (Family, Comedy)
+(9, 6), (9, 3),    -- Harry Potter 1 (Fantasy, Family)
+(10, 6), (10, 3),  -- Harry Potter 2 (Fantasy, Family)
+(11, 6), (11, 3),  -- Harry Potter 3 (Fantasy, Family)
+(12, 6), (12, 3),  -- Harry Potter 4 (Fantasy, Family)
+(13, 6), (13, 3),  -- Harry Potter 5 (Fantasy, Family)
+(14, 6), (14, 3),  -- Harry Potter 6 (Fantasy, Family)
+(15, 6), (15, 3),  -- Harry Potter 7 Part 1 (Fantasy, Family)
+(16, 6), (16, 3),  -- Harry Potter 7 Part 2 (Fantasy, Family)
+(17, 3), (17, 5),  -- Spongebob Movie (Family, Comedy)
+(18, 3), (18, 6),  -- Tangled (Family, Fantasy)
+(19, 3), (19, 5),  -- Despicable Me (Family, Comedy)
+(20, 1), (20, 6),  -- Avatar (Sci-Fi, Fantasy)
+(21, 4), (21, 5);  -- Forrest Gump (Romance, Comedy)
+
+-- ✅ Insert an Admin User
+INSERT INTO Logins (username, password, role) 
+VALUES ('admin', '$2b$12$SO6tkJhJmXQNp30dP1QgKexywVf4OJuKGsTOgVbks4iJPWAgLvZCq', 'admin');
+
+-- ✅ Check inserted data
+SELECT * FROM Movies;
+SELECT * FROM Genres;
+SELECT * FROM Logins;
+SELECT * FROM User_Accounts;
+SELECT * FROM Customers;
+SELECT * FROM Rentals;
+SELECT * FROM Reviews;
+
