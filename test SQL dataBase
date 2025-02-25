@@ -1,4 +1,4 @@
--- 1. Drop Database if it exists & Recreate it
+--1.
 DROP DATABASE IF EXISTS movie_rental;
 CREATE DATABASE movie_rental;
 USE movie_rental;
@@ -110,18 +110,6 @@ CREATE TABLE Reviews (
     FOREIGN KEY (account_id) REFERENCES User_Accounts(account_id) ON DELETE CASCADE
 );
 
--- ✅ Reset AUTO_INCREMENT values (not needed for fresh DB, but useful in case of old data)
-ALTER TABLE Genres AUTO_INCREMENT = 1;
-ALTER TABLE Movies AUTO_INCREMENT = 1;
-ALTER TABLE Logins AUTO_INCREMENT = 1;
-ALTER TABLE User_Accounts AUTO_INCREMENT = 1;
-ALTER TABLE Customers AUTO_INCREMENT = 1;
-ALTER TABLE Rentals AUTO_INCREMENT = 1;
-ALTER TABLE Payments AUTO_INCREMENT = 1;
-ALTER TABLE Watchlist AUTO_INCREMENT = 1;
-ALTER TABLE Favorites AUTO_INCREMENT = 1;
-ALTER TABLE Reviews AUTO_INCREMENT = 1;
-
 Insert Genres Data
 INSERT INTO Genres (genre_name) VALUES
 ('Sci-Fi'), ('Action'), ('Family'), ('Romance'), ('Comedy'), ('Fantasy');
@@ -174,16 +162,10 @@ INSERT IGNORE INTO MovieGenres (movie_id, genre_id) VALUES
 (20, 1), (20, 6),  -- Avatar (Sci-Fi, Fantasy)
 (21, 4), (21, 5);  -- Forrest Gump (Romance, Comedy)
 
--- ✅ Insert an Admin User
+-- Insert an Admin User
 INSERT INTO Logins (username, password, role) 
 VALUES ('admin', '$2b$12$SO6tkJhJmXQNp30dP1QgKexywVf4OJuKGsTOgVbks4iJPWAgLvZCq', 'admin');
 
--- ✅ Check inserted data
+-- Check inserted data
 SELECT * FROM Movies;
-SELECT * FROM Genres;
-SELECT * FROM Logins;
-SELECT * FROM User_Accounts;
-SELECT * FROM Customers;
-SELECT * FROM Rentals;
-SELECT * FROM Reviews;
 
