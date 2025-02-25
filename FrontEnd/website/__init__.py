@@ -14,7 +14,7 @@ db_config = {
     "user": "root",
     "password": "root",
     "database": "movie_rental",
-    "port": 8889
+    "port": 3306
 }
 connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=10, **db_config)
 
