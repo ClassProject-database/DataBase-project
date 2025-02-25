@@ -4,14 +4,14 @@ document.addEventListener("DOMContentLoaded", function () {
     setupDarkMode();
 });
 
-// ✅ Fetch Movies & Populate Carousel
+//  Fetch Movies & Populate Carousel
 async function fetchMovies() {
     try {
         const response = await fetch('/api/movies');
         const movies = await response.json();
 
         const carouselTrack = document.querySelector(".carousel-track");
-        if (!carouselTrack) return; // ✅ Prevent error if carousel is missing
+        if (!carouselTrack) return; //  Prevent error if carousel is missing
 
         carouselTrack.innerHTML = "";
 
@@ -37,13 +37,13 @@ async function fetchMovies() {
     }
 }
 
-// ✅ Setup Carousel Navigation
+//  Setup Carousel Navigation
 function setupCarousel() {
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
     const carouselTrack = document.querySelector('.carousel-track');
 
-    if (!carouselTrack || !prevBtn || !nextBtn) return; // ✅ Prevent errors
+    if (!carouselTrack || !prevBtn || !nextBtn) return; //  Prevent errors
 
     prevBtn.addEventListener("click", () => {
         carouselTrack.scrollBy({ left: -200, behavior: "smooth" });
@@ -54,7 +54,7 @@ function setupCarousel() {
     });
 }
 
-// ✅ Dark Mode Toggle
+//  Dark Mode Toggle
 function setupDarkMode() {
     const darkModeToggle = document.getElementById("darkModeToggle");
     if (!darkModeToggle) return;
@@ -64,7 +64,7 @@ function setupDarkMode() {
         localStorage.setItem("darkMode", document.body.classList.contains("dark-mode") ? "enabled" : "disabled");
     });
 
-    // ✅ Persist Dark Mode Across Sessions
+    //  Persist Dark Mode Across Sessions
     if (localStorage.getItem("darkMode") === "enabled") {
         document.body.classList.add("dark-mode");
     }

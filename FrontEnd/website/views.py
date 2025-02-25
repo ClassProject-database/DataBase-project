@@ -6,12 +6,12 @@ from . import get_db_connection
 bcrypt = Bcrypt()
 views = Blueprint('views', __name__)
 
-# ✅ Homepage
+#  Homepage
 @views.route('/')
 def HomePage():
     return render_template("home.html")
 
-# ✅ Restricted Inventory Page
+#  Restricted Inventory Page
 @views.route('/inventory2')
 @login_required
 def inventory2():
@@ -25,7 +25,7 @@ def inventory2():
     conn.close()
     return render_template("inventory2.html", movies=movies, genres=genres)
 
-# ✅ API: Fetch Movies
+#  API: Fetch Movies
 @views.route('/api/movies')
 def get_movies():
     conn = get_db_connection()
@@ -47,7 +47,7 @@ def get_movies():
         cursor.close()
         conn.close()
 
-# ✅ Admin Dashboard
+#  Admin Dashboard
 @views.route('/admin', methods=['GET'])
 @login_required
 def admin_dashboard():
@@ -85,7 +85,7 @@ def user_rentals():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # ✅ Fetch user info
+    #  Fetch user info
     cursor.execute("""
         SELECT ua.account_id, ua.first_name, ua.last_name, ua.phone, l.username 
         FROM User_Accounts ua
@@ -95,12 +95,12 @@ def user_rentals():
     user_info = cursor.fetchone()
 
     if not user_info:
-        flash("❌ User not found.", "error")
+        flash(" User not found.", "error")
         return redirect(url_for('views.HomePage'))
 
     account_id = user_info['account_id']
 
-    # ✅ Fetch rental history (Fix column reference)
+    #  Fetch rental history (Fix column reference)
     cursor.execute("""
         SELECT r.rental_id, r.rental_date, r.return_date, r.status, m.title
         FROM Rentals r
@@ -109,7 +109,7 @@ def user_rentals():
     """, (account_id,))
     rentals = cursor.fetchall()
 
-    # ✅ Fetch user's reviews (Fix column reference)
+    #  Fetch user's reviews (Fix column reference)
     cursor.execute("""
         SELECT rev.review_id, rev.review_date, rev.rating, rev.comment, m.title
         FROM Reviews rev
@@ -124,7 +124,7 @@ def user_rentals():
     return render_template("userRentals.html", user=user_info, rentals=rentals, reviews=reviews)
 
 
-# ✅ Add User (Admin Only)
+#  Add User (Admin Only)
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
@@ -169,18 +169,18 @@ def add_user():
                        (login_id, first_name, last_name, phone))
         conn.commit()
 
-        print("✅ User added successfully!")
+        print(" User added successfully!")
         return jsonify({'success': True})
 
     except Exception as e:
-        print("❌ Error adding user:", e)
+        print(" Error adding user:", e)
         return jsonify({'success': False, 'error': str(e)}), 500
 
     finally:
         cursor.close()
         conn.close()
 
-# ✅ Delete User (Admin Only)
+#  Delete User (Admin Only)
 @views.route('/api/delete_user', methods=['POST'])
 @login_required
 def delete_user():
@@ -197,7 +197,7 @@ def delete_user():
     cursor = conn.cursor()
 
     try:
-        # ✅ Delete from Logins (cascade deletes User_Accounts)
+        #  Delete from Logins (cascade deletes User_Accounts)
         cursor.execute("DELETE FROM Logins WHERE login_id = %s", (login_id,))
         conn.commit()
         return jsonify({'success': True})
@@ -211,7 +211,7 @@ def delete_user():
         conn.close()
 
 
-# ✅ Post Review
+#  Post Review
 @views.route('/api/post_review', methods=['POST'])
 @login_required
 def post_review():
@@ -224,7 +224,7 @@ def post_review():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # ✅ Fetch customer_id from login_id
+    #  Fetch customer_id from login_id
     cursor.execute("SELECT customer_id FROM Customers WHERE user_account_id = (SELECT account_id FROM User_Accounts WHERE login_id = %s)", (current_user.id,))
     customer = cursor.fetchone()
 
@@ -233,14 +233,14 @@ def post_review():
 
     customer_id = customer['customer_id']
 
-    # ✅ Check if the user has already reviewed this movie
+    #  Check if the user has already reviewed this movie
     cursor.execute("SELECT * FROM Reviews WHERE movie_id = %s AND customer_id = %s", (movie_id, customer_id))
     existing_review = cursor.fetchone()
 
     if existing_review:
         return jsonify({'success': False, 'error': 'You have already reviewed this movie'}), 400
 
-    # ✅ Insert review
+    #  Insert review
     cursor.execute("INSERT INTO Reviews (movie_id, customer_id, rating, comment) VALUES (%s, %s, %s, %s)", 
                    (movie_id, customer_id, rating, comment))
     conn.commit()
@@ -250,7 +250,7 @@ def post_review():
 
     return jsonify({'success': True})
 
-# ✅ Reviews Page
+#  Reviews Page
 @views.route('/reviews')
 def reviews_page():
     conn = get_db_connection()

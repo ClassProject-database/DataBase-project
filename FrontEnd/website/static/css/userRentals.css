@@ -1,4 +1,4 @@
-/* 🔹 Full height background */
+/*  Full height background */
 html, body {
     height: 100%;
     background: linear-gradient(to bottom right, #1a1d21, #121416);
@@ -8,7 +8,7 @@ html, body {
     font-family: 'Arial', sans-serif;
 }
 
-/* 🔹 Rentals Container */
+/*  Rentals Container */
 .rentals-container {
     max-width: 800px;
     margin: 50px auto;
@@ -21,7 +21,7 @@ html, body {
     transition: all 0.3s ease-in-out;
 }
 
-/* 🔹 Responsive Design */
+/*  Responsive Design */
 @media (max-width: 768px) {
     .rentals-container {
         width: 90%;
@@ -29,7 +29,7 @@ html, body {
     }
 }
 
-/* 🔹 Table Styles */
+/*  Table Styles */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -55,13 +55,13 @@ tr:nth-child(even) {
     background-color: rgba(44, 47, 51, 0.8);
 }
 
-/* 🔹 Hover Effect on Table Rows */
+/*  Hover Effect on Table Rows */
 tr:hover {
     background-color: rgba(0, 123, 255, 0.2);
     transition: background 0.2s ease-in-out;
 }
 
-/* 🔹 Status Colors */
+/*  Status Colors */
 .text-warning {
     color: #ffc107; /* Yellow for "rented" */
     font-weight: bold;
@@ -72,7 +72,7 @@ tr:hover {
     font-weight: bold;
 }
 
-/* 🔹 Buttons */
+/*  Buttons */
 button {
     background-color: #007bff;
     border: none;
@@ -91,7 +91,7 @@ button:hover {
     box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
 }
 
-/* 🔹 Delete Button */
+/*  Delete Button */
 .btn-danger {
     background-color: #dc3545;
 }
@@ -100,7 +100,7 @@ button:hover {
     background-color: #b02a37;
 }
 
-/* 🔹 Review Form */
+/*  Review Form */
 #review-form {
     margin-top: 20px;
     padding: 15px;
@@ -109,7 +109,7 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* 🔹 Input & Textarea */
+/*  Input & Textarea */
 input, textarea, select {
     width: 100%;
     padding: 10px;
@@ -124,13 +124,13 @@ input:focus, textarea:focus {
     outline: 2px solid #007bff;
 }
 
-/* 🔹 Search Container */
+/*  Search Container */
 .search-container {
     position: relative;
     margin-bottom: 10px;
 }
 
-/* 🔹 Dropdown Menu */
+/*  Dropdown Menu */
 #movieDropdown {
     position: absolute;
     background: rgba(34, 36, 40, 0.95);
@@ -147,7 +147,7 @@ input:focus, textarea:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-/* 🔹 Dropdown Items */
+/*  Dropdown Items */
 #movieDropdown .dropdown-item {
     padding: 10px;
     cursor: pointer;
@@ -160,7 +160,7 @@ input:focus, textarea:focus {
     background: #007bff;
 }
 
-/* 🔹 Alert Messages */
+/*  Alert Messages */
 .alert {
     padding: 10px;
     margin: 10px 0;
@@ -181,7 +181,7 @@ input:focus, textarea:focus {
     color: black;
 }
 
-/* ❌ Error Alert */
+/*  Error Alert */
 .alert-danger {
     background-color: #dc3545;
     color: white;

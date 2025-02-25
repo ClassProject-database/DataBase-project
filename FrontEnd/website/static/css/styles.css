@@ -1,4 +1,4 @@
-/* ✅ General Styles */
+/*  General Styles */
 * {
   margin: 0;
   padding: 0;
@@ -18,7 +18,7 @@ body {
   padding: 20px;
 }
 
-/* ✅ Hero Section */
+/*  Hero Section */
 .hero {
   position: relative;
   height: 40vh;
@@ -57,7 +57,7 @@ body {
   font-size: 1.1rem;
 }
 
-/* ✅ Featured Movies Carousel */
+/*  Featured Movies Carousel */
 .featured-movies {
   text-align: center;
   padding: 50px 20px;
@@ -118,7 +118,7 @@ body {
 .prev { left: 10px; }
 .next { right: 10px; }
 
-/* ✅ How It Works Section */
+/*  How It Works Section */
 .how-it-works {
   text-align: center;
   padding: 50px 20px;
@@ -150,7 +150,7 @@ body {
   margin-bottom: 10px;
 }
 
-/* ✅ Latest Reviews */
+/*  Latest Reviews */
 .latest-reviews {
   text-align: center;
   padding: 50px 20px;
@@ -169,7 +169,7 @@ body {
   transform: scale(1.02);
 }
 
-/* ✅ Navbar */
+/*  Navbar */
 .navbar {
   background-color: #181828 !important; /* Dark navy */
   color: white;
@@ -192,7 +192,7 @@ body {
   color: #ffcc00 !important;
 }
 
-/* ✅ Footer */
+/*  Footer */
 footer {
   background-color: #181828;
   color: white;
@@ -202,7 +202,7 @@ footer {
   border-top: 2px solid #3a3a52;
 }
 
-/* ✅ Dark Mode */
+/*  Dark Mode */
 .dark-mode {
   background-color: #12121b !important;
   color: #dcdcdc !important;
@@ -231,7 +231,7 @@ footer {
   border-top: 2px solid #3a3a52 !important;
 }
 
-/* ✅ Responsive Adjustments */
+/*  Responsive Adjustments */
 @media screen and (max-width: 768px) {
   .hero-content h1 {
     font-size: 2rem;

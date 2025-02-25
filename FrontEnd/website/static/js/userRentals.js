@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-    refreshRentals(); // ✅ Load rentals when page loads
-    fetchMovies(); // ✅ Fetch movies from API
+    refreshRentals(); //  Load rentals when page loads
+    fetchMovies(); //  Fetch movies from API
 });
 
-// ✅ Function to Fetch Rentals and Update Table
+//  Function to Fetch Rentals and Update Table
 async function refreshRentals() {
     try {
         const response = await fetch('/api/user_rentals');
@@ -23,7 +23,7 @@ async function refreshRentals() {
     }
 }
 
-// ✅ Helper function to update rental table
+//  to update rental table
 function updateRentalsTable(rentals) {
     const tableBody = document.getElementById('rentalsTableBody');
     tableBody.innerHTML = ""; // Clear existing data
@@ -49,7 +49,7 @@ function updateRentalsTable(rentals) {
     });
 }
 
-// ✅ Fetch Movies and Populate Datalist & Dropdown
+//  Fetch Movies and Populate Datalist & Dropdown
 async function fetchMovies() {
     try {
         const response = await fetch('/api/movies');
@@ -62,26 +62,26 @@ async function fetchMovies() {
         dropdown.innerHTML = ""; // Clear previous options
 
         movies.forEach(movie => {
-            // ✅ Add to datalist for search suggestions
+            //  Add to datalist for search suggestions
             let option = document.createElement('option');
             option.value = movie.title;
             option.setAttribute("data-id", movie.movie_id);
             datalist.appendChild(option);
 
-            // ✅ Add to hidden dropdown for form submission
+            //  Add to hidden dropdown for form submission
             let dropdownOption = document.createElement('option');
             dropdownOption.value = movie.movie_id;
             dropdownOption.textContent = movie.title;
             dropdown.appendChild(dropdownOption);
         });
 
-        // ✅ Attach event listener only after movies are fetched
+        //  Attach event listener only after movies are fetched
         document.getElementById('movieSearch').addEventListener('input', handleMovieSearch);
     } catch (error) {
         console.error('Error fetching movies:', error);
     }
 }
-// ✅ Ensure movie ID is set when selecting a movie
+//  Ensure movie ID is set when selecting a movie
 document.getElementById('movieSearch').addEventListener('input', function () {
     let searchValue = this.value.toLowerCase();
     let dropdown = document.getElementById("movieDropdown");
@@ -99,7 +99,7 @@ document.getElementById('movieSearch').addEventListener('input', function () {
 
     if (filteredMovies.length === 0) return;
 
-    // ✅ Populate Dropdown with Filtered Movies
+    //  Populate Dropdown with Filtered Movies
     filteredMovies.forEach(movie => {
         let option = document.createElement("div");
         option.classList.add("dropdown-item");
@@ -108,7 +108,7 @@ document.getElementById('movieSearch').addEventListener('input', function () {
 
         option.addEventListener("click", function () {
             document.getElementById("movieSearch").value = movie.title;
-            movieIdField.value = movie.movie_id; // ✅ Set movie_id
+            movieIdField.value = movie.movie_id; //  Set movie_id
             dropdown.style.display = "none"; // Hide after selection
         });
 
@@ -118,7 +118,7 @@ document.getElementById('movieSearch').addEventListener('input', function () {
     dropdown.style.display = "block"; // Show only if matches found
 });
 
-// ✅ Handle Movie Search and Select Correct `movie_id`
+//  Handle Movie Search 
 function handleMovieSearch() {
     let searchValue = this.value.toLowerCase();
     let datalistOptions = document.querySelectorAll("#movieList option");
@@ -132,13 +132,13 @@ function handleMovieSearch() {
         }
     });
 
-    // ✅ Show warning if the user types but doesn't select a valid movie
+    //  Show warning if the user types but doesn't select a valid movie
     if (!found) {
         dropdown.value = ""; // Reset movie_id
     }
 }
 
-// ✅ Fix Review Form Submission
+//  Review Form Submission
 document.getElementById('review-form').addEventListener('submit', function (e) {
     e.preventDefault();
     

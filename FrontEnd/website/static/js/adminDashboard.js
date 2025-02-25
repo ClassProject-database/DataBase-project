@@ -14,19 +14,19 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 3000);
     }
 
-    // ✅ Fetch Helper (Handles Invalid JSON Errors)
+    // (Handles Invalid JSON Errors)
     async function safeFetchJson(response) {
         try {
             const text = await response.text();
             return JSON.parse(text);
         } catch (e) {
-            console.error("❌ Invalid JSON response:", text);
+            console.error(" Invalid JSON response:", text);
             return { success: false, error: "Invalid server response" };
         }
     }
 
     // ============================
-    // ✅ Fetch & Display Users
+    // Fetch & Display Users
     // ============================
     async function fetchUsers(searchQuery = "") {
         try {
@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const usersTable = document.getElementById("user-table-body");
             if (!usersTable) {
-                console.error("❌ Error: 'user-table-body' not found.");
+                console.error(" Error: 'user-table-body' not found.");
                 return;
             }
 
@@ -69,12 +69,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
         } catch (error) {
-            console.error("❌ Error fetching users:", error);
+            console.error(" Error fetching users:", error);
         }
     }
 
     // ============================
-    // ✅ Add User Functionality
+    // Add User Functionality
     // ============================
     const addUserForm = document.getElementById("add-user-form");
     if (addUserForm) {
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let role = document.getElementById("role").value.trim() || "user";
 
             if (!username || !firstName || !lastName || !phone || !role) {
-                showToast("❌ Please fill in all fields.", "error");
+                showToast(" Please fill in all fields.", "error");
                 return;
             }
 
@@ -103,14 +103,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 const data = await safeFetchJson(response);
                 if (data.success) {
-                    showToast("✅ User added successfully!");
+                    showToast(" User added successfully!");
                     fetchUsers(); // Refresh table
                 } else {
-                    showToast("❌ Error: " + data.error, "error");
+                    showToast(" Error: " + data.error, "error");
                 }
             } catch (error) {
-                console.error("❌ Fetch Error:", error);
-                showToast("❌ Error adding user.", "error");
+                console.error(" Fetch Error:", error);
+                showToast(" Error adding user.", "error");
             }
         });
     }
@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const row = document.querySelector(`tr[data-account-id="${accountId}"]`);
         if (!row) {
-            console.error("❌ Error: Could not find row for user.");
+            console.error(" Error: Could not find row for user.");
             return;
         }
 
@@ -151,14 +151,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const data = await safeFetchJson(response);
             if (data.success) {
-                showToast("✅ User deleted successfully!");
+                showToast(" User deleted successfully!");
                 fetchUsers(); // Refresh user table
             } else {
-                showToast("❌ Error deleting user: " + data.error, "error");
+                showToast(" Error deleting user: " + data.error, "error");
             }
         } catch (error) {
-            console.error("❌ Fetch Error:", error);
-            showToast("❌ Error deleting user.", "error");
+            console.error(" Fetch Error:", error);
+            showToast(" Error deleting user.", "error");
         }
     }
 
@@ -177,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ✅ Initial Fetch of Users
+    //  Initial Fetch of Users
     fetchUsers();
 });
 
@@ -208,13 +208,13 @@ if (addMovieForm) {
             }
         });
 
-        // ✅ Validate required fields
+        //  Validate required fields
         if (!movieData.title || !movieData.year || !movieData.rating || !movieData.price || !movieData.genre_ids) {
-            showToast("❌ Please fill in all required fields.", "error");
+            showToast(" Please fill in all required fields.", "error");
             return;
         }
 
-        console.log("📤 Sending Movie Data:", movieData); // ✅ Debugging
+        console.log("📤 Sending Movie Data:", movieData); //  Debugging
 
         try {
             const response = await fetch("/api/add_movie", {
@@ -223,26 +223,26 @@ if (addMovieForm) {
                 body: JSON.stringify(movieData)
             });
 
-            const text = await response.text(); // ✅ Read raw response
+            const text = await response.text(); //  Read raw response
             try {
-                var data = JSON.parse(text); // ✅ Convert to JSON safely
+                var data = JSON.parse(text); //  Convert to JSON safely
             } catch (jsonError) {
-                console.error("❌ JSON Parse Error:", jsonError, "\nResponse:", text);
-                showToast("❌ Server error: Invalid response format.", "error");
+                console.error(" JSON Parse Error:", jsonError, "\nResponse:", text);
+                showToast(" Server error: Invalid response format.", "error");
                 return;
             }
 
-            console.log("📩 Response Data:", data); // ✅ Debugging
+            console.log("📩 Response Data:", data); //  Debugging
 
             if (data.success) {
-                showToast("✅ Movie added successfully!");
-                addMovieForm.reset(); // ✅ Reset only if successful
+                showToast(" Movie added successfully!");
+                addMovieForm.reset(); //  Reset only if successful
             } else {
-                showToast("❌ Error adding movie: " + (data.error || "Unknown error"), "error");
+                showToast(" Error adding movie: " + (data.error || "Unknown error"), "error");
             }
         } catch (error) {
-            console.error("❌ Fetch Error:", error);
-            showToast("❌ Error adding movie.", "error");
+            console.error(" Fetch Error:", error);
+            showToast(" Error adding movie.", "error");
         }
     });
 }
