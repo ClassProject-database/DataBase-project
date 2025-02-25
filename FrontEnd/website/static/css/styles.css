@@ -1,5 +1,4 @@
-
-/* ========== GENERAL STYLES ============== */
+/* ✅ General Styles */
 * {
   margin: 0;
   padding: 0;
@@ -7,25 +6,170 @@
 }
 
 body {
-  font-family: Tahoma, Helvetica, Arial, sans-serif;
-  font-size: 14px;
-  color: #000;
-  background-color: #f8f9fa; /* Light gray background */
+  font-family: 'Poppins', sans-serif;
+  background: #121212;
+  color: white;
   line-height: 1.6;
 }
 
-/* Wrapper to Center Main Content */
-#wrapper {
-  background-color: #fff;
-  margin: 0 auto;
-  padding: 0;
-  max-width: 1200px; /* Restrict width for better readability */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
 }
 
+/* ✅ Hero Section */
+.hero {
+  position: relative;
+  height: 40vh;
+  background: url("../images/hero-bg.jpg") no-repeat center center/cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
 
-/* ========== NAVBAR & HEADER ============== */
+.hero .overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
 
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
 
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-content p {
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+.hero-buttons .btn {
+  margin: 5px;
+  font-size: 1.1rem;
+}
+
+/* ✅ Featured Movies Carousel */
+.featured-movies {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px;
+}
+
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-track .movie-card {
+  flex: 0 0 auto;
+  width: 180px;
+  margin: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s;
+  text-align: center;
+  background: #1e1e1e;
+  padding: 10px;
+}
+
+.carousel-track .movie-card img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.carousel-track .movie-card:hover {
+  transform: scale(1.1);
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 10px 15px;
+  border-radius: 50%;
+}
+
+.prev { left: 10px; }
+.next { right: 10px; }
+
+/* ✅ How It Works Section */
+.how-it-works {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.step {
+  background: #1e1e1e;
+  padding: 20px;
+  border-radius: 10px;
+  width: 250px;
+  text-align: center;
+  transition: transform 0.3s;
+}
+
+.step:hover {
+  transform: scale(1.05);
+}
+
+.step i {
+  font-size: 2rem;
+  color: #007bff;
+  margin-bottom: 10px;
+}
+
+/* ✅ Latest Reviews */
+.latest-reviews {
+  text-align: center;
+  padding: 50px 20px;
+}
+
+.review-card {
+  background: #1e1e1e;
+  padding: 15px;
+  border-left: 4px solid #007bff;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: transform 0.2s;
+}
+
+.review-card:hover {
+  transform: scale(1.02);
+}
+
+/* ✅ Navbar */
 .navbar {
   background-color: #181828 !important; /* Dark navy */
   color: white;
@@ -45,211 +189,64 @@ body {
 }
 
 .navbar-nav .nav-link:hover {
-  color: #dcdcdc !important;
+  color: #ffcc00 !important;
 }
 
-header {
-  background-color: #25253a;
-  color: white;
-  padding: 3rem 2rem;
-  text-align: center;
-  margin-bottom: 2rem;
-  border-bottom: 2px solid #3a3a52;
-}
-
-header h1 {
-  font-size: 3rem;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
-
-header p {
-  font-size: 1.2rem;
-  color: #bbb;
-}
-
-/* ========== MOVIE CARDS ================= */
-
-.movie-img {
-  width: 100%;
-  height: 425px;
-  object-fit: cover;
-  border-radius: 5px;
-}
-
-.card {
-  border: 1px solid #ddd;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.card:hover {
-  transform: scale(1.03);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.card-body {
-  text-align: center;
-}
-
-/* Card Footer (for buttons) */
-.card-footer {
-  background: transparent;
-  border-top: none;
-  text-align: center;
-}
-
-/* ========== FILTER BUTTONS =============== */
-.container .btn {
-  margin-bottom: 10px;
-  padding: 10px 15px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
-}
-
-.container .btn:hover {
-  transform: translateY(-2px);
-}
-
-.container .btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-  color: white;
-}
-
-.container .btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004494;
-}
-
-
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-right: -15px;
-  margin-left: -15px;
-}
-
-.row > * {
-  flex-shrink: 0;
-  width: 100%;
-  max-width: 100%;
-  padding-right: calc(15px / 2);
-  padding-left: calc(15px / 2);
-  margin-top: 1rem;
-}
-
-/*  Grid for Movies */
-@media (min-width: 576px) {
-  .row-cols-md-2 > * {
-    flex: 0 0 auto;
-    width: 50%;
-  }
-}
-
-@media (min-width: 768px) {
-  .row-cols-md-3 > * {
-    flex: 0 0 auto;
-    width: 33.3333%;
-  }
-}
-
-@media (min-width: 992px) {
-  .row-cols-lg-4 > * {
-    flex: 0 0 auto;
-    width: 25%;
-  }
-}
-
-/* ========== FOOTER ====================== */
-
-
+/* ✅ Footer */
 footer {
-  background-color: #46484b;
-  color: rgb(53, 51, 51);
+  background-color: #181828;
+  color: white;
   padding: 1rem 2rem;
   text-align: center;
   margin-top: 2rem;
   border-top: 2px solid #3a3a52;
 }
 
-footer p {
-  margin: 0;
-}
-
-
-/* ========== MODALS ====================== */
-
-
-.custom-modal-overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-  transition: background-color 0.3s ease;
-}
-
-/* Show modal overlay */
-.custom-modal-overlay.show {
-  display: block;
-}
-
-
-/* DARK MODE  */
-
-
+/* ✅ Dark Mode */
 .dark-mode {
   background-color: #12121b !important;
   color: #dcdcdc !important;
 }
 
-/* Navbar */
 .dark-mode nav {
   background: linear-gradient(to bottom, #1c1c2e, #1a1a2e) !important;
-  border-bottom: 1px solid #29293d !important;
-}
-
-/* Navbar Links */
-.dark-mode .navbar-nav .nav-link {
-  color: #ffffff !important;
 }
 
 .dark-mode .navbar-nav .nav-link:hover {
-  color: #bbbbbb !important;
+  color: #ffcc00 !important;
 }
 
-/* Cards */
-.dark-mode .card {
+.dark-mode .movie-card {
   background-color: #29293d !important;
-  border: 1px solid #3a3a52 !important;
-  color: white !important;
+  color: white;
   transition: background 0.3s ease-in-out;
 }
 
-.dark-mode .card:hover {
-  background-color: #32324a !important;
+.dark-mode .movie-card:hover {
+  background-color: #404060 !important;
 }
 
-/* Buttons */
-.dark-mode .btn-primary {
-  background-color: #007bff !important;
-  border-color: #0056b3 !important;
-  color: white !important;
-}
-
-.dark-mode .btn-primary:hover {
-  background-color: #0056b3 !important;
-  border-color: #004494 !important;
-}
-
-/* Footer */
 .dark-mode footer {
   background: linear-gradient(to bottom, #1a1a2e, #12121b) !important;
-  color: #dcdcdc !important;
   border-top: 2px solid #3a3a52 !important;
+}
+
+/* ✅ Responsive Adjustments */
+@media screen and (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content p {
+    font-size: 1rem;
+  }
+
+  .carousel-track .movie-card {
+    width: 140px;
+  }
+
+  .steps {
+    flex-direction: column;
+    align-items: center;
+  }
 }

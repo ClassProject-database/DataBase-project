@@ -1,0 +1,229 @@
+/* =========================
+   General Admin Dashboard
+   ========================= */
+   .admin-dashboard {
+    padding: 20px;
+    margin-bottom: 40px;
+  }
+  
+  .admin-dashboard h1,
+  .admin-dashboard h2 {
+    margin-bottom: 20px;
+  }
+  
+  /* =========================
+     User Table & Search
+     ========================= */
+  #searchUsers {
+    width: 50%;
+    min-width: 200px;
+    margin: 0 auto 1rem auto;
+    display: block;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  #users-table {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  #users-table thead th {
+    background-color: #212529; /* Darker header for contrast */
+  }
+  
+  #users-table th,
+  #users-table td {
+    padding: 10px;
+    text-align: center;
+  }
+  
+  /* Hover effect for rows */
+  #users-table tbody tr:hover {
+    background-color: #343a40; /* Slightly darker row on hover */
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  /* =========================
+     Movie Form
+     ========================= */
+  #add-movie-form .form-group {
+    margin-bottom: 15px;
+  }
+  
+  #add-movie-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  #add-movie-form input,
+  #add-movie-form select {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+  }
+  
+  #add-movie-form select:focus,
+  #add-movie-form input:focus {
+    outline: none;
+    border-color: #80bdff; /* Bootstrap-like focus */
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+  }
+  
+  /* =========================
+     Modal Styling
+     ========================= */
+     .modal-overlay {
+        visibility: hidden;
+        opacity: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .modal-overlay.show {
+        visibility: visible;
+        opacity: 1;
+    }
+    
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        width: 90%;
+        max-width: 400px;
+        text-align: center;
+        position: relative;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    }
+    
+    .close-modal {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 20px;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: black;
+    }
+    
+
+  
+  .close-modal:hover {
+    color: #000;
+  }
+  
+  /* =========================
+     Button Hover Enhancements
+     ========================= */
+  .btn {
+    transition: all 0.2s ease-in-out;
+    border-radius: 4px;
+  }
+  
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  }
+  
+  /* For "Edit", "View", "Delete" buttons (optional color tweaks) */
+  .btn.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+  .btn.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #004494;
+  }
+  
+  .btn.btn-info {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+  }
+  .btn.btn-info:hover {
+    background-color: #117a8b;
+    border-color: #0f6c7a;
+  }
+  
+  .btn.btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  .btn.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+  }
+  
+  /* =========================
+     Toast / Notification (Optional)
+     ========================= */
+  /* If you want a quick toast style, uncomment and adjust:
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #333;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 5px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 3000;
+  }
+  
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .toast.success {
+    background-color: #28a745;
+  }
+  
+  .toast.error {
+    background-color: #dc3545;
+  }
+  */
+  /* ✅ Make sure dropdown is visible */
+#movieDropdown {
+    position: absolute;
+    background: #333;
+    border: 1px solid #444;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none; /* Hide by default */
+    z-index: 1000;
+    left: 0;
+    top: 45px; /* Adjust position to prevent overlapping */
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#movieDropdown .dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+    background-color: #222;
+    border-bottom: 1px solid #444;
+    transition: background 0.2s;
+}
+
+#movieDropdown .dropdown-item:hover {
+    background: #007bff;
+}

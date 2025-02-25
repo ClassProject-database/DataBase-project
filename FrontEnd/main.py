@@ -1,6 +1,6 @@
-from website import creates_app
+from website import create_app
 
-app=creates_app()
+app=create_app()
 
 if __name__== '__main__':
     app.run(debug=True)

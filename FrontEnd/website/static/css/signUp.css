@@ -75,8 +75,7 @@ nav.navbar {
 /* Sign-up button */
 .form-signUp button {
   width: 100%;
-  background-color: #494849 !important;
-  border: none;
+  background-color: #0056b3 !important; 
   padding: 12px;
   font-size: 1.1rem;
   color: #ffffff;
@@ -86,9 +85,10 @@ nav.navbar {
 }
 
 .form-signUp button:hover {
-  background-color: #0056b3;
-  transform: scale(1.03);
+  background-color: #007bff;
+  transform: scale(1.05);
 }
+
 
 /* Margin for floating form elements */
 .form-signUp .form-floating {

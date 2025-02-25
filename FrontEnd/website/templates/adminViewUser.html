@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}View User{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+  <h2>User Information</h2>
+  <div class="card mb-4">
+    <div class="card-body">
+      <p><strong>Username:</strong> {{ user.username }}</p>
+      <p><strong>First Name:</strong> {{ user.first_name }}</p>
+      <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+      <p><strong>Phone:</strong> {{ user.phone }}</p>
+      <p><strong>Role:</strong> {{ user.role }}</p>
+    </div>
+  </div>
+
+  <h3>Rental History</h3>
+  {% if rentals and rentals|length > 0 %}
+  <table class="table table-dark table-striped">
+    <thead>
+      <tr>
+        <th>Rental ID</th>
+        <th>Movie Title</th>
+        <th>Rental Date</th>
+        <th>Return Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for rental in rentals %}
+      <tr>
+        <td>{{ rental.rental_id }}</td>
+        <td>{{ rental.title }}</td>
+        <td>{{ rental.rental_date }}</td>
+        <td>{{ rental.return_date if rental.return_date else "N/A" }}</td>
+        <td>{{ rental.status }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No rentals found for this user.</p>
+  {% endif %}
+</div>
+{% endblock %}

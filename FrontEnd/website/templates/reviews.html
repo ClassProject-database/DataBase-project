@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}User Reviews - Movie Store{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 class="text-center mt-4">User Reviews</h1>
+
+    {% if reviews %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <ul class="list-group mt-3 shadow-lg">
+                    {% for review in reviews %}
+                    <li class="list-group-item review-item">
+                        <div class="review-header">
+                            <div class="review-info">
+                                <strong class="review-movie">{{ review.title }}</strong>
+                                <span class="review-rating">⭐ {{ review.rating }}/5</span>
+                                <p class="review-user"><i class="fa fa-user"></i> {{ review.username }} • <small>{{ review.review_date }}</small></p>
+                            </div>
+                        </div>
+                        <p class="review-comment">{{ review.comment }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center mt-4">
+            <i class="fa fa-info-circle"></i> No reviews yet. Be the first to leave one!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

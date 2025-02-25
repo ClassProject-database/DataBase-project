@@ -1,8 +1,50 @@
-{% extends "base2.html" %}
-{% block title %} Login {% endblock%}
+{% extends "base.html" %}
 
-{% block content %}
-<p>the Login page</p>
+{% block title %}Login{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
 {% endblock %}
 
+{% block content %}
+<div class="login-container">
+    <form action="{{ url_for('auth.login') }}" method="POST" class="form-login">
+      <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
 
+      <!-- ✅ Flash Messages for Errors -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+              {% for category, message in messages %}
+                  <div class="alert alert-{{ category }}">{{ message }}</div>
+              {% endfor %}
+          {% endif %}
+      {% endwith %}
+
+      <!-- ✅ Username Field (Replaces Email) -->
+      <div class="form-floating mb-3">
+        <input 
+          type="text" 
+          name="username" 
+          class="form-control" 
+          id="floatingUsername" 
+          placeholder="Username" 
+          required>
+        <label for="floatingUsername">Username</label>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-floating mb-3">
+        <input 
+          type="password" 
+          name="password" 
+          class="form-control" 
+          id="floatingPassword" 
+          placeholder="Password" 
+          required>
+        <label for="floatingPassword">Password</label>
+      </div>
+
+      <button class="w-50 btn-lg btn-primary" type="submit">Login</button>
+    </form>
+</div>
+{% endblock %}

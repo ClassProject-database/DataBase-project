@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block title %}My Rentals - Movie Store{% endblock %}
+
+{% block content %}
+<div class="rental-container">
+    <h1 class="text-center">My Rentals</h1>
+
+    <!-- ✅ Display User Info -->
+    <div class="user-info">
+        <h3>User Information</h3>
+        <p><strong>Username:</strong> {{ user.username if user else "N/A" }}</p>
+        <p><strong>First Name:</strong> {{ user.first_name if user else "N/A" }}</p>
+        <p><strong>Last Name:</strong> {{ user.last_name if user else "N/A" }}</p>
+        <p><strong>Phone:</strong> {{ user.phone if user else "N/A" }}</p>
+    </div>
+
+    <!-- ✅ Rental History Table -->
+    <h3>Rental History</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Movie Title</th>
+                <th>Rental Date</th>
+                <th>Return Date</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="rentalsTableBody">
+            {% for rental in rentals %}
+            <tr>
+                <td>{{ rental.title }}</td>
+                <td>{{ rental.rental_date }}</td>
+                <td>{{ rental.return_date or 'Not Returned' }}</td>
+                <td>{{ rental.status }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center">No rentals found.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h3>Post a Review</h3>
+
+    <!-- ✅ Search Bar for Movies -->
+    <div class="search-container">
+        <input type="text" id="movieSearch" class="form-control mb-2" placeholder="Search Movie..." autocomplete="off">
+        <input type="hidden" id="selectedMovieId" name="movie_id">
+        <div id="movieDropdown" class="dropdown-menu"></div>
+    </div>
+
+    <form id="review-form">
+        <div class="form-group">
+            <label for="reviewRating">Rating (1-5)</label>
+            <input type="number" id="reviewRating" name="rating" class="form-control" min="1" max="5" required>
+        </div>
+        <div class="form-group">
+            <label for="reviewComment">Review</label>
+            <textarea id="reviewComment" name="comment" class="form-control" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Submit Review</button>
+    </form>
+
+    <h3>My Reviews</h3>
+    <ul class="list-group">
+        {% for review in reviews %}
+        <li class="list-group-item">
+            <strong>{{ review.title }}</strong> ({{ review.rating }}/5)
+            <br>{{ review.comment }}
+            <br><small>Posted on: {{ review.review_date }}</small>
+        </li>
+        {% else %}
+        <li class="list-group-item text-center">No reviews yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<style>
+/* ✅ Style improvements */
+.rental-container {
+    position: relative;
+    max-width: 700px;
+    margin: auto;
+}
+
+.search-container {
+    position: relative;
+}
+
+/* ✅ Dropdown styling */
+#movieDropdown {
+    position: absolute;
+    background: #222;
+    border: 1px solid #444;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+    left: 0;
+    top: 40px;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#movieDropdown .dropdown-item {
+    padding: 8px;
+    cursor: pointer;
+    color: white;
+    border-bottom: 1px solid #444;
+}
+
+#movieDropdown .dropdown-item:hover {
+    background: #007bff;
+}
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        let moviesList = [];
+    
+        // ✅ Fetch Movies Immediately on Page Load
+        async function fetchMovies() {
+            try {
+                const response = await fetch('/api/movies');
+                moviesList = await response.json();
+            } catch (error) {
+                console.error('❌ Error fetching movies:', error);
+            }
+        }
+    
+        await fetchMovies(); // ✅ Ensure movies are loaded early
+    
+        const searchInput = document.getElementById("movieSearch");
+        const dropdown = document.getElementById("movieDropdown");
+        const movieIdField = document.getElementById("selectedMovieId");
+    
+        // ✅ Show & Filter Movies in Dropdown
+        searchInput.addEventListener("input", function () {
+            let searchValue = this.value.trim().toLowerCase();
+            dropdown.innerHTML = ""; // Clear previous results
+    
+            if (searchValue.length === 0) {
+                dropdown.style.display = "none";
+                movieIdField.value = ""; // Reset hidden field
+                return;
+            }
+    
+            let filteredMovies = moviesList.filter(movie => movie.title.toLowerCase().includes(searchValue));
+    
+            if (filteredMovies.length === 0) {
+                dropdown.innerHTML = `<div class='dropdown-item text-muted'>No movies found</div>`;
+                dropdown.style.display = "block";
+                return;
+            }
+    
+            // ✅ Populate Dropdown
+            filteredMovies.forEach(movie => {
+                let option = document.createElement("div");
+                option.classList.add("dropdown-item");
+                option.textContent = movie.title;
+                option.dataset.id = movie.movie_id;
+    
+                // ✅ Handle Click Event (Selecting a movie)
+                option.addEventListener("click", function () {
+                    searchInput.value = movie.title;
+                    movieIdField.value = movie.movie_id; // ✅ Store movie_id
+                    dropdown.style.display = "none"; // Hide dropdown
+                });
+    
+                dropdown.appendChild(option);
+            });
+    
+            dropdown.style.display = "block"; // ✅ Show dropdown only when results exist
+        });
+    
+        // ✅ Hide Dropdown When Clicking Outside
+        document.addEventListener("click", function (e) {
+            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    
+        // ✅ Review Form Submission
+        document.getElementById('review-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+        
+            let movieTitle = searchInput.value;
+            let movieId = movieIdField.value; // ✅ Ensure it's set
+            let rating = document.getElementById("reviewRating").value;
+            let review = document.getElementById("reviewComment").value;
+        
+            if (!movieId || !moviesList.some(movie => movie.movie_id == movieId)) {
+                alert("❌ Please select a valid movie from the dropdown.");
+                return;
+            }
+        
+            console.log("📤 Submitting Review:", { movie_id: movieId, rating, review });
+        
+            fetch('/api/post_review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ movie_id: movieId, rating, review })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("✅ Review submitted successfully!");
+                    location.reload();
+                } else {
+                    alert("❌ Error: " + data.error);
+                }
+            })
+            .catch(error => console.error('❌ Error:', error));
+        });        
+    });
+    
+</script>
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/userRentals.css') }}">
+{% endblock %}
+
+{% endblock %}

@@ -1,26 +1,21 @@
 console.log("cart.js loaded!");
 
-// adds to cart
+// Adds an item to the cart
 window.addToCart = function (name, price) {
     try {
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        let newItem = { name: name, price: parseFloat(price) };
-        cart.push(newItem);
+        cart.push({ name: name, price: parseFloat(price) });
         localStorage.setItem("cart", JSON.stringify(cart));
 
         updateCartBadge();
-        // Only update the cart list if the element exists
-        if (document.getElementById("cart-items")) {
-            updateCartList();
-        }
-        customAlert(`${name} has been added to your cart!`);
+        updateCartList();
+        showModal(`${name} has been added to your cart!`);
     } catch (error) {
         console.error("Error adding item to cart:", error);
     }
 };
 
-
-//  Update Cart Badge Count
+// Updates the cart badge count
 function updateCartBadge() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartBadge = document.querySelector(".cart-badge");
@@ -29,17 +24,15 @@ function updateCartBadge() {
     }
 }
 
-//  Update Cart List Display
+// Updates the cart list display
 function updateCartList() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartList = document.getElementById("cart-items");
-    if (!cartList) {
-        
-        return;
-    }
+    if (!cartList) return;
+    
     cartList.innerHTML = ""; // Clear existing content
-
     let total = 0;
+
     if (cart.length === 0) {
         cartList.innerHTML = `<li class="list-group-item text-center">Your cart is empty.</li>`;
     } else {
@@ -56,14 +49,14 @@ function updateCartList() {
             cartList.appendChild(listItem);
         });
     }
+
     let totalPriceElement = document.getElementById("total-price");
     let totalItemsElement = document.getElementById("total-items");
     if (totalItemsElement) totalItemsElement.innerText = cart.length;
     if (totalPriceElement) totalPriceElement.innerText = total.toFixed(2);
 }
 
-
-// Remove Item from Cart
+// Removes item from the cart
 document.addEventListener("click", function (event) {
     if (event.target.classList.contains("remove-btn")) {
         let index = event.target.getAttribute("data-index");
@@ -72,25 +65,44 @@ document.addEventListener("click", function (event) {
         localStorage.setItem("cart", JSON.stringify(cart));
         updateCartList();
         updateCartBadge();
-        customAlert2(` Item remvoed from your cart!`);
+        showModal("Item removed from your cart!");
     }
 });
 
-// Clear Cart Function
+// Clears the entire cart
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("cart.js initialized...");
+    updateCartBadge();
+    updateCartList();
+
     let clearCartBtn = document.getElementById("clear-cart-btn");
     if (clearCartBtn) {
         clearCartBtn.addEventListener("click", function () {
             localStorage.removeItem("cart");
             updateCartList();
             updateCartBadge();
+            showModal("Your cart has been cleared.");
         });
     }
 });
 
-//  Load Cart Display on Page Load
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("cart.js script initialized...");
-    updateCartBadge();
-    updateCartList();
-});
+// Function to show the custom modal alert
+function showModal(message) {
+    const overlay = document.getElementById('customModalOverlay');
+    const messageDiv = document.getElementById('customModalMessage');
+    const okButton = document.getElementById('customModalOkBtn');
+
+    if (!overlay || !messageDiv || !okButton) {
+        console.error("Modal elements not found in the DOM.");
+        return;
+    }
+
+    messageDiv.textContent = message;
+    overlay.classList.add('show');
+
+    // ✅ Remove old click event before adding a new one (fixes multiple clicks issue)
+    okButton.replaceWith(okButton.cloneNode(true)); 
+    document.getElementById('customModalOkBtn').addEventListener("click", function () {
+        overlay.classList.remove('show');
+    });
+}

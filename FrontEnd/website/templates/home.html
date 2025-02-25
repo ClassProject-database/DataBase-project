@@ -1,117 +1,65 @@
-{% extends 'base2.html' %}
-
-{% block title %}Home - Movie Rental{% endblock %}
+{% extends "base.html" %}
+{% block title %}Home - Movie Store{% endblock %}
 
 {% block content %}
-<!-- Hero / Header Section -->
-<header class="bg-dark text-white py-5">
-    <div class="container text-center">
-        <h1 class="display-4 fw-bold">Rent Your Favorite Movies Anytime</h1>
-        <p class="lead fw-normal text-white-50">Discover new releases and timeless classics right at your fingertips.</p>
-        <a href="{{ url_for('views.inventory2') }}" class="btn btn-primary btn-lg mt-3">
-            Browse Movies
-        </a>
+
+<!-- ✅ Hero Section -->
+<section class="hero">
+  <div class="overlay"></div>
+  <div class="hero-content text-center">
+    <h1>Discover & Rent Your Favorite Movies</h1>
+    <p class="lead">Stream and enjoy top-rated movies from our vast collection.</p>
+    <div class="hero-buttons">
+      <a href="{{ url_for('views.inventory2') }}" class="btn btn-primary btn-lg">Browse Movies</a>
+      {% if not current_user.is_authenticated %}
+      <a href="{{ url_for('auth.signUp') }}" class="btn btn-outline-light btn-lg">Sign Up</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Login</a>
+      {% endif %}
     </div>
-</header>
-
-<!-- Featured Movies Section -->
-<section class="py-5">
-    <div class="container">
-        <h2 class="text-center mb-4 fw-bold">Featured Movies</h2>
-        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4">
-            <!-- Movie 1 -->
-            <div class="col">
-                <div class="card h-100">
-                    <img 
-                        class="card-img-top movie-img" 
-                        src="{{ url_for('static', filename='images/movie1.jpg') }}" 
-                        alt="Inception"
-                    >
-                    <div class="card-body text-center">
-                        <h5 class="fw-bolder">Inception</h5>
-                        <p>$3.99 / 24h</p>
-                    </div>
-                    <div class="card-footer text-center">
-                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
-                            Rent Now
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Movie 2 -->
-            <div class="col">
-                <div class="card h-100">
-                    <img 
-                        class="card-img-top movie-img" 
-                        src="{{ url_for('static', filename='images/movie2.jpg') }}" 
-                        alt="Interstellar"
-                    >
-                    <div class="card-body text-center">
-                        <h5 class="fw-bolder">Interstellar</h5>
-                        <p>$4.99 / 24h</p>
-                    </div>
-                    <div class="card-footer text-center">
-                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
-                            Rent Now
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Movie 3 -->
-            <div class="col">
-                <div class="card h-100">
-                    <img 
-                        class="card-img-top movie-img" 
-                        src="{{ url_for('static', filename='images/movie3.jpg') }}" 
-                        alt="The Dark Knight"
-                    >
-                    <div class="card-body text-center">
-                        <h5 class="fw-bolder">The Dark Knight</h5>
-                        <p>$3.49 / 24h</p>
-                    </div>
-                    <div class="card-footer text-center">
-                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
-                            Rent Now
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Example for a 4th Column -->
-            <!-- 
-            <div class="col">
-                <div class="card h-100">
-                    <img 
-                        class="card-img-top movie-img" 
-                        src="{{ url_for('static', filename='images/movie4.jpg') }}"
-                        alt="Movie Title"
-                    >
-                    <div class="card-body text-center">
-                        <h5 class="fw-bolder">Movie Title</h5>
-                        <p>$X.XX / 24h</p>
-                    </div>
-                    <div class="card-footer text-center">
-                        <a class="btn btn-outline-dark" href="{{ url_for('auth.Cart') }}">
-                            Rent Now
-                        </a>
-                    </div>
-                </div>
-            </div>
-            -->
-        </div>
-    </div>
+  </div>
 </section>
 
-<!-- CTA / Sign-Up Section -->
-<section class="bg-light py-5">
-    <div class="container text-center">
-        <h2 class="fw-bold">Ready to Watch?</h2>
-        <p>Sign up and start renting movies instantly.</p>
-        <a href="{{ url_for('auth.signUp') }}" class="btn btn-primary btn-lg">
-            Sign Up Now
-        </a>
-    </div>
+<!-- ✅ Featured Movies -->
+<section class="featured-movies container my-5">
+  <h2 class="section-title text-center mb-4">Featured Movies</h2>
+  <div class="carousel-container position-relative">
+    <button class="carousel-btn prev"><i class="fa fa-chevron-left"></i></button>
+    <div class="carousel-track d-flex align-items-center"></div>
+    <button class="carousel-btn next"><i class="fa fa-chevron-right"></i></button>
+  </div>
 </section>
+
+<!-- ✅ How It Works -->
+<section class="how-it-works container my-5">
+  <h2 class="text-center mb-4">How It Works</h2>
+  <div class="row">
+    <div class="col-md-4 text-center">
+      <i class="fa fa-search fa-3x text-primary mb-3"></i>
+      <h4>Find a Movie</h4>
+      <p>Search and explore our vast collection.</p>
+    </div>
+    <div class="col-md-4 text-center">
+      <i class="fa fa-shopping-cart fa-3x text-primary mb-3"></i>
+      <h4>Rent or Buy</h4>
+      <p>Add movies to your cart and checkout easily.</p>
+    </div>
+    <div class="col-md-4 text-center">
+      <i class="fa fa-play-circle fa-3x text-primary mb-3"></i>
+      <h4>Watch Anytime</h4>
+      <p>Your movies on your time</p>
+    </div>
+  </div>
+</section>
+
+<!-- ✅ Latest Reviews Preview -->
+<section class="reviews-preview container my-5">
+  <h2 class="text-center mb-4">Latest Reviews</h2>
+  <div id="latestReviews" class="list-group">
+    <!-- Reviews populated dynamically -->
+  </div>
+  <div class="text-center mt-3">
+    <a href="{{ url_for('views.reviews_page') }}" class="btn btn-outline-primary">View All Reviews</a>
+  </div>
+</section>
+
 {% endblock %}

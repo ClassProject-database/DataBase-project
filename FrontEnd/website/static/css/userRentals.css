@@ -1,0 +1,188 @@
+/* 🔹 Full height background */
+html, body {
+    height: 100%;
+    background: linear-gradient(to bottom right, #1a1d21, #121416);
+    color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* 🔹 Rentals Container */
+.rentals-container {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background: rgba(44, 47, 51, 0.95); /* Slightly more transparent */
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(12px);
+    text-align: center;
+    transition: all 0.3s ease-in-out;
+}
+
+/* 🔹 Responsive Design */
+@media (max-width: 768px) {
+    .rentals-container {
+        width: 90%;
+        padding: 15px;
+    }
+}
+
+/* 🔹 Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: rgba(34, 36, 40, 0.9); /* Dark transparent background */
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #444;
+    text-align: center;
+}
+
+th {
+    background-color: #222;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+    background-color: rgba(44, 47, 51, 0.8);
+}
+
+/* 🔹 Hover Effect on Table Rows */
+tr:hover {
+    background-color: rgba(0, 123, 255, 0.2);
+    transition: background 0.2s ease-in-out;
+}
+
+/* 🔹 Status Colors */
+.text-warning {
+    color: #ffc107; /* Yellow for "rented" */
+    font-weight: bold;
+}
+
+.text-success {
+    color: #28a745; /* Green for "returned" */
+    font-weight: bold;
+}
+
+/* 🔹 Buttons */
+button {
+    background-color: #007bff;
+    border: none;
+    padding: 12px;
+    font-size: 1rem;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+    transform: scale(1.08);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+/* 🔹 Delete Button */
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-danger:hover {
+    background-color: #b02a37;
+}
+
+/* 🔹 Review Form */
+#review-form {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(50, 54, 60, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* 🔹 Input & Textarea */
+input, textarea, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(30, 30, 30, 0.9);
+    color: white;
+}
+
+input:focus, textarea:focus {
+    outline: 2px solid #007bff;
+}
+
+/* 🔹 Search Container */
+.search-container {
+    position: relative;
+    margin-bottom: 10px;
+}
+
+/* 🔹 Dropdown Menu */
+#movieDropdown {
+    position: absolute;
+    background: rgba(34, 36, 40, 0.95);
+    border: 1px solid #444;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+    left: 0;
+    top: 40px;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 🔹 Dropdown Items */
+#movieDropdown .dropdown-item {
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+    border-bottom: 1px solid #444;
+    transition: background 0.2s ease-in-out;
+}
+
+#movieDropdown .dropdown-item:hover {
+    background: #007bff;
+}
+
+/* 🔹 Alert Messages */
+.alert {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* ✅ Success Alert */
+.alert-success {
+    background-color: #28a745;
+    color: white;
+}
+
+/* ⚠️ Warning Alert */
+.alert-warning {
+    background-color: #ffc107;
+    color: black;
+}
+
+/* ❌ Error Alert */
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
+}
