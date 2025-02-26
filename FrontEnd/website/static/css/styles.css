@@ -1,4 +1,6 @@
-/*  General Styles */
+/* ======================
+   Global & Layout
+====================== */
 * {
   margin: 0;
   padding: 0;
@@ -18,10 +20,12 @@ body {
   padding: 20px;
 }
 
-/*  Hero Section */
+/* ======================
+   Hero Section
+====================== */
 .hero {
   position: relative;
-  height: 40vh;
+  height: 40vh; /* Reduced for a smaller hero section */
   background: url("../images/hero-bg.jpg") no-repeat center center/cover;
   display: flex;
   align-items: center;
@@ -57,7 +61,9 @@ body {
   font-size: 1.1rem;
 }
 
-/*  Featured Movies Carousel */
+/* ======================
+   Featured Movies Carousel
+====================== */
 .featured-movies {
   text-align: center;
   padding: 50px 20px;
@@ -115,10 +121,16 @@ body {
   border-radius: 50%;
 }
 
-.prev { left: 10px; }
-.next { right: 10px; }
+.prev {
+  left: 10px;
+}
+.next {
+  right: 10px;
+}
 
-/*  How It Works Section */
+/* ======================
+   How It Works Section
+====================== */
 .how-it-works {
   text-align: center;
   padding: 50px 20px;
@@ -150,7 +162,9 @@ body {
   margin-bottom: 10px;
 }
 
-/*  Latest Reviews */
+/* ======================
+   Latest Reviews
+====================== */
 .latest-reviews {
   text-align: center;
   padding: 50px 20px;
@@ -169,7 +183,9 @@ body {
   transform: scale(1.02);
 }
 
-/*  Navbar */
+/* ======================
+   Navbar
+====================== */
 .navbar {
   background-color: #181828 !important; /* Dark navy */
   color: white;
@@ -192,7 +208,9 @@ body {
   color: #ffcc00 !important;
 }
 
-/*  Footer */
+/* ======================
+   Footer
+====================== */
 footer {
   background-color: #181828;
   color: white;
@@ -202,7 +220,9 @@ footer {
   border-top: 2px solid #3a3a52;
 }
 
-/*  Dark Mode */
+/* ======================
+   Dark Mode
+====================== */
 .dark-mode {
   background-color: #12121b !important;
   color: #dcdcdc !important;
@@ -231,7 +251,65 @@ footer {
   border-top: 2px solid #3a3a52 !important;
 }
 
-/*  Responsive Adjustments */
+/* ======================
+   Custom Modal Overlay
+====================== */
+#customModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;             /* Hidden by default */
+  justify-content: center;   /* Center horizontally */
+  align-items: center;       /* Center vertically */
+  z-index: 9999;             /* On top of everything */
+}
+
+/* When we add the 'show' class, display it as flex */
+#customModalOverlay.show {
+  display: flex;
+}
+
+/* The modal container itself */
+.custom-modal {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* The message inside the modal */
+.custom-modal-message {
+  margin-bottom: 10px;
+  color: #333; /* Make text readable on white background */
+}
+
+/* The OK button */
+#customModalOkBtn {
+  margin-top: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#customModalOkBtn:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+/* ======================
+   Responsive Adjustments
+====================== */
 @media screen and (max-width: 768px) {
   .hero-content h1 {
     font-size: 2rem;

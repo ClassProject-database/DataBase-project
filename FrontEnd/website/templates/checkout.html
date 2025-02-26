@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Checkout - Modern</title>
+  <!-- Include Bootstrap CSS (replace with your preferred version or CDN) -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  >
+  <!-- Your Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  <style>
+    /* Additional optional styling */
+    .checkout-container {
+      max-width: 500px;
+      margin: 60px auto;
+      background-color: #3f4772;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .checkout-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .checkout-header h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+    .summary-list {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 1rem;
+    }
+    .summary-list li {
+      padding: 0.3rem 0;
+    }
+    .checkout-message {
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body class="bg-dark text-white">
+
+  <div class="checkout-container">
+    <div class="checkout-header">
+      <h1>Checkout</h1>
+      <p class="text-muted mb-0">Complete your purchase</p>
+    </div>
+
+    <!-- Order Summary -->
+    <div id="cart-summary" class="mb-4">
+      <h5>Order Summary</h5>
+      <ul id="cart-items" class="summary-list">
+        <!-- Cart items inserted dynamically -->
+      </ul>
+      <p class="fw-bold">Total: $<span id="total-price">0.00</span></p>
+    </div>
+
+    <!-- Checkout Form -->
+    <form id="checkout-form" class="needs-validation" novalidate>
+      <div class="mb-3">
+        <label for="cardNumber" class="form-label">Card Number</label>
+        <input 
+          type="text" 
+          id="cardNumber" 
+          class="form-control" 
+          placeholder="XXXX XXXX XXXX XXXX" 
+          required
+        >
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label for="expiration" class="form-label">Expiration (MM/YY)</label>
+          <input 
+            type="text" 
+            id="expiration" 
+            class="form-control" 
+            placeholder="MM/YY" 
+            required
+          >
+        </div>
+        <div class="col-md-6 mb-3">
+          <label for="cvv" class="form-label">CVV</label>
+          <input 
+            type="text" 
+            id="cvv" 
+            class="form-control" 
+            placeholder="3 or 4 digits" 
+            required
+          >
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="discountCode" class="form-label">Discount Code (Optional)</label>
+        <input 
+          type="text" 
+          id="discountCode" 
+          class="form-control" 
+          placeholder="Enter discount code"
+        >
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100" id="submit-button">
+        Complete Purchase
+      </button>
+    </form>
+
+    <!-- Message/Status Area -->
+    <div id="checkout-message" class="checkout-message"></div>
+  </div>
+
+  <!-- Include Bootstrap JS (defer or place before closing body tag) -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    defer
+  ></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("Checkout page loaded!");
+
+      const checkoutForm = document.getElementById("checkout-form");
+      const messageDiv = document.getElementById("checkout-message");
+      const submitButton = document.getElementById("submit-button");
+
+      // === 1) Populate Cart Summary from localStorage ===
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      let totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
+
+      // Render cart items
+      const cartList = document.getElementById("cart-items");
+      cart.forEach(item => {
+        let li = document.createElement("li");
+        // Adjust as needed: item.name, item.title, etc.
+        li.textContent = `${item.name || item.title || "Movie"} - $${item.price}`;
+        cartList.appendChild(li);
+      });
+      document.getElementById("total-price").textContent = totalPrice.toFixed(2);
+
+      // === 2) Handle Checkout Form Submission ===
+      checkoutForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        submitButton.disabled = true; // Prevent multiple clicks
+
+        // Grab form fields
+        const cardNumber = document.getElementById("cardNumber").value.trim();
+        const expiration = document.getElementById("expiration").value.trim();
+        const cvv = document.getElementById("cvv").value.trim();
+        const discountCode = document.getElementById("discountCode").value.trim();
+
+        // Basic validation
+        if (!cardNumber || !expiration || !cvv) {
+          messageDiv.textContent = "Please enter all required payment details.";
+          messageDiv.style.color = "red";
+          submitButton.disabled = false;
+          return;
+        }
+
+        if (cart.length === 0) {
+          messageDiv.textContent = "Your cart is empty. Add items before checkout.";
+          messageDiv.style.color = "red";
+          submitButton.disabled = false;
+          return;
+        }
+
+        // === 3) Build Checkout Data ===
+        const checkoutData = {
+          cart: cart,
+          amount: totalPrice.toFixed(2),
+          payment_method: "Card",
+          discount_code: discountCode
+        };
+
+        console.log("Sending checkout data:", checkoutData);
+
+        try {
+          // === 4) Send POST request to /api/checkout ===
+          const response = await fetch("/api/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(checkoutData)
+          });
+
+          const data = await response.json();
+          console.log("Response from /api/checkout:", data);
+
+          // === 5) Handle Server Response ===
+          if (data.success) {
+            messageDiv.textContent = "Checkout successful! Redirecting to your rentals...";
+            messageDiv.style.color = "green";
+            // Clear cart on success
+            localStorage.removeItem("cart");
+            // Redirect after a short delay
+            setTimeout(() => {
+              window.location.href = "/user_rentals";
+            }, 3000);
+          } else {
+            messageDiv.textContent = "Checkout failed: " + data.error;
+            messageDiv.style.color = "red";
+            submitButton.disabled = false;
+          }
+        } catch (error) {
+          console.error("Checkout Error:", error);
+          messageDiv.textContent = "An error occurred during checkout.";
+          messageDiv.style.color = "red";
+          submitButton.disabled = false;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

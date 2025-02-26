@@ -41,11 +41,14 @@
                         <p>Price: ${{ movie.price }}</p>
                     </div>
                     <div class="card-footer text-center">
-                        <button 
-                            class="btn btn-outline-dark" 
-                            onclick="addToCart('{{ movie.title|escape }}', {{ movie.price }})">
-                            Add to Cart
+                        <!-- After: No inline onclick -->
+                        <button class="btn btn-outline-dark add-to-cart-btn"
+                        data-movie-id="{{ movie.movie_id }}"
+                        data-title="{{ movie.title|escape }}"
+                        data-price="{{ movie.price }}">
+                        Add to Cart
                         </button>
+
                     </div>
                 </div>
             </div>

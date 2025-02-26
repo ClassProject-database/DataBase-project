@@ -18,27 +18,34 @@
     <h3>Rental History</h3>
     <table class="table table-striped">
         <thead>
-            <tr>
-                <th>Movie Title</th>
-                <th>Rental Date</th>
-                <th>Return Date</th>
-                <th>Status</th>
-            </tr>
+          <tr>
+            <th>Movie Title</th>
+            <th>Rental Date</th>
+            <th>Return Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody id="rentalsTableBody">
-            {% for rental in rentals %}
-            <tr>
-                <td>{{ rental.title }}</td>
-                <td>{{ rental.rental_date }}</td>
-                <td>{{ rental.return_date or 'Not Returned' }}</td>
-                <td>{{ rental.status }}</td>
-            </tr>
-            {% else %}
-            <tr><td colspan="4" class="text-center">No rentals found.</td></tr>
-            {% endfor %}
+          {% for rental in rentals %}
+          <tr data-rental-id="{{ rental.rental_id }}">
+            <td>{{ rental.title }}</td>
+            <td>{{ rental.rental_date }}</td>
+            <td>{{ rental.return_date or 'Not Returned' }}</td>
+            <td>{{ rental.status }}</td>
+            <td>
+              <button class="btn btn-sm btn-danger delete-rental-btn" data-rental-id="{{ rental.rental_id }}">
+                Delete
+              </button>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center">No rentals found.</td></tr>
+          {% endfor %}
         </tbody>
-    </table>
-
+      </table>
+      
+    
     <h3>Post a Review</h3>
 
     <!-- ✅ Search Bar for Movies -->
@@ -115,107 +122,13 @@
 }
 </style>
 
-<script>
-    document.addEventListener("DOMContentLoaded", async function () {
-        let moviesList = [];
-    
-        // ✅ Fetch Movies Immediately on Page Load
-        async function fetchMovies() {
-            try {
-                const response = await fetch('/api/movies');
-                moviesList = await response.json();
-            } catch (error) {
-                console.error('❌ Error fetching movies:', error);
-            }
-        }
-    
-        await fetchMovies(); // ✅ Ensure movies are loaded early
-    
-        const searchInput = document.getElementById("movieSearch");
-        const dropdown = document.getElementById("movieDropdown");
-        const movieIdField = document.getElementById("selectedMovieId");
-    
-        // ✅ Show & Filter Movies in Dropdown
-        searchInput.addEventListener("input", function () {
-            let searchValue = this.value.trim().toLowerCase();
-            dropdown.innerHTML = ""; // Clear previous results
-    
-            if (searchValue.length === 0) {
-                dropdown.style.display = "none";
-                movieIdField.value = ""; // Reset hidden field
-                return;
-            }
-    
-            let filteredMovies = moviesList.filter(movie => movie.title.toLowerCase().includes(searchValue));
-    
-            if (filteredMovies.length === 0) {
-                dropdown.innerHTML = `<div class='dropdown-item text-muted'>No movies found</div>`;
-                dropdown.style.display = "block";
-                return;
-            }
-    
-            // ✅ Populate Dropdown
-            filteredMovies.forEach(movie => {
-                let option = document.createElement("div");
-                option.classList.add("dropdown-item");
-                option.textContent = movie.title;
-                option.dataset.id = movie.movie_id;
-    
-                // ✅ Handle Click Event (Selecting a movie)
-                option.addEventListener("click", function () {
-                    searchInput.value = movie.title;
-                    movieIdField.value = movie.movie_id; // ✅ Store movie_id
-                    dropdown.style.display = "none"; // Hide dropdown
-                });
-    
-                dropdown.appendChild(option);
-            });
-    
-            dropdown.style.display = "block"; // ✅ Show dropdown only when results exist
-        });
-    
-        // ✅ Hide Dropdown When Clicking Outside
-        document.addEventListener("click", function (e) {
-            if (!searchInput.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.style.display = "none";
-            }
-        });
-    
-        // ✅ Review Form Submission
-        document.getElementById('review-form').addEventListener('submit', function (e) {
-            e.preventDefault();
-        
-            let movieTitle = searchInput.value;
-            let movieId = movieIdField.value; // ✅ Ensure it's set
-            let rating = document.getElementById("reviewRating").value;
-            let review = document.getElementById("reviewComment").value;
-        
-            if (!movieId || !moviesList.some(movie => movie.movie_id == movieId)) {
-                alert("❌ Please select a valid movie from the dropdown.");
-                return;
-            }
-        
-            console.log("📤 Submitting Review:", { movie_id: movieId, rating, review });
-        
-            fetch('/api/post_review', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ movie_id: movieId, rating, review })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("✅ Review submitted successfully!");
-                    location.reload();
-                } else {
-                    alert("❌ Error: " + data.error);
-                }
-            })
-            .catch(error => console.error('❌ Error:', error));
-        });        
-    });
-    
-</script>
+
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/userRentals.js') }}" defer></script>
+{% endblock %}
+
+
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/userRentals.css') }}">
 {% endblock %}
