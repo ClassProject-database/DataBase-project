@@ -1,6 +1,6 @@
-/* ======================
+/* 
    CSS Variables
-====================== */
+ */
 :root {
     /* Colors */
     --bg-gradient-start: #1a1d21;
@@ -34,9 +34,9 @@
     --transition-speed: 0.3s;
   }
   
-  /* ======================
+  /* 
      Global & Layout
-  ====================== */
+   */
   html, body {
     height: 100%;
     margin: 0;
@@ -66,9 +66,9 @@
     }
   }
   
-  /* ======================
+  /* 
      Table Styles
-  ====================== */
+   */
   table {
     width: 100%;
     border-collapse: collapse;
@@ -99,9 +99,9 @@
     transition: background var(--transition-speed) ease-in-out;
   }
   
-  /* ======================
+  /* 
      Status Text Colors
-  ====================== */
+   */
   .text-warning {
     color: #ffc107;
     font-weight: bold;
@@ -112,9 +112,9 @@
     font-weight: bold;
   }
   
-  /* ======================
+  /* 
      Buttons
-  ====================== */
+   */
   button {
     background-color: var(--primary);
     border: none;
@@ -142,9 +142,9 @@
     background-color: var(--danger-hover);
   }
   
-  /* ======================
+  /* 
      Review Form
-  ====================== */
+   */
   #review-form {
     margin-top: 20px;
     padding: 15px;
@@ -167,9 +167,9 @@
     outline: 2px solid var(--primary);
   }
   
-  /* ======================
+  /* 
      Search & Dropdown
-  ====================== */
+   */
   .search-container {
     position: relative;
     margin-bottom: var(--margin-base);
@@ -203,9 +203,9 @@
     background: var(--primary);
   }
   
-  /* ======================
+  /* 
      Alert Messages
-  ====================== */
+   */
   .alert {
     padding: 10px;
     margin: var(--margin-base) 0;

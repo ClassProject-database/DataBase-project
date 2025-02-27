@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort
 from flask_login import login_required, current_user
 from . import get_db_connection, bcrypt
-# No need to reinitialize Bcrypt here if already initialized in __init__.py
 
 views = Blueprint('views', __name__)
 
@@ -36,7 +35,7 @@ def get_movies():
     try:
         genre_id = request.args.get('genre_id', type=int)
         
-        # ✅ Ensure genre_id is handled properly
+        #  Ensure genre_id is handled properly
         if genre_id is not None:
             query = """
                 SELECT DISTINCT Movies.* 
@@ -101,7 +100,7 @@ def user_rentals():
         cursor.execute("SELECT * FROM Users WHERE account_id = %s", (account_id,))
         user_info = cursor.fetchone()
         if not user_info:
-            flash("❌ User not found.", "error")
+            flash(" User not found.", "error")
             return redirect(url_for('views.HomePage'))
 
         # Fetch rental history using account_id
@@ -138,7 +137,7 @@ def add_user():
         return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
 
     data = request.get_json()
-    print("\n📩 Received Data:", data)
+    print("\n Received Data:", data)
     if not data:
         return jsonify({'success': False, 'error': 'No data received'}), 400
 
@@ -185,7 +184,7 @@ def delete_user():
         return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
 
     data = request.get_json()
-    print("📩 Received Data:", data)
+    print(" Received Data:", data)
     if not data or 'account_id' not in data:
         return jsonify({'success': False, 'error': 'Missing account_id'}), 400
 
@@ -197,7 +196,7 @@ def delete_user():
         conn.commit()
         return jsonify({'success': True, 'message': 'User deleted successfully'})
     except Exception as e:
-        print("❌ Error deleting user:", e)
+        print(" Error deleting user:", e)
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         cursor.close()
@@ -295,9 +294,14 @@ def checkout():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
+<<<<<<< HEAD
         account_id = current_user.id  # current_user.id is account_id
         
         # ✅ Insert into Transactions table
+=======
+        account_id = current_user.id  
+        # Insert into Transactions table
+>>>>>>> 71555c479a176f58de49488e65f7b1983e002b71
         cursor.execute("""
             INSERT INTO Transactions (account_id, total_price, payment_status, purchase_date)
             VALUES (%s, %s, %s, NOW())
@@ -329,7 +333,7 @@ def checkout():
         conn.commit()
         return jsonify({"success": True, "message": "Checkout successful!"})
     except Exception as e:
-        print("❌ Checkout Error:", e)
+        print(" Checkout Error:", e)
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
         cursor.close()
@@ -350,7 +354,7 @@ def delete_rental():
     print(f"🗑️ Received DELETE request: {data} from user ID {current_user.id}")
     rental_id = data.get('rental_id')
     if not rental_id:
-        print("❌ Missing rental_id in request")
+        print(" Missing rental_id in request")
         return jsonify({'success': False, 'error': 'Missing rental_id'}), 400
 
     conn = get_db_connection()
@@ -360,15 +364,15 @@ def delete_rental():
         cursor.execute("SELECT rental_id FROM Rentals WHERE rental_id = %s AND account_id = %s",
                        (rental_id, current_user.id))
         if not cursor.fetchone():
-            print(f"❌ Rental ID {rental_id} not found or unauthorized for account {current_user.id}.")
+            print(f" Rental ID {rental_id} not found or unauthorized for account {current_user.id}.")
             return jsonify({'success': False, 'error': 'Rental not found or unauthorized'}), 400
 
         cursor.execute("DELETE FROM Rentals WHERE rental_id = %s", (rental_id,))
         conn.commit()
-        print(f"✅ Successfully deleted rental ID {rental_id} for account {current_user.id}")
+        print(f" Successfully deleted rental ID {rental_id} for account {current_user.id}")
         return jsonify({'success': True})
     except Exception as e:
-        print("❌ Error deleting rental:", e)
+        print(" Error deleting rental:", e)
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         cursor.close()
@@ -409,7 +413,7 @@ def add_movie():
     rating = data.get("rating")
     price = data.get("price")
     image = data.get("image") if "image" in data else "default.jpg"
-    genre_ids = data.get("genre_ids", [])  # Expecting an array of genre IDs
+    genre_ids = data.get("genre_ids", [])  
 
     if not title or not year or not rating or not price:
         return jsonify({"success": False, "error": "Missing required fields"}), 400
@@ -437,7 +441,7 @@ def add_movie():
         conn.close()
 
 
-# ✅ API: Fetch Comments for a Review
+#  API: Fetch Comments for a Review
 @views.route('/api/comments/<int:review_id>', methods=['GET'])
 def get_comments(review_id):
     conn = get_db_connection()
@@ -448,7 +452,7 @@ def get_comments(review_id):
     conn.close()
     return jsonify(comments)
 
-# ✅ API: Post Comment
+#  API: Post Comment
 @views.route('/api/post_comment', methods=['POST'])
 def post_comment():
     data = request.json

@@ -4,9 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setupDarkMode();
 });
 
-// -------------------------------------
 // Fetch Movies & Populate Carousel
-// -------------------------------------
 const fetchMovies = async () => {
     try {
         const response = await fetch('/api/movies');
@@ -15,7 +13,7 @@ const fetchMovies = async () => {
         }
         const movies = await response.json();
         const carouselTrack = document.querySelector(".carousel-track");
-        if (!carouselTrack) return; // Prevent error if carousel element is missing
+        if (!carouselTrack) return; // Prevent error if element is missing
 
         // Clear any existing content
         carouselTrack.innerHTML = "";
@@ -37,13 +35,11 @@ const fetchMovies = async () => {
             carouselTrack.appendChild(movieCard);
         });
     } catch (error) {
-        console.error("❌ Error fetching movies:", error);
+        console.error(" Error fetching movies:", error);
     }
 };
 
-// -------------------------------------
 // Setup Carousel Navigation
-// -------------------------------------
 const setupCarousel = () => {
     const prevBtn = document.querySelector('.prev');
     const nextBtn = document.querySelector('.next');
@@ -59,9 +55,7 @@ const setupCarousel = () => {
     });
 };
 
-// -------------------------------------
 // Setup Dark Mode Toggle
-// -------------------------------------
 const setupDarkMode = () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
     if (!darkModeToggle) return;

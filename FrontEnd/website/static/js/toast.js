@@ -1,4 +1,4 @@
-// ✅ Global Toast Notification Function
+// Toast Notification Function
 window.showToast = function (message, type = "success") {
     const toast = document.createElement("div");
     toast.classList.add("toast-message", type);

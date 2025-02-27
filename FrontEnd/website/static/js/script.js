@@ -23,7 +23,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
     // Display movies on the page
     const displayMovies = (movies) => {
-      // Ensure that .row uniquely selects your movie container element
       const moviesRow = document.querySelector('.row');
       if (!moviesRow) {
         console.error("Could not find the '.row' element for displaying movies.");
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
       moviesRow.innerHTML = '';
   
       movies.forEach(movie => {
-        // Create a column container for the movie card
         const col = document.createElement('div');
         col.classList.add('col');
   
@@ -41,13 +39,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement('div');
         card.classList.add('card', 'h-100');
   
-        // Create and configure the movie image element
+        // configure the movie image element
         const img = document.createElement('img');
         img.classList.add('card-img-top', 'movie-img');
         img.src = movie.image ? `/static/images/${movie.image}` : '/static/images/keyboard.jpg';
         img.alt = movie.title || movie.name;
   
-        // Create card body with movie details
+        // body with movie details
         const cardBody = document.createElement('div');
         cardBody.classList.add('card-body', 'text-center');
         const title = document.createElement('h5');
@@ -60,10 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const priceP = document.createElement('p');
         priceP.textContent = `Price: $${movie.price}`;
   
-        // Append movie details to the card body
         cardBody.append(title, year, rating, priceP);
   
-        // Create card footer with "Add to Cart" button
+        // footer with "Add to Cart" button
         const cardFooter = document.createElement('div');
         cardFooter.classList.add('card-footer', 'text-center');
         const button = document.createElement('button');
@@ -86,7 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     };
   
-    // Call fetchMovies on page load
     fetchMovies();
   });
   

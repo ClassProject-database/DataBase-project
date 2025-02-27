@@ -23,42 +23,58 @@
       <h4>Total Price: $<span id="total-price">0.00</span></h4>
     </div>
 
+    <!-- Discount Code Input -->
+    <div class="mt-3">
+      <label for="discount-code" class="form-label">Discount Code:</label>
+      <input type="text" id="discount-code" placeholder="Enter discount code" class="form-control">
+    </div>
+
     <div class="mt-3 d-flex justify-content-between">
       <button id="clear-cart-btn" class="btn btn-danger">Clear Cart</button>
       <button id="checkout-btn" class="btn btn-success">Proceed to Checkout</button>
     </div>
   </div>
 </section>
+
+<!-- Custom Modal -->
+<div id="customModalOverlay" class="modal-overlay">
+  <div class="modal-content">
+    <p id="customModalMessage"></p>
+    <button id="customModalOkBtn" class="btn btn-primary">OK</button>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
-<!-- Load external cart.js file -->
 <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
-<script defer>
-document.addEventListener("DOMContentLoaded", () => {
-  console.log("Cart page loaded!");
-
-  const checkoutBtn = document.getElementById("checkout-btn");
-  const totalItemsEl = document.getElementById("total-items");
-
-  // Ensure the checkout button exists before attaching the event listener
-  if (checkoutBtn && totalItemsEl) {
-    checkoutBtn.addEventListener("click", () => {
-      const totalItems = parseInt(totalItemsEl.innerText, 10);
-      if (isNaN(totalItems) || totalItems === 0) {
-        alert("Your cart is empty. Please add items before proceeding to checkout.");
-        return;
-      }
-      // Redirect to the checkout page
-      window.location.href = "/checkout";
-    });
-  } else {
-    console.error("Checkout button or total items element not found.");
-  }
-});
-</script>
 {% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
+<style>
+  /* Custom modal styling */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-overlay.show {
+    display: flex;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 300px;
+  }
+</style>
 {% endblock %}

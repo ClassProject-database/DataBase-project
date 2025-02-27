@@ -1,9 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   console.log(" Admin dashboard loaded!");
 
-  // ============================
   // Toast Notification Helper
-  // ============================
   const showToast = (message, type = "success") => {
     const toast = document.createElement("div");
     toast.classList.add("toast", type);
@@ -27,9 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // ============================
   // Fetch & Display Users
-  // ============================
   const fetchUsers = async (searchQuery = "") => {
     try {
       const response = await fetch(`/api/search_users?query=${encodeURIComponent(searchQuery)}`);
@@ -38,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const users = await safeFetchJson(response);
-      console.log("📩 Received Users Data:", users);
+      console.log(" Received Users Data:", users);
 
       const usersTable = document.getElementById("user-table-body");
       if (!usersTable) {
@@ -75,9 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // ============================
   // Add User 
-  // ============================
   const addUserForm = document.getElementById("add-user-form");
   if (addUserForm) {
     addUserForm.addEventListener("submit", async (e) => {
@@ -117,9 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ============================
   // Edit User 
-  // ============================
   const editUser = async (accountId) => {
     console.log(`✏️ Editing User ID: ${accountId}`);
     try {
@@ -129,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const user = await response.json();
-      console.log("📩 Received User Data:", user);
+      console.log(" Received User Data:", user);
 
       document.getElementById("editCustomerId").value = user.account_id;
       document.getElementById("editUsername").value = user.username;
@@ -142,8 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       document.getElementById("editUserModal").classList.add("show");
     } catch (error) {
-      console.error("❌ Error fetching user:", error);
-      alert("❌ Error loading user data.");
+      console.error(" Error fetching user:", error);
+      alert(" Error loading user data.");
     }
   };
 
@@ -152,12 +144,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("editUserModal").classList.remove("show");
   });
 
-  // ============================
   // Delete User 
-  // ============================
   const deleteUser = async (accountId) => {
     if (!accountId) {
-      console.error("❌ Error: Missing account_id before sending request");
+      console.error(" Error: Missing account_id before sending request");
       return;
     }
 
@@ -177,23 +167,21 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const data = await response.json();
-      console.log("📩 Received Response:", data);
+      console.log(" Received Response:", data);
 
       if (data.success) {
-        alert("✅ User deleted successfully!");
+        alert(" User deleted successfully!");
         fetchUsers(); // Refresh user list
       } else {
         throw new Error(data.error || "Unknown error occurred");
       }
     } catch (error) {
-      console.error("❌ Error deleting user:", error);
-      alert(`❌ Error: ${error.message}`);
+      console.error(" Error deleting user:", error);
+      alert(` Error: ${error.message}`);
     }
   };
 
-  // ============================
   // Event Delegation for User Actions
-  // ============================
   const userTableBody = document.getElementById("user-table-body");
   if (userTableBody) {
     userTableBody.addEventListener("click", (event) => {
@@ -210,14 +198,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ============================
   // Initial Fetch of Users
-  // ============================
   fetchUsers();
 
-  // ============================
   // Add Movie Functionality
-  // ============================
   const addMovieForm = document.getElementById("add-movie-form");
   if (addMovieForm) {
     addMovieForm.addEventListener("submit", async (e) => {
@@ -264,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        console.log("📩 Response Data:", data);
+        console.log(" Response Data:", data);
 
         if (data.success) {
           showToast("Movie added successfully!");

@@ -14,7 +14,6 @@
 
 <!-- Genre Filter Buttons -->
 <div class="container text-center my-4">
-    <!-- Use data attributes to store the genre_id for each filter button -->
     <button class="btn btn-secondary mx-2 filter-btn" data-genre-id="null">All</button>
 
     {% for genre in genres %}
@@ -64,6 +63,5 @@
 {% block extra_js %}
 <!-- cart.js handles adding items to the cart -->
 <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
-<!-- filters.js (or a similar file) should attach event listeners to .filter-btn and call fetchMovies(genreId) -->
 <script src="{{ url_for('static', filename='js/filters.js') }}" defer></script>
 {% endblock %}

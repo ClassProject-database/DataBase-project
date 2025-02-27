@@ -32,15 +32,31 @@ document.addEventListener("DOMContentLoaded", function () {
         const cvv = document.getElementById("cvv").value.trim();
         const discountCode = document.getElementById("discount-code").value.trim();
 
+<<<<<<< HEAD
         // ✅ Retrieve cart from localStorage
+=======
+        //  validation for payment info
+        if (!cardNumber || !expiryDate || !cvv) {
+            messageDiv.textContent = "Please enter all required payment details.";
+            messageDiv.style.color = "red";
+            return;
+        }
+
+        // Retrieve cart data from localStorage
+>>>>>>> 71555c479a176f58de49488e65f7b1983e002b71
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
         if (cart.length === 0) {
             showErrorGlobal("Your cart is empty. Add items before checkout.");
             return;
         }
 
+<<<<<<< HEAD
         // ✅ Calculate total amount
         const totalAmount = cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0).toFixed(2);
+=======
+        // Calculate total amount
+        const totalAmount = cart.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2);
+>>>>>>> 71555c479a176f58de49488e65f7b1983e002b71
 
         // ✅ Validation Functions
         function showError(field, message) {

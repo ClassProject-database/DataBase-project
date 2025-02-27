@@ -1,4 +1,4 @@
--- 1. Create/Use Database
+--- 1. Create/Use Database
 CREATE DATABASE IF NOT EXISTS movie_rental;
 USE movie_rental;
 
@@ -101,10 +101,9 @@ CREATE TABLE IF NOT EXISTS Watchlist (
     FOREIGN KEY (account_id) REFERENCES Users(account_id) ON DELETE CASCADE,
     FOREIGN KEY (movie_id) REFERENCES Movies(movie_id) ON DELETE CASCADE
 );
-
--------------------------------------------------
--- 10. Reviews Table
--------------------------------------------------
+----------------------------------
+-- 9. rReviews
+---------------------------------
 CREATE TABLE IF NOT EXISTS Reviews (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     movie_id INT NOT NULL,
@@ -116,6 +115,14 @@ CREATE TABLE IF NOT EXISTS Reviews (
     FOREIGN KEY (account_id) REFERENCES Users(account_id) ON DELETE CASCADE
 );
 
+CREATE TABLE Comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    review_id INT NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    text TEXT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (review_id) REFERENCES Reviews(review_id) ON DELETE CASCADE
+);
 --------------------------------------------
 -- Insert Sample Data
 -------------------------------------------------
