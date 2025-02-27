@@ -285,6 +285,7 @@ def checkout():
     data = request.get_json()
     if not data or "cart" not in data or "amount" not in data:
         return jsonify({"success": False, "error": "Invalid checkout data"}), 400
+    
     cart_items = data["cart"]
     try:
         amount = float(data["amount"])
@@ -295,7 +296,8 @@ def checkout():
     cursor = conn.cursor(dictionary=True)
     try:
         account_id = current_user.id  # current_user.id is account_id
-        # Insert into Transactions table
+        
+        # ✅ Insert into Transactions table
         cursor.execute("""
             INSERT INTO Transactions (account_id, total_price, payment_status, purchase_date)
             VALUES (%s, %s, %s, NOW())
@@ -303,15 +305,27 @@ def checkout():
         conn.commit()
         transaction_id = cursor.lastrowid
 
-        # Insert Rentals
+        # ✅ Insert Rentals, preventing duplicates
         for item in cart_items:
             if "movie_id" not in item:
                 print("Missing movie_id in cart item:", item)
                 continue
+
+            movie_id = item["movie_id"]
+
+            # ✅ Check if rental already exists
             cursor.execute("""
-                INSERT INTO Rentals (account_id, movie_id, rental_date, return_date, status, transaction_id)
-                VALUES (%s, %s, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'rented', %s)
-            """, (account_id, item["movie_id"], transaction_id))
+                SELECT COUNT(*) as count FROM Rentals 
+                WHERE account_id = %s AND movie_id = %s AND status = 'rented'
+            """, (account_id, movie_id))
+            existing_rental = cursor.fetchone()
+
+            if existing_rental["count"] == 0:  # ✅ Only insert if not rented
+                cursor.execute("""
+                    INSERT INTO Rentals (account_id, movie_id, rental_date, return_date, status, transaction_id)
+                    VALUES (%s, %s, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'rented', %s)
+                """, (account_id, movie_id, transaction_id))
+
         conn.commit()
         return jsonify({"success": True, "message": "Checkout successful!"})
     except Exception as e:
@@ -320,6 +334,7 @@ def checkout():
     finally:
         cursor.close()
         conn.close()
+
 
 # 12. Checkout Page
 @views.route('/checkout', methods=['GET'])

@@ -1,54 +1,131 @@
+/* ========== Checkout Container ========== */
 .checkout-container {
-    max-width: 600px;
-    margin: 40px auto;
+    max-width: 500px;
+    margin: 50px auto;
     background: #1e1e1e;
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     color: #f0f0f0;
-  }
-  
-  .checkout-container h2 {
+}
+
+/* ========== Heading ========== */
+.checkout-container h2 {
     text-align: center;
     margin-bottom: 20px;
-  }
-  
-  .checkout-container .form-group {
+    font-size: 1.8rem;
+    color: #ffffff;
+}
+
+/* ========== Form Elements ========== */
+.checkout-container .form-group {
     margin-bottom: 15px;
-  }
-  
-  .checkout-container label {
+}
+
+.checkout-container label {
     font-weight: 600;
-  }
-  
-  .checkout-container input {
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #333;
-    background: #2c2c2c;
-    color: #fff;
-  }
-  
-  .checkout-container button {
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Input fields */
+.checkout-container input {
     width: 100%;
     padding: 12px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background: #2c2c2c;
+    color: #fff;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+/* Placeholder color */
+.checkout-container input::placeholder {
+    color: #bbb;
+}
+
+/* Input focus effect */
+.checkout-container input:focus {
+    outline: none;
+    border-color: #28a745;
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
+}
+
+/* Invalid input styling */
+.checkout-container input.is-invalid {
+    border-color: #dc35c6 !important;
+    background-color: #3b1e1e !important;
+}
+
+/* Success input styling */
+.checkout-container input.is-valid {
+    border-color: #28a745 !important;
+    background-color: #1e3b1e !important;
+}
+
+/* ========== Checkout Button ========== */
+.checkout-container button {
+    width: 100%;
+    padding: 14px;
     border: none;
     background-color: #28a745;
     color: #fff;
     font-size: 1.1rem;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     margin-top: 20px;
-    transition: background 0.3s ease;
-  }
-  
-  .checkout-container button:hover {
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover and Click Effects */
+.checkout-container button:hover {
     background-color: #218838;
-  }
-  
-  .checkout-message {
+}
+.checkout-container button:active {
+    transform: scale(0.98);
+}
+
+/* Disabled button */
+.checkout-container button:disabled {
+    background-color: #5a5a5a;
+    cursor: not-allowed;
+}
+
+/* ========== Checkout Message ========== */
+.checkout-message {
     text-align: center;
     margin-top: 15px;
-  }
-  
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* Success Message */
+.checkout-message.success {
+    color: #28a745;
+}
+
+/* Error Message */
+.checkout-message.error {
+    color: #eb54e3;
+}
+
+/* ========== Responsive Design ========== */
+@media (max-width: 600px) {
+    .checkout-container {
+        padding: 20px;
+        width: 90%;
+    }
+
+    .checkout-container h2 {
+        font-size: 1.5rem;
+    }
+
+    .checkout-container input {
+        padding: 10px;
+    }
+
+    .checkout-container button {
+        font-size: 1rem;
+    }
+}

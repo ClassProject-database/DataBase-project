@@ -7,7 +7,6 @@
   <!-- Your Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <style>
-    /* Additional optional styling */
     .checkout-container {
       max-width: 500px;
       margin: 60px auto;
@@ -20,21 +19,20 @@
       text-align: center;
       margin-bottom: 1.5rem;
     }
-    .checkout-header h1 {
-      font-size: 1.8rem;
-      margin-bottom: 0.5rem;
-    }
     .summary-list {
       list-style: none;
       padding-left: 0;
       margin-bottom: 1rem;
     }
-    .summary-list li {
-      padding: 0.3rem 0;
-    }
     .checkout-message {
       margin-top: 1rem;
       font-weight: 500;
+      color:rgb(35, 42, 77)
+    }
+    .invalid-feedback {
+      display: block;
+      color: red;
+      font-size: 0.9rem;
     }
   </style>
 </head>
@@ -48,9 +46,7 @@
     <!-- Order Summary -->
     <div id="cart-summary" class="mb-4">
       <h5>Order Summary</h5>
-      <ul id="cart-items" class="summary-list">
-        <!-- Cart items inserted dynamically -->
-      </ul>
+      <ul id="cart-items" class="summary-list"></ul>
       <p class="fw-bold">Total: $<span id="total-price">0.00</span></p>
     </div>
 
@@ -58,46 +54,26 @@
     <form id="checkout-form" class="needs-validation" novalidate>
       <div class="mb-3">
         <label for="cardNumber" class="form-label">Card Number</label>
-        <input 
-          type="text" 
-          id="cardNumber" 
-          class="form-control" 
-          placeholder="XXXX XXXX XXXX XXXX" 
-          required
-        >
+        <input type="text" id="cardNumber" class="form-control" placeholder="XXXX XXXX XXXX XXXX" required>
+        <div class="checkout-message">Enter a valid 13-19 digit card number.</div>
       </div>
 
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="expiration" class="form-label">Expiration (MM/YY)</label>
-          <input 
-            type="text" 
-            id="expiration" 
-            class="form-control" 
-            placeholder="MM/YY" 
-            required
-          >
+          <input type="text" id="expiration" class="form-control" placeholder="MM/YY" required>
+          <div class="checkout-message">Enter a valid expiration date (MM/YY).</div>
         </div>
         <div class="col-md-6 mb-3">
           <label for="cvv" class="form-label">CVV</label>
-          <input 
-            type="text" 
-            id="cvv" 
-            class="form-control" 
-            placeholder="3 or 4 digits" 
-            required
-          >
+          <input type="text" id="cvv" class="form-control" placeholder="3 or 4 digits" required>
+          <div class="checkout-message">Enter a valid 3-4 digit CVV.</div>
         </div>
       </div>
 
       <div class="mb-3">
         <label for="discountCode" class="form-label">Discount Code (Optional)</label>
-        <input 
-          type="text" 
-          id="discountCode" 
-          class="form-control" 
-          placeholder="Enter discount code"
-        >
+        <input type="text" id="discountCode" class="form-control" placeholder="Enter discount code">
       </div>
 
       <button type="submit" class="btn btn-primary w-100" id="submit-button">
@@ -105,104 +81,86 @@
       </button>
     </form>
 
-    <!-- Message/Status Area -->
     <div id="checkout-message" class="checkout-message"></div>
   </div>
 
-  <!-- Bootstrap JS (placed before closing body tag) -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("Checkout page loaded!");
+      console.log("📌 Checkout page loaded!");
 
       const checkoutForm = document.getElementById("checkout-form");
       const messageDiv = document.getElementById("checkout-message");
       const submitButton = document.getElementById("submit-button");
 
-      // === 1) Populate Cart Summary from localStorage ===
+      // === 1) Populate Cart Summary ===
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
       const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
       
       const cartList = document.getElementById("cart-items");
-      cartList.innerHTML = "";
-      if (cart.length === 0) {
-        const li = document.createElement("li");
-        li.className = "list-group-item text-center";
-        li.textContent = "Your cart is empty.";
-        cartList.appendChild(li);
-      } else {
-        cart.forEach(item => {
-          const li = document.createElement("li");
-          li.textContent = `${item.name || item.title || "Movie"} - $${parseFloat(item.price).toFixed(2)}`;
-          cartList.appendChild(li);
-        });
-      }
-      document.getElementById("total-price").textContent = parseFloat(totalPrice).toFixed(2);
+      cartList.innerHTML = cart.length ? cart.map(item => 
+        `<li>${item.name || item.title || "Movie"} - $${parseFloat(item.price).toFixed(2)}</li>`
+      ).join("") : `<li class="text-center">Your cart is empty.</li>`;
 
-      // === 2) Handle Checkout Form Submission ===
+      document.getElementById("total-price").textContent = totalPrice.toFixed(2);
+
+      // === 2) Checkout Form Submission ===
       checkoutForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        submitButton.disabled = true; // Prevent multiple submissions
-
-        // Retrieve payment fields
+        
+        if (submitButton.disabled) return; // ✅ Prevent duplicate clicks
+        submitButton.disabled = true; // ✅ Disable the button after first click
+      
+        messageDiv.textContent = "Processing...";
+        messageDiv.style.color = "blue";
+      
         const cardNumber = document.getElementById("cardNumber").value.trim();
         const expiration = document.getElementById("expiration").value.trim();
         const cvv = document.getElementById("cvv").value.trim();
         const discountCode = document.getElementById("discountCode").value.trim();
-
-        // Validate required payment details
-        if (!cardNumber || !expiration || !cvv) {
-          messageDiv.textContent = "Please enter all required payment details.";
+      
+        // ✅ Validation Logic Here...
+      
+        if (!valid) {
+          messageDiv.textContent = "Please correct the highlighted fields.";
           messageDiv.style.color = "red";
           submitButton.disabled = false;
           return;
         }
-        if (cart.length === 0) {
-          messageDiv.textContent = "Your cart is empty. Add items before checkout.";
-          messageDiv.style.color = "red";
-          submitButton.disabled = false;
-          return;
-        }
-
-        // Build checkout payload
+      
+        // ✅ Checkout API Request
         const checkoutData = {
-          cart: cart,
-          amount: parseFloat(totalPrice.toFixed(2)),
-          payment_method: "Card",
-          discount_code: discountCode
+          cart, amount: totalPrice.toFixed(2), payment_method: "Card", discount_code: discountCode
         };
-
-        console.log("Sending checkout data:", checkoutData);
-
+      
         try {
           const response = await fetch("/api/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(checkoutData)
           });
-
+      
           const data = await response.json();
-          console.log("Response from /api/checkout:", data);
-
+          console.log("📩 Checkout Response:", data);
+      
           if (data.success) {
-            messageDiv.textContent = "Checkout successful! Redirecting to your rentals...";
+            messageDiv.textContent = "✅ Checkout successful! Redirecting...";
             messageDiv.style.color = "green";
-            localStorage.removeItem("cart"); // Clear cart after checkout
-            setTimeout(() => {
-              window.location.href = "/user_rentals";
-            }, 3000);
+            localStorage.removeItem("cart");
+            setTimeout(() => window.location.href = "/user_rentals", 3000);
           } else {
-            messageDiv.textContent = "Checkout failed: " + data.error;
+            messageDiv.textContent = "❌ Checkout failed: " + (data.error || "Unknown error");
             messageDiv.style.color = "red";
             submitButton.disabled = false;
           }
         } catch (error) {
-          console.error("Checkout Error:", error);
-          messageDiv.textContent = "An error occurred during checkout.";
+          console.error("❌ Checkout Error:", error);
+          messageDiv.textContent = "❌ An error occurred.";
           messageDiv.style.color = "red";
           submitButton.disabled = false;
         }
-      });
+      }); // ✅ Now the event listener wraps the entire function correctly
+      
     });
   </script>
 </body>

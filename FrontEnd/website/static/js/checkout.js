@@ -1,43 +1,102 @@
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("📌 Checkout page loaded!");
+
     const checkoutForm = document.getElementById("checkout-form");
     const messageDiv = document.getElementById("checkout-message");
+    const submitButton = checkoutForm.querySelector("button[type='submit']");
+    let isSubmitting = false; // ✅ Add a flag for submission status
 
+    if (!checkoutForm) {
+        console.error("❌ Checkout form not found!");
+        return;
+    }
+
+    // ✅ Handle form submission only once
     checkoutForm.addEventListener("submit", async function (e) {
         e.preventDefault();
 
-        // Retrieve payment form data
+        // ✅ Prevent duplicate form submissions
+        if (submitButton.disabled || isSubmitting) return;
+        submitButton.disabled = true;
+        isSubmitting = true; // ✅ Set the flag to true
+
+        messageDiv.textContent = "Processing checkout...";
+        messageDiv.style.color = "blue";
+
+        // ✅ Declare `valid` at the start
+        let valid = true;
+
+        // ✅ Get form values
         const cardNumber = document.getElementById("card-number").value.trim();
         const expiryDate = document.getElementById("expiry-date").value.trim();
         const cvv = document.getElementById("cvv").value.trim();
         const discountCode = document.getElementById("discount-code").value.trim();
 
-        // Basic validation for payment info
-        if (!cardNumber || !expiryDate || !cvv) {
-            messageDiv.textContent = "Please enter all required payment details.";
-            messageDiv.style.color = "red";
-            return;
-        }
-
-        // Retrieve cart data from localStorage
+        // ✅ Retrieve cart from localStorage
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
         if (cart.length === 0) {
-            messageDiv.textContent = "Your cart is empty. Add items before checkout.";
-            messageDiv.style.color = "red";
+            showErrorGlobal("Your cart is empty. Add items before checkout.");
             return;
         }
 
-        // Calculate total amount (assuming each cart item has a 'price' property)
-        const totalAmount = cart.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2);
+        // ✅ Calculate total amount
+        const totalAmount = cart.reduce((sum, item) => sum + (parseFloat(item.price) || 0), 0).toFixed(2);
 
-        // Prepare checkout data
+        // ✅ Validation Functions
+        function showError(field, message) {
+            field.classList.add("is-invalid");
+            if (field.nextElementSibling) field.nextElementSibling.textContent = message;
+            valid = false;
+        }
+
+        function clearError(field) {
+            field.classList.remove("is-invalid");
+            if (field.nextElementSibling) field.nextElementSibling.textContent = "";
+        }
+
+        function showErrorGlobal(message) {
+            messageDiv.textContent = message;
+            messageDiv.style.color = "red";
+            submitButton.disabled = false;
+            valid = false;
+        }
+
+        // ✅ Validate Credit Card (13-19 digits)
+        if (!/^\d{13,19}$/.test(cardNumber)) {
+            showError(document.getElementById("card-number"), "Invalid card number.");
+        } else {
+            clearError(document.getElementById("card-number"));
+        }
+
+        // ✅ Validate Expiry Date (MM/YY)
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
+            showError(document.getElementById("expiry-date"), "Invalid expiry date.");
+        } else {
+            clearError(document.getElementById("expiry-date"));
+        }
+
+        // ✅ Validate CVV (3-4 digits)
+        if (!/^\d{3,4}$/.test(cvv)) {
+            showError(document.getElementById("cvv"), "Invalid CVV.");
+        } else {
+            clearError(document.getElementById("cvv"));
+        }
+
+        if (!valid) {
+            showErrorGlobal("⚠️ Please correct the highlighted fields.");
+            isSubmitting = false; // ✅ Reset the flag on error
+            return;
+        }
+
+        // ✅ Checkout Data
         const checkoutData = {
             cart: cart,
             amount: totalAmount,
-            payment_method: "Card", // In our simulation, always "Card"
+            payment_method: "Card",
             discount_code: discountCode
         };
 
-        console.log("Sending checkout data:", checkoutData);
+        console.log("📤 Sending checkout data:", checkoutData);
 
         try {
             const response = await fetch("/api/checkout", {
@@ -46,25 +105,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify(checkoutData)
             });
 
-            // Try to parse the response as JSON
+            if (!response.ok) throw new Error(`Server responded with ${response.status}`);
+
             const data = await response.json();
-            console.log("Checkout Response:", data);
+            console.log("📩 Checkout Response:", data);
 
             if (data.success) {
-                messageDiv.textContent = "Checkout successful! Redirecting to your rentals...";
+                messageDiv.textContent = "✅ Checkout successful! Redirecting...";
                 messageDiv.style.color = "green";
-                localStorage.removeItem("cart"); // Clear cart after checkout
-                setTimeout(() => {
-                    window.location.href = "/user_rentals";
-                }, 4000);
+                localStorage.removeItem("cart"); // ✅ Clear cart after checkout
+                // ✅ Redirect immediately
+                window.location.href = "/user_rentals";
+
             } else {
-                messageDiv.textContent = "Checkout failed: " + data.error;
-                messageDiv.style.color = "red";
+                showErrorGlobal("Checkout failed: " + (data.error || "Unknown error"));
+                isSubmitting = false; // ✅ Reset the flag on error
+
             }
         } catch (error) {
-            console.error("Checkout Error:", error);
-            messageDiv.textContent = "An error occurred during checkout.";
-            messageDiv.style.color = "red";
+            console.error("❌ Checkout Error:", error);
+            showErrorGlobal("An error occurred during checkout. Please try again.");
+            isSubmitting = false; // ✅ Reset the flag on error
+
+        } finally {
+            if (!data.success) {
+                submitButton.disabled = false; // ✅ Enable the button again only if the request failed
+            }
         }
     });
 });
