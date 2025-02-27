@@ -1,11 +1,11 @@
 console.log("cart.js loaded!");
 
-// ✅ Adds an item to the cart
+//  Adds an item to the cart
 window.addToCart = function (movie_id, name, price) {
-    console.log("🛒 addToCart called with:", movie_id, name, price);
+    console.log(" addToCart called with:", movie_id, name, price);
     try {
         if (!movie_id || !name || isNaN(price)) {
-            console.error("❌ Invalid item data:", { movie_id, name, price });
+            console.error(" Invalid item data:", { movie_id, name, price });
             return;
         }
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -21,18 +21,18 @@ window.addToCart = function (movie_id, name, price) {
         updateCartList();
         showModal(`${name} has been added to your cart!`);
     } catch (error) {
-        console.error("❌ Error adding item to cart:", error);
+        console.error(" Error adding item to cart:", error);
     }
 };
 
-// ✅ Updates the cart badge count
+//  Updates the cart badge count
 function updateCartBadge() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartBadge = document.querySelector(".cart-badge");
     if (cartBadge) cartBadge.innerText = cart.length;
 }
 
-// ✅ Updates the cart list display
+//  Updates the cart list display
 function updateCartList() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     let cartList = document.getElementById("cart-items");
@@ -64,7 +64,7 @@ function updateCartList() {
     if (totalPriceElement) totalPriceElement.innerText = total.toFixed(2);
 }
 
-// ✅ Removes item from the cart
+//  Removes item from the cart
 document.addEventListener("click", function (event) {
     if (event.target.classList.contains("remove-btn")) {
         let index = parseInt(event.target.getAttribute("data-index"));
@@ -79,7 +79,7 @@ document.addEventListener("click", function (event) {
     }
 });
 
-// ✅ Clears the entire cart and handles checkout
+//  Clears the entire cart and handles checkout
 document.addEventListener("DOMContentLoaded", function () {
     console.log("cart.js initialized...");
     updateCartBadge();
@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.removeItem("cart");
             updateCartList();
             updateCartBadge();
-            showModal("🛒 Your cart has been cleared.");
+            showModal(" Your cart has been cleared.");
         });
     }
 
@@ -103,11 +103,11 @@ document.addEventListener("DOMContentLoaded", function () {
             let discountCode = document.getElementById("discount-code")?.value || "";
 
             if (cart.length === 0) {
-                showModal("🚫 Your cart is empty. Add items before proceeding.");
+                showModal(" Your cart is empty. Add items before proceeding.");
                 return;
             }
 
-            console.log("📤 Sending checkout request...", { cart, totalPrice, discountCode });
+            console.log(" Sending checkout request...", { cart, totalPrice, discountCode });
 
             try {
                 const response = await fetch("/api/checkout", {
@@ -115,31 +115,31 @@ document.addEventListener("DOMContentLoaded", function () {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         cart,
-                        amount: totalPrice,  // ✅ Ensure this is a number
+                        amount: totalPrice,  //  Ensure this is a number
                         payment_method: "Card", 
                         discount_code: discountCode
                     })
                 });
 
                 const data = await response.json();
-                console.log("📩 Checkout Response:", data);
+                console.log(" Checkout Response:", data);
 
                 if (data.success) {
-                    showModal("✅ Checkout successful! Redirecting...");
+                    showModal(" Checkout successful! Redirecting...");
                     localStorage.removeItem("cart");  // Clear cart after checkout
                     setTimeout(() => { window.location.href = "/user_rentals"; }, 2000);
                 } else {
-                    showModal("❌ Error: " + data.error);
+                    showModal(" Error: " + data.error);
                 }
             } catch (error) {
-                console.error("❌ Checkout Error:", error);
-                showModal("❌ Error processing checkout.");
+                console.error(" Checkout Error:", error);
+                showModal(" Error processing checkout.");
             }
         });
     }
 });
 
-// ✅ Modal display function
+//  Modal display function
 function showModal(message) {
     const overlay = document.getElementById('customModalOverlay');
     const messageDiv = document.getElementById('customModalMessage');

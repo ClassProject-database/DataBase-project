@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Reviews page loaded!");
+    console.log(" Reviews page loaded!");
 
     const commentModal = new bootstrap.Modal(document.getElementById("commentModal"));
 
-    // ✅ Open Comment Modal
+    //  Open Comment Modal
     document.querySelectorAll(".comment-btn").forEach(button => {
         button.addEventListener("click", function () {
             const reviewId = this.getAttribute("data-review-id");
@@ -13,22 +13,22 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // ✅ Toggle Comments Section (Now Working!)
+    //  Toggle Comments Section 
     document.querySelectorAll(".view-comments-btn").forEach(button => {
         button.addEventListener("click", async function () {
             const reviewId = this.getAttribute("data-review-id");
             const commentsContainer = document.getElementById(`comments-${reviewId}`);
 
             if (!commentsContainer) {
-                console.error("❌ Comments container not found!");
+                console.error(" Comments container not found!");
                 return;
             }
 
             if (commentsContainer.innerHTML.trim() === "") {
-                await loadComments(reviewId); // ✅ Load comments only if empty
+                await loadComments(reviewId); //  Load comments only if empty
             }
 
-            // ✅ Toggle Visibility
+            //  Toggle Visibility
             if (commentsContainer.classList.contains("d-none")) {
                 commentsContainer.classList.remove("d-none");
                 this.innerHTML = "🔼 Hide Comments";
@@ -39,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // ✅ Post Comment via AJAX
+    //  Post Comment via AJAX
     document.getElementById("postCommentBtn").addEventListener("click", async () => {
         const reviewId = document.getElementById("currentReviewId").value;
         const commentText = document.getElementById("commentText").value.trim();
@@ -59,20 +59,20 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = await response.json();
 
             if (data.success) {
-                showToast("✅ Comment posted!");
-                document.getElementById("commentText").value = ""; // ✅ Clear input
-                await loadComments(reviewId); // ✅ Update comments list
-                commentModal.hide(); // ✅ Close modal properly
+                showToast(" Comment posted!");
+                document.getElementById("commentText").value = ""; //  Clear input
+                await loadComments(reviewId);
+                commentModal.hide(); //  Close modal 
             } else {
-                showToast("❌ Error posting comment.", "error");
+                showToast(" Error posting comment.", "error");
             }
         } catch (error) {
-            console.error("❌ Error posting comment:", error);
-            showToast("❌ Could not post comment. Try again.", "error");
+            console.error(" Error posting comment:", error);
+            showToast(" Could not post comment. Try again.", "error");
         }
     });
 
-    // ✅ Load Comments Function (Fixed!)
+    //  Load Comments Function 
     async function loadComments(reviewId) {
         try {
             const response = await fetch(`/api/comments/${reviewId}`);
@@ -92,11 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 `).join("");
         } catch (error) {
-            console.error("❌ Error loading comments:", error);
+            console.error(" Error loading comments:", error);
         }
     }
 
-    // ✅ Ensure `showToast` is Defined
     function showToast(message, type = "success") {
         const toast = document.createElement("div");
         toast.classList.add("toast", type);

@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const cvv = document.getElementById("cvv").value.trim();
         const discountCode = document.getElementById("discount-code").value.trim();
 
-        // Basic validation for payment info
+        //  validation for payment info
         if (!cardNumber || !expiryDate || !cvv) {
             messageDiv.textContent = "Please enter all required payment details.";
             messageDiv.style.color = "red";
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Calculate total amount (assuming each cart item has a 'price' property)
+        // Calculate total amount
         const totalAmount = cart.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2);
 
         // Prepare checkout data

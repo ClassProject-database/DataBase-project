@@ -15,12 +15,12 @@ db_config = {
     "user": "root",
     "password": "root",
     "database": "movie_rental",
-    "port": 3306
+    "port": 8889
 }
 try:
     connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=10, **db_config)
 except mysql.connector.Error as err:
-    print(f"❌ Database connection pool error: {err}")
+    print(f" Database connection pool error: {err}")
     connection_pool = None
 
 # Function to get a database connection safely
@@ -31,7 +31,7 @@ def get_db_connection():
     try:
         return connection_pool.get_connection()
     except mysql.connector.Error as err:
-        print(f"❌ Database connection error: {err}")
+        print(f" Database connection error: {err}")
         return None
 
 # Define User Class for Flask-Login using account_id

@@ -16,9 +16,9 @@ body.signup-page {
   flex-direction: column;
 }
 
-/* Ensure navbar stays at the top */
+/* navbar */
 nav.navbar {
-  position: relative; /* Change to fixed if you want it always visible */
+  position: relative; 
   width: 100%;
   z-index: 1000;
 }
@@ -95,7 +95,7 @@ nav.navbar {
   margin-bottom: 15px;
 }
 
-/* Ensure inputs have rounded corners */
+
 .form-signUp input[type="email"],
 .form-signUp input[type="password"] {
   border-radius: 5px;

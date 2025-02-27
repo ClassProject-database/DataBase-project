@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("✅ Filters script loaded.");
+    console.log(" Filters script loaded.");
 
-    // ✅ Fetch & Display Movies
+    //  Fetch & Display Movies
     const fetchMovies = async (genreId = null) => {
         let url = "/api/movies";
         
-        // ✅ Ensure correct handling of genreId
+        //  Ensure correct handling of genreId
         if (genreId !== null && !isNaN(genreId)) {
             url += `?genre_id=${genreId}`;
         }
@@ -18,15 +18,15 @@ document.addEventListener("DOMContentLoaded", () => {
             const movies = await response.json();
             displayMovies(movies);
         } catch (error) {
-            console.error("❌ Error fetching movies:", error);
+            console.error(" Error fetching movies:", error);
         }
     };
 
-    // ✅ Display Movies in UI
+    //  Display Movies in UI
     const displayMovies = (movies) => {
         const moviesContainer = document.getElementById("movies-container");
         if (!moviesContainer) {
-            console.error("❌ No element with ID 'movies-container' found.");
+            console.error("No element with ID 'movies-container' found.");
             return;
         }
         moviesContainer.innerHTML = "";
@@ -75,16 +75,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    // ✅ Attach Click Event to Genre Buttons
+    //  Attach Click Event to Genre Buttons
     document.querySelectorAll(".filter-btn").forEach((button) => {
         button.addEventListener("click", () => {
             let genreId = button.dataset.genreId;
-            genreId = genreId === "null" ? null : parseInt(genreId); // ✅ Ensure it's null or number
+            genreId = genreId === "null" ? null : parseInt(genreId); 
             console.log(`🔍 Filtering movies by Genre ID: ${genreId ?? "All"}`);
             fetchMovies(genreId);
         });
     });
 
-    // ✅ Load all movies initially
+    //  Load all movies initially
     fetchMovies();
 });

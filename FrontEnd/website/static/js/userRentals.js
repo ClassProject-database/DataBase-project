@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
-    console.log("📌 User Rentals Page Loaded. Initializing Features...");
+    console.log("User Rentals Page Loaded. Initializing Features...");
 
-    // ✅ Initialize Rentals, Reviews, and Dropdown Search
+    //  Initialize Rentals, Reviews, and Dropdown Search
     if (document.getElementById("rentalsTableBody")) {
         await refreshRentals();
         setupDeleteRentalListener();
@@ -20,15 +20,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
-// ------------------------------
-// ✅ Global Cart Function (Prevents Duplicates)
-// ------------------------------
+//  Global Cart Function (Prevents Duplicates)
 if (!window.addToCart) {
     window.addToCart = function (movie_id, name, price) {
-        console.log("🛒 Adding to Cart:", { movie_id, name, price });
+        console.log(" Adding to Cart:", { movie_id, name, price });
 
         if (!movie_id || !name || isNaN(price)) {
-            console.error("❌ Invalid item data:", { movie_id, name, price });
+            console.error(" Invalid item data:", { movie_id, name, price });
             return;
         }
 
@@ -45,19 +43,17 @@ if (!window.addToCart) {
     };
 }
 
-// ------------------------------
-// ✅ Fetch Rentals & Update Table
-// ------------------------------
+//  Fetch Rentals & Update Table
 async function refreshRentals() {
     try {
-        console.log("📡 Fetching Rentals...");
+        console.log(" Fetching Rentals...");
         const response = await fetch("/api/rentals");
         if (!response.ok) throw new Error(`Failed to fetch rentals. Status: ${response.status}`);
 
         const rentals = await response.json();
         updateRentalsTable(rentals);
     } catch (error) {
-        console.error("❌ Failed to load rentals:", error);
+        console.error(" Failed to load rentals:", error);
     }
 }
 
@@ -83,9 +79,7 @@ function updateRentalsTable(rentals) {
             </tr>`).join("");
 }
 
-// ------------------------------
-// ✅ Handle Rental Deletions
-// ------------------------------
+//  Handle Rental Deletions
 function setupDeleteRentalListener() {
     document.getElementById("rentalsTableBody")?.addEventListener("click", function (e) {
         if (!e.target.classList.contains("delete-rental-btn")) return;
@@ -107,30 +101,26 @@ function setupDeleteRentalListener() {
                 showToast("Error: " + data.error, "error");
             }
         })
-        .catch(error => console.error("❌ Error deleting rental:", error));
+        .catch(error => console.error(" Error deleting rental:", error));
     });
 }
 
-// ------------------------------
-// ✅ Fetch Movies for Dropdown Search
-// ------------------------------
+//  Fetch Movies for Dropdown Search
 async function fetchMoviesForDropdown() {
-    console.log("📡 Fetching movies for review search...");
+    console.log(" Fetching movies for review search...");
 
     try {
         const response = await fetch("/api/movies");
         if (!response.ok) throw new Error(`Error: ${response.status}`);
 
         window.moviesList = await response.json();
-        console.log("✅ Movies loaded for dropdown successfully.");
+        console.log(" Movies loaded for dropdown successfully.");
     } catch (error) {
-        console.error("❌ Error fetching movies:", error);
+        console.error(" Error fetching movies:", error);
     }
 }
 
-// ------------------------------
-// ✅ Movie Search Input Filtering
-// ------------------------------
+//  Movie Search Input Filtering
 document.getElementById("movieSearch")?.addEventListener("input", function () {
     const query = this.value.trim().toLowerCase();
     const dropdown = document.getElementById("movieDropdown");
@@ -163,9 +153,7 @@ document.getElementById("movieSearch")?.addEventListener("input", function () {
     dropdown.style.display = "block";
 });
 
-// ------------------------------
-// ✅ Review Form Submission (Now Updates Instantly!)
-// ------------------------------
+//  Review Form Submission 
 function setupReviewForm() {
     document.getElementById("review-form")?.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -188,15 +176,15 @@ function setupReviewForm() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showToast("✅ Review submitted successfully!");
+                showToast(" Review submitted successfully!");
 
-                // ✅ Clear input fields
+                //  Clear input fields
                 document.getElementById("reviewRating").value = "";
                 document.getElementById("reviewComment").value = "";
                 document.getElementById("movieSearch").value = "";
                 document.getElementById("selectedMovieId").value = "";
 
-                // ✅ Dynamically Update Review List Without Reload
+                //  Dynamically Update Review List 
                 const newReview = document.createElement("li");
                 newReview.classList.add("list-group-item");
                 newReview.innerHTML = `
@@ -206,20 +194,18 @@ function setupReviewForm() {
                 `;
                 reviewList.prepend(newReview); // Add to the top of the list
             } else {
-                showToast("❌ Error: " + data.error, "error");
+                showToast(" Error: " + data.error, "error");
             }
         })
         .catch(error => {
-            console.error("❌ Error submitting review:", error);
-            showToast("❌ Error submitting review.", "error");
+            console.error(" Error submitting review:", error);
+            showToast(" Error submitting review.", "error");
         });
     });
 }
 
 
-// ------------------------------
-// ✅ User Table Actions (Delete/Edit)
-// ------------------------------
+//  User Table Actions (Delete/Edit)
 function setupUserTableListeners() {
     document.getElementById("user-table-body")?.addEventListener("click", function (event) {
         const target = event.target;
@@ -233,7 +219,7 @@ function setupUserTableListeners() {
 
 async function deleteUser(accountId) {
     if (!accountId) return;
-    console.log("🗑️ Deleting User:", accountId);
+    console.log(" Deleting User:", accountId);
 
     try {
         const response = await fetch("/api/delete_user", {
@@ -250,6 +236,6 @@ async function deleteUser(accountId) {
             showToast("Error: " + data.error, "error");
         }
     } catch (error) {
-        console.error("❌ Error deleting user:", error);
+        console.error(" Error deleting user:", error);
     }
 }
