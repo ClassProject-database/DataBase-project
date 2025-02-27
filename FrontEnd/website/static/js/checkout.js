@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Calculate total amount (assuming your cart items have a 'price' property)
+        // Calculate total amount (assuming each cart item has a 'price' property)
         const totalAmount = cart.reduce((sum, item) => sum + parseFloat(item.price), 0).toFixed(2);
 
         // Prepare checkout data
@@ -46,12 +46,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: JSON.stringify(checkoutData)
             });
 
+            // Try to parse the response as JSON
             const data = await response.json();
+            console.log("Checkout Response:", data);
+
             if (data.success) {
                 messageDiv.textContent = "Checkout successful! Redirecting to your rentals...";
                 messageDiv.style.color = "green";
                 localStorage.removeItem("cart"); // Clear cart after checkout
-                // Redirect after a brief pause (e.g., 4 seconds)
                 setTimeout(() => {
                     window.location.href = "/user_rentals";
                 }, 4000);

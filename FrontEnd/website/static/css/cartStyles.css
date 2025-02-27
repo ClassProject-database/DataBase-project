@@ -1,34 +1,50 @@
-/* List Group Item */
-.list-group-item {
-    background-color: #ffffff; 
-    border: 1px solid #ccc; 
-    padding: 12px 18px; 
-    font-size: 15px; /
-    transition: background-color 0.2s ease-in-out;
-}
-
-.list-group-item:hover {
-    background-color: #f1f1f1; /
-}
-
-/* Bold Text Inside List Item */
-.list-group-item strong {
-    font-size: 16px; 
+:root {
+    --list-bg: #ffffff;
+    --list-border: #ccc;
+    --list-hover-bg: #f1f1f1;
+    --font-size-list: 15px;
+    --font-size-bold: 16px;
+    --remove-btn-bg: #dc3545;
+    --remove-btn-hover-bg: #c82333;
+    --transition-speed: 0.2s;
+  }
+  
+  /* List Group Item */
+  .list-group-item {
+    background-color: var(--list-bg);
+    border: 1px solid var(--list-border);
+    padding: 12px 18px;
+    font-size: var(--font-size-list);
+    transition: background-color var(--transition-speed) ease-in-out,
+                transform var(--transition-speed) ease-in-out;
+  }
+  
+  .list-group-item:hover {
+    background-color: var(--list-hover-bg);
+    transform: translateY(-1px);
+  }
+  
+  /* Bold Text Inside List Item */
+  .list-group-item strong {
+    font-size: var(--font-size-bold);
     font-weight: bold;
-}
-
-.remove-btn {
+  }
+  
+  /* Remove Button Styling */
+  .remove-btn {
     font-size: 14px;
-    padding: 6px 12px; 
-    background-color: #dc3545; 
-    color: white;
+    padding: 6px 12px;
+    background-color: var(--remove-btn-bg);
+    color: #fff;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.2s ease-in-out;
-}
-
-.remove-btn:hover {
-    background-color: #c82333; 
-}
-
+    transition: background var(--transition-speed) ease-in-out,
+                transform var(--transition-speed) ease-in-out;
+  }
+  
+  .remove-btn:hover {
+    background-color: var(--remove-btn-hover-bg);
+    transform: translateY(-1px);
+  }
+  

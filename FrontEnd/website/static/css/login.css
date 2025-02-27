@@ -28,4 +28,10 @@ body {
 
 .alert {
     margin-top: 10px;
+    /* Add fade-out transition */
+    transition: opacity 1s ease-out;
+}
+
+.alert.fade-out {
+    opacity: 0;
 }

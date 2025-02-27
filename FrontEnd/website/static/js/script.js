@@ -1,37 +1,39 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     console.log("Page is loaded and ready!");
   
-    // Function to fetch movie data from the API and then display the movies
-    function fetchMovies() {
-      fetch('/api/movies')
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(movies => {
-          displayMovies(movies);
-        })
-        .catch(error => {
-          console.error('There has been a problem with your fetch operation:', error);
-          // You can call a custom alert here if defined
+    // Fetch movies using async/await
+    const fetchMovies = async () => {
+      try {
+        const response = await fetch('/api/movies');
+        if (!response.ok) {
+          throw new Error(`Network response was not ok: ${response.status}`);
+        }
+        const movies = await response.json();
+        displayMovies(movies);
+      } catch (error) {
+        console.error("There has been a problem with your fetch operation:", error);
+        // If a customAlert function is defined, use it; otherwise, use alert
+        if (typeof customAlert === "function") {
           customAlert("Failed to load movies. Please try again later.");
-        });
-    }
+        } else {
+          alert("Failed to load movies. Please try again later.");
+        }
+      }
+    };
   
-    // Function to display movies on the page
-    function displayMovies(movies) {
-      const moviesRow = document.querySelector('.row'); // Ensure this uniquely selects the container
+    // Display movies on the page
+    const displayMovies = (movies) => {
+      // Ensure that .row uniquely selects your movie container element
+      const moviesRow = document.querySelector('.row');
       if (!moviesRow) {
-        console.error("Could not find .row element");
+        console.error("Could not find the '.row' element for displaying movies.");
         return;
       }
-      // Clear previous movies
+      // Clear previous content
       moviesRow.innerHTML = '';
   
       movies.forEach(movie => {
-        // Create a column element for each movie card
+        // Create a column container for the movie card
         const col = document.createElement('div');
         col.classList.add('col');
   
@@ -39,59 +41,52 @@ document.addEventListener("DOMContentLoaded", function () {
         const card = document.createElement('div');
         card.classList.add('card', 'h-100');
   
-        // Create the movie image element
+        // Create and configure the movie image element
         const img = document.createElement('img');
         img.classList.add('card-img-top', 'movie-img');
-        // Use the movie image or a fallback image
         img.src = movie.image ? `/static/images/${movie.image}` : '/static/images/keyboard.jpg';
         img.alt = movie.title || movie.name;
   
-        // Create the card body for movie details
+        // Create card body with movie details
         const cardBody = document.createElement('div');
         cardBody.classList.add('card-body', 'text-center');
-  
         const title = document.createElement('h5');
         title.classList.add('fw-bolder', 'card-title');
         title.textContent = movie.title || movie.name;
-  
         const year = document.createElement('p');
         year.textContent = `Year: ${movie.year}`;
-  
         const rating = document.createElement('p');
         rating.textContent = `Rating: ${movie.rating}`;
+        const priceP = document.createElement('p');
+        priceP.textContent = `Price: $${movie.price}`;
   
-        const price = document.createElement('p');
-        price.textContent = `Price: $${movie.price}`;
+        // Append movie details to the card body
+        cardBody.append(title, year, rating, priceP);
   
-        // Append details to the card body
-        cardBody.appendChild(title);
-        cardBody.appendChild(year);
-        cardBody.appendChild(rating);
-        cardBody.appendChild(price);
-  
-        // Create the card footer with an "Add to Cart" button
+        // Create card footer with "Add to Cart" button
         const cardFooter = document.createElement('div');
         cardFooter.classList.add('card-footer', 'text-center');
         const button = document.createElement('button');
         button.classList.add('btn', 'btn-outline-dark');
         button.textContent = 'Add to Cart';
-        // Call the global addToCart function (assumed defined elsewhere, e.g., in cart.js)
-        // Pass movie.movie_id, movie.title (or movie.name), and movie.price in the proper order
-        button.onclick = function () {
-          addToCart(movie.movie_id, movie.title || movie.name, movie.price);
+        button.onclick = () => {
+          console.log(`Adding to cart: ID=${movie.movie_id}, Title=${movie.title || movie.name}, Price=${movie.price}`);
+          if (typeof addToCart === 'function') {
+            addToCart(movie.movie_id, movie.title || movie.name, movie.price);
+          } else {
+            console.warn("addToCart function is not defined.");
+          }
         };
         cardFooter.appendChild(button);
   
-        // Assemble the card and add it to the row
-        card.appendChild(img);
-        card.appendChild(cardBody);
-        card.appendChild(cardFooter);
+        // Assemble card components and add to the container
+        card.append(img, cardBody, cardFooter);
         col.appendChild(card);
         moviesRow.appendChild(col);
       });
-    }
+    };
   
-    // Call fetchMovies once when the page loads
+    // Call fetchMovies on page load
     fetchMovies();
   });
   

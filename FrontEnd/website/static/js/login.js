@@ -1,11 +1,18 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", () => {
     console.log("Login page loaded!");
 
-    // Example: Show an alert if there is a flash message
-    let alerts = document.querySelectorAll(".alert");
+    const alerts = document.querySelectorAll(".alert");
     if (alerts.length > 0) {
+        // Wait 3 seconds before starting fade out
         setTimeout(() => {
-            alerts.forEach(alert => alert.style.display = "none");
+            alerts.forEach(alert => {
+                // Add a class to trigger the CSS fade-out transition
+                alert.classList.add("fade-out");
+                // Listen for the end of the transition and then remove the element
+                alert.addEventListener("transitionend", () => {
+                    alert.remove();
+                });
+            });
         }, 3000);
     }
 });

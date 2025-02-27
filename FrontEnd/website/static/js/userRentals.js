@@ -1,23 +1,21 @@
-// Define a global moviesList to be used across functions (if not already defined)
+// Ensure global moviesList exists
 if (!window.moviesList) {
     window.moviesList = [];
   }
   
-  //////////////////////////////
-  // Global Cart Functions (Optional)
-  // Modify addToCart to prevent duplicates
-  //////////////////////////////
+  // ------------------------------
+  // Global Cart Functions
+  // ------------------------------
   if (typeof window.addToCart !== "function") {
     window.addToCart = function (movie_id, name, price) {
       console.log("🛒 addToCart called with:", movie_id, name, price);
       try {
-        // Prevent adding if any value is missing or if price is not a valid number
         if (!movie_id || !name || isNaN(price)) {
           console.error("❌ Invalid item data:", { movie_id, name, price });
           return;
         }
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        // Check if this movie is already in the cart
+        // Prevent duplicates:
         if (cart.find(item => item.movie_id == movie_id)) {
           console.log(`Movie ID ${movie_id} is already in the cart.`);
           return;
@@ -33,50 +31,14 @@ if (!window.moviesList) {
     };
   }
   
-  //////////////////////////////
-  // Initialization on DOMContentLoaded
-  //////////////////////////////
-  document.addEventListener("DOMContentLoaded", async function () {
-    console.log("📌 Rentals page loaded. Initializing features...");
-  
-    // 1. Refresh Rentals & Set Up Delete Listener (if the rentals table exists)
-    const rentalsTable = document.getElementById("rentalsTableBody");
-    if (rentalsTable) {
-      await refreshRentals();
-      setupDeleteRentalListener();
-    } else {
-      console.warn("⚠️ rentalsTableBody not found in the DOM.");
-    }
-  
-    // 2. Fetch Movies for Review Dropdown (if both movieList and reviewMovie elements exist)
-    if (document.getElementById("movieList") && document.getElementById("reviewMovie")) {
-      await fetchMovies();
-      const movieSearchEl = document.getElementById("movieSearch");
-      if (movieSearchEl) {
-        movieSearchEl.addEventListener("input", handleCustomDropdown);
-      }
-    } else {
-      console.warn("⚠️ movieList or reviewMovie element not found. Skipping fetchMovies().");
-    }
-  
-    // 3. Set Up Review Form Submission (if the review form exists)
-    if (document.getElementById("review-form")) {
-      setupReviewForm();
-    }
-  });
-  
-  //////////////////////////////
-  // 1. Rentals Functions
-  //////////////////////////////
-  
-  // Refresh rentals from backend and update table
+  // ------------------------------
+  // Rentals Functions
+  // ------------------------------
   async function refreshRentals() {
     try {
       console.log("📡 Fetching rentals...");
-      // Make sure your backend endpoint '/api/rentals' returns a JSON array of rentals
       const response = await fetch("/api/rentals");
       if (!response.ok) {
-        console.error("❌ API response not OK:", response.status, response.statusText);
         throw new Error(`Failed to fetch rentals. Status: ${response.status}`);
       }
       const rentals = await response.json();
@@ -88,15 +50,15 @@ if (!window.moviesList) {
     }
   }
   
-  // Update the rentals table in the DOM
   function updateRentalsTable(rentals) {
     const tableBody = document.getElementById("rentalsTableBody");
+    if (!tableBody) return;
     tableBody.innerHTML = "";
     if (rentals.length === 0) {
       tableBody.innerHTML = `<tr><td colspan="5" class="text-center">No rentals found.</td></tr>`;
       return;
     }
-    rentals.forEach((rental) => {
+    rentals.forEach(rental => {
       const row = document.createElement("tr");
       row.setAttribute("data-rental-id", rental.rental_id);
       row.innerHTML = `
@@ -114,7 +76,6 @@ if (!window.moviesList) {
     });
   }
   
-  // Set up the delete rental listener (with prevention of duplicate listeners)
   function setupDeleteRentalListener() {
     const rentalsTable = document.getElementById("rentalsTableBody");
     if (!rentalsTable) {
@@ -134,7 +95,6 @@ if (!window.moviesList) {
           console.error("❌ Missing rental ID on delete button.");
           return;
         }
-        // Disable button immediately to prevent duplicate clicks
         e.target.disabled = true;
         if (!confirm("Are you sure you want to delete this rental record?")) {
           e.target.disabled = false;
@@ -146,8 +106,8 @@ if (!window.moviesList) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ rental_id: rentalId }),
         })
-          .then((response) => response.json())
-          .then((data) => {
+          .then(response => response.json())
+          .then(data => {
             console.log("📩 Delete response:", data);
             if (data.success) {
               const row = document.querySelector(`tr[data-rental-id="${rentalId}"]`);
@@ -161,7 +121,7 @@ if (!window.moviesList) {
               e.target.disabled = false;
             }
           })
-          .catch((error) => {
+          .catch(error => {
             console.error("❌ Fetch Error while deleting rental:", error);
             alert("❌ An error occurred while deleting the rental.");
             e.target.disabled = false;
@@ -170,56 +130,56 @@ if (!window.moviesList) {
     });
   }
   
-  //////////////////////////////
-  // 2. Movies & Review Dropdown Functions
-  //////////////////////////////
-  
-  // Fetch movies from API and populate datalist and hidden dropdown
-  async function fetchMovies() {
-    console.log("📡 Fetching movies...");
+  // ------------------------------
+  // Movies & Review Dropdown Functions
+  // ------------------------------
+  async function fetchMoviesForDropdown() {
+    console.log("📡 Fetching movies for dropdown...");
     const datalist = document.getElementById("movieList");
     const dropdown = document.getElementById("reviewMovie");
     if (!datalist || !dropdown) {
-      console.warn("⚠️ movieList or reviewMovie not found in DOM. Skipping fetchMovies().");
+      console.warn("⚠️ movieList or reviewMovie not found in DOM. Skipping fetchMoviesForDropdown().");
       return;
     }
     try {
       const response = await fetch("/api/movies");
-      moviesList = await response.json();
+      if (!response.ok) throw new Error(`Status: ${response.status}`);
+      window.moviesList = await response.json();
       datalist.innerHTML = "";
       dropdown.innerHTML = "";
-      moviesList.forEach((movie) => {
+      window.moviesList.forEach(movie => {
+        // Populate datalist (for built-in browser support)
         let option = document.createElement("option");
         option.value = movie.title;
         option.setAttribute("data-id", movie.movie_id);
         datalist.appendChild(option);
+        // Populate custom dropdown for reviews
         let dropdownOption = document.createElement("option");
         dropdownOption.value = movie.movie_id;
         dropdownOption.textContent = movie.title;
         dropdown.appendChild(dropdownOption);
       });
-      console.log("✅ Movies loaded successfully.");
+      console.log("✅ Movies loaded for dropdown successfully.");
     } catch (error) {
-      console.error("❌ Error fetching movies:", error);
+      console.error("❌ Error fetching movies for dropdown:", error);
     }
   }
   
-  // Custom dropdown handling for movie search
   function handleCustomDropdown() {
-    let searchValue = this.value.trim().toLowerCase();
-    let dropdown = document.getElementById("movieDropdown");
-    let movieIdField = document.getElementById("selectedMovieId");
+    const searchValue = this.value.trim().toLowerCase();
+    const dropdown = document.getElementById("movieDropdown");
+    const movieIdField = document.getElementById("selectedMovieId");
     dropdown.innerHTML = "";
     dropdown.style.display = "none";
     if (searchValue.length === 0) {
       movieIdField.value = "";
       return;
     }
-    let filteredMovies = moviesList.filter((movie) =>
+    const filteredMovies = window.moviesList.filter(movie =>
       movie.title.toLowerCase().includes(searchValue)
     );
     if (filteredMovies.length === 0) return;
-    filteredMovies.forEach((movie) => {
+    filteredMovies.forEach(movie => {
       let option = document.createElement("div");
       option.classList.add("dropdown-item");
       option.textContent = movie.title;
@@ -234,50 +194,22 @@ if (!window.moviesList) {
     dropdown.style.display = "block";
   }
   
-  // Also attach built-in datalist logic for movie search
   const movieSearchInput = document.getElementById("movieSearch");
   if (movieSearchInput) {
-    movieSearchInput.addEventListener("input", function () {
-      let searchValue = this.value.toLowerCase();
-      let dropdown = document.getElementById("movieDropdown");
-      let movieIdField = document.getElementById("selectedMovieId");
-      dropdown.innerHTML = "";
-      dropdown.style.display = "none";
-      if (searchValue.length === 0) {
-        movieIdField.value = "";
-        return;
-      }
-      let filteredMovies = moviesList.filter((movie) =>
-        movie.title.toLowerCase().includes(searchValue)
-      );
-      if (filteredMovies.length === 0) return;
-      filteredMovies.forEach((movie) => {
-        let option = document.createElement("div");
-        option.classList.add("dropdown-item");
-        option.textContent = movie.title;
-        option.dataset.id = movie.movie_id;
-        option.addEventListener("click", function () {
-          movieSearchInput.value = movie.title;
-          movieIdField.value = movie.movie_id;
-          dropdown.style.display = "none";
-        });
-        dropdown.appendChild(option);
-      });
-      dropdown.style.display = "block";
-    });
+    movieSearchInput.addEventListener("input", handleCustomDropdown);
   }
   
-  //////////////////////////////
-  // 4. Review Form Submission
-  //////////////////////////////
+  // ------------------------------
+  // Review Form Submission
+  // ------------------------------
   function setupReviewForm() {
     const reviewForm = document.getElementById("review-form");
     if (!reviewForm) return;
     reviewForm.addEventListener("submit", function (e) {
       e.preventDefault();
-      let movieId = document.getElementById("selectedMovieId").value;
-      let rating = document.getElementById("reviewRating").value;
-      let review = document.getElementById("reviewComment").value;
+      const movieId = document.getElementById("selectedMovieId").value;
+      const rating = document.getElementById("reviewRating").value;
+      const review = document.getElementById("reviewComment").value;
       if (!movieId) {
         alert("Please select a movie from the list to submit a review.");
         return;
@@ -291,8 +223,8 @@ if (!window.moviesList) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ movie_id: movieId, rating, review }),
       })
-        .then((response) => response.json())
-        .then((data) => {
+        .then(response => response.json())
+        .then(data => {
           if (data.success) {
             alert("Review submitted successfully!");
             location.reload();
@@ -300,31 +232,32 @@ if (!window.moviesList) {
             alert("Error: " + data.error);
           }
         })
-        .catch((error) => console.error("Error:", error));
+        .catch(error => console.error("Error submitting review:", error));
     });
   }
   
-  //////////////////////////////
-  // Additional: Display Movies (for Inventory/Filters)
-  // (This part is separate and may be used on a different page, e.g. inventory.html)
+  // ------------------------------
+  // Additional: Display Movies for Inventory/Filters
+  // (Optional: If this page should display movies in a grid)
+  // ------------------------------
   document.addEventListener("DOMContentLoaded", function () {
     function fetchMoviesForDisplay() {
       fetch("/api/movies")
-        .then((response) => {
+        .then(response => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
           return response.json();
         })
-        .then((movies) => {
+        .then(movies => {
           displayMovies(movies);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error("Failed to load movies:", error);
-          customAlert("Failed to load movies. Please try again later.");
+          customAlert && customAlert("Failed to load movies. Please try again later.");
         });
     }
-  
+    
     function displayMovies(movies) {
       const moviesRow = document.querySelector(".row");
       if (!moviesRow) {
@@ -332,7 +265,7 @@ if (!window.moviesList) {
         return;
       }
       moviesRow.innerHTML = "";
-      movies.forEach((movie) => {
+      movies.forEach(movie => {
         const col = document.createElement("div");
         col.classList.add("col");
         const card = document.createElement("div");
@@ -350,30 +283,71 @@ if (!window.moviesList) {
         year.textContent = `Year: ${movie.year}`;
         const ratingEl = document.createElement("p");
         ratingEl.textContent = `Rating: ${movie.rating}`;
-        const price = document.createElement("p");
-        price.textContent = `Price: $${movie.price}`;
-        cardBody.appendChild(title);
-        cardBody.appendChild(year);
-        cardBody.appendChild(ratingEl);
-        cardBody.appendChild(price);
+        const priceEl = document.createElement("p");
+        priceEl.textContent = `Price: $${movie.price}`;
+        cardBody.append(title, year, ratingEl, priceEl);
         const cardFooter = document.createElement("div");
         cardFooter.classList.add("card-footer", "text-center");
         const button = document.createElement("button");
         button.classList.add("btn", "btn-outline-dark");
         button.textContent = "Add to Cart";
-        // Call addToCart with movie_id, title, and price
         button.onclick = function () {
           addToCart(movie.movie_id, movie.title || movie.name, movie.price);
         };
         cardFooter.appendChild(button);
-        card.appendChild(img);
-        card.appendChild(cardBody);
-        card.appendChild(cardFooter);
+        card.append(img, cardBody, cardFooter);
         col.appendChild(card);
         moviesRow.appendChild(col);
       });
     }
+    
+    // Optionally call fetchMoviesForDisplay() if needed
+    // fetchMoviesForDisplay();
+  });
   
-    // Optionally, call fetchMoviesForDisplay() if this page should also display movies.
+  // ------------------------------
+  // Initialization on DOMContentLoaded
+  // ------------------------------
+  document.addEventListener("DOMContentLoaded", async function () {
+    console.log("📌 Rentals page loaded. Initializing features...");
+  
+    // 1. Refresh Rentals & Set Up Delete Listener (if rentals table exists)
+    const rentalsTable = document.getElementById("rentalsTableBody");
+    if (rentalsTable) {
+      await refreshRentals();
+      setupDeleteRentalListener();
+    } else {
+      console.warn("⚠️ rentalsTableBody not found in the DOM.");
+    }
+  
+    // 2. Fetch Movies for Review Dropdown (if movieList and reviewMovie exist)
+    if (document.getElementById("movieList") && document.getElementById("reviewMovie")) {
+      await fetchMoviesForDropdown();
+    } else {
+      console.warn("⚠️ movieList or reviewMovie element not found. Skipping fetchMoviesForDropdown().");
+    }
+  
+    // 3. Set Up Review Form Submission (if the review form exists)
+    if (document.getElementById("review-form")) {
+      setupReviewForm();
+    }
+  
+    // 4. Attach global event listener for user actions on the users table (if applicable)
+    const usersTableBody = document.getElementById("user-table-body");
+    if (usersTableBody) {
+      usersTableBody.addEventListener("click", function (event) {
+        const target = event.target;
+        const accountId = target.dataset.accountId;
+        if (target.classList.contains("edit-user-btn")) {
+          console.log(`Editing User ID: ${accountId}`);
+          // TODO: Implement edit functionality
+        }
+        if (target.classList.contains("delete-user-btn")) {
+          if (confirm("Are you sure you want to delete this user?")) {
+            deleteUser(accountId);
+          }
+        }
+      });
+    }
   });
   

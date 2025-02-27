@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}Your Cart - Movie Store{% endblock %}
 
@@ -32,21 +32,33 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- Load cart.js which should handle cart updates -->
+<!-- Load external cart.js file -->
 <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+<script defer>
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("Cart page loaded!");
+
   const checkoutBtn = document.getElementById("checkout-btn");
-  checkoutBtn.addEventListener("click", function () {
-    // Ensure the cart isn't empty before proceeding to checkout
-    const totalItems = document.getElementById("total-items").innerText;
-    if (parseInt(totalItems) === 0) {
-      alert("Your cart is empty. Please add items before proceeding to checkout.");
-      return;
-    }
-    // Redirect to checkout page (make sure your backend has a /checkout route)
-    window.location.href = "/checkout";
-  });
+  const totalItemsEl = document.getElementById("total-items");
+
+  // Ensure the checkout button exists before attaching the event listener
+  if (checkoutBtn && totalItemsEl) {
+    checkoutBtn.addEventListener("click", () => {
+      const totalItems = parseInt(totalItemsEl.innerText, 10);
+      if (isNaN(totalItems) || totalItems === 0) {
+        alert("Your cart is empty. Please add items before proceeding to checkout.");
+        return;
+      }
+      // Redirect to the checkout page
+      window.location.href = "/checkout";
+    });
+  } else {
+    console.error("Checkout button or total items element not found.");
+  }
 });
 </script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/cart.css') }}">
 {% endblock %}

@@ -1,33 +1,37 @@
 {% extends "base.html" %}
+
 {% block title %}My Rentals - Movie Store{% endblock %}
 
 {% block content %}
-<div class="rental-container">
+<section class="rental-container">
+  <header>
     <h1 class="text-center">My Rentals</h1>
+  </header>
 
-    <!-- ✅ Display User Info -->
-    <div class="user-info">
-        <h3>User Information</h3>
-        <p><strong>Username:</strong> {{ user.username if user else "N/A" }}</p>
-        <p><strong>First Name:</strong> {{ user.first_name if user else "N/A" }}</p>
-        <p><strong>Last Name:</strong> {{ user.last_name if user else "N/A" }}</p>
-        <p><strong>Phone:</strong> {{ user.phone if user else "N/A" }}</p>
-    </div>
+  <!-- User Information -->
+  <article class="user-info mb-4">
+    <h3>User Information</h3>
+    <p><strong>Username:</strong> {{ user.username if user else "N/A" }}</p>
+    <p><strong>First Name:</strong> {{ user.first_name if user else "N/A" }}</p>
+    <p><strong>Last Name:</strong> {{ user.last_name if user else "N/A" }}</p>
+    <p><strong>Phone:</strong> {{ user.phone if user else "N/A" }}</p>
+  </article>
 
-    <!-- ✅ Rental History Table -->
+  <!-- Rental History -->
+  <article class="rental-history mb-5">
     <h3>Rental History</h3>
     <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Movie Title</th>
-            <th>Rental Date</th>
-            <th>Return Date</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="rentalsTableBody">
-          {% for rental in rentals %}
+      <thead>
+        <tr>
+          <th>Movie Title</th>
+          <th>Rental Date</th>
+          <th>Return Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="rentalsTableBody">
+        {% for rental in rentals %}
           <tr data-rental-id="{{ rental.rental_id }}">
             <td>{{ rental.title }}</td>
             <td>{{ rental.rental_date }}</td>
@@ -39,62 +43,69 @@
               </button>
             </td>
           </tr>
-          {% else %}
-          <tr><td colspan="5" class="text-center">No rentals found.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      
-    
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-center">No rentals found.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </article>
+
+  <!-- Post a Review -->
+  <article class="post-review mb-5">
     <h3>Post a Review</h3>
-
-    <!-- ✅ Search Bar for Movies -->
-    <div class="search-container">
-        <input type="text" id="movieSearch" class="form-control mb-2" placeholder="Search Movie..." autocomplete="off">
-        <input type="hidden" id="selectedMovieId" name="movie_id">
-        <div id="movieDropdown" class="dropdown-menu"></div>
+    <div class="search-container mb-2">
+      <input type="text" id="movieSearch" class="form-control" placeholder="Search Movie..." autocomplete="off">
+      <input type="hidden" id="selectedMovieId" name="movie_id">
+      <div id="movieDropdown" class="dropdown-menu"></div>
     </div>
-
     <form id="review-form">
-        <div class="form-group">
-            <label for="reviewRating">Rating (1-5)</label>
-            <input type="number" id="reviewRating" name="rating" class="form-control" min="1" max="5" required>
-        </div>
-        <div class="form-group">
-            <label for="reviewComment">Review</label>
-            <textarea id="reviewComment" name="comment" class="form-control" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary mt-3">Submit Review</button>
+      <div class="form-group mb-3">
+        <label for="reviewRating">Rating (1-5)</label>
+        <input type="number" id="reviewRating" name="rating" class="form-control" min="1" max="5" required>
+      </div>
+      <div class="form-group mb-3">
+        <label for="reviewComment">Review</label>
+        <textarea id="reviewComment" name="comment" class="form-control" rows="3" required></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit Review</button>
     </form>
+  </article>
 
+  <!-- My Reviews -->
+  <article class="my-reviews">
     <h3>My Reviews</h3>
     <ul class="list-group">
-        {% for review in reviews %}
+      {% for review in reviews %}
         <li class="list-group-item">
-            <strong>{{ review.title }}</strong> ({{ review.rating }}/5)
-            <br>{{ review.comment }}
-            <br><small>Posted on: {{ review.review_date }}</small>
+          <strong>{{ review.title }}</strong> ({{ review.rating }}/5)
+          <br>{{ review.comment }}
+          <br><small>Posted on: {{ review.review_date }}</small>
         </li>
-        {% else %}
+      {% else %}
         <li class="list-group-item text-center">No reviews yet.</li>
-        {% endfor %}
+      {% endfor %}
     </ul>
-</div>
+  </article>
+</section>
 
 <style>
-/* ✅ Style improvements */
-.rental-container {
+  /* Rental Container */
+  .rental-container {
     position: relative;
     max-width: 700px;
     margin: auto;
-}
+    padding: 20px;
+  }
 
-.search-container {
+  /* Search Container for Review Section */
+  .search-container {
     position: relative;
-}
+  }
 
-/* ✅ Dropdown styling */
-#movieDropdown {
+  /* Dropdown Styling */
+  #movieDropdown {
     position: absolute;
     background: #222;
     border: 1px solid #444;
@@ -108,29 +119,25 @@
     padding: 5px;
     border-radius: 5px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
+  }
 
-#movieDropdown .dropdown-item {
+  #movieDropdown .dropdown-item {
     padding: 8px;
     cursor: pointer;
     color: white;
     border-bottom: 1px solid #444;
-}
+  }
 
-#movieDropdown .dropdown-item:hover {
+  #movieDropdown .dropdown-item:hover {
     background: #007bff;
-}
+  }
 </style>
-
-
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/userRentals.js') }}" defer></script>
 {% endblock %}
 
-
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/userRentals.css') }}">
 {% endblock %}
-
 {% endblock %}

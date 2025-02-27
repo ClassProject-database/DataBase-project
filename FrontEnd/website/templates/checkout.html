@@ -2,11 +2,8 @@
 <html lang="en">
 <head>
   <title>Checkout - Modern</title>
-  <!-- Include Bootstrap CSS (replace with your preferred version or CDN) -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-  >
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <!-- Your Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <style>
@@ -42,7 +39,6 @@
   </style>
 </head>
 <body class="bg-dark text-white">
-
   <div class="checkout-container">
     <div class="checkout-header">
       <h1>Checkout</h1>
@@ -113,14 +109,10 @@
     <div id="checkout-message" class="checkout-message"></div>
   </div>
 
-  <!-- Include Bootstrap JS (defer or place before closing body tag) -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    defer
-  ></script>
-
+  <!-- Bootstrap JS (placed before closing body tag) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", () => {
       console.log("Checkout page loaded!");
 
       const checkoutForm = document.getElementById("checkout-form");
@@ -128,38 +120,43 @@
       const submitButton = document.getElementById("submit-button");
 
       // === 1) Populate Cart Summary from localStorage ===
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      let totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
-
-      // Render cart items
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
+      
       const cartList = document.getElementById("cart-items");
-      cart.forEach(item => {
-        let li = document.createElement("li");
-        // Adjust as needed: item.name, item.title, etc.
-        li.textContent = `${item.name || item.title || "Movie"} - $${item.price}`;
+      cartList.innerHTML = "";
+      if (cart.length === 0) {
+        const li = document.createElement("li");
+        li.className = "list-group-item text-center";
+        li.textContent = "Your cart is empty.";
         cartList.appendChild(li);
-      });
-      document.getElementById("total-price").textContent = totalPrice.toFixed(2);
+      } else {
+        cart.forEach(item => {
+          const li = document.createElement("li");
+          li.textContent = `${item.name || item.title || "Movie"} - $${parseFloat(item.price).toFixed(2)}`;
+          cartList.appendChild(li);
+        });
+      }
+      document.getElementById("total-price").textContent = parseFloat(totalPrice).toFixed(2);
 
       // === 2) Handle Checkout Form Submission ===
-      checkoutForm.addEventListener("submit", async function (e) {
+      checkoutForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-        submitButton.disabled = true; // Prevent multiple clicks
+        submitButton.disabled = true; // Prevent multiple submissions
 
-        // Grab form fields
+        // Retrieve payment fields
         const cardNumber = document.getElementById("cardNumber").value.trim();
         const expiration = document.getElementById("expiration").value.trim();
         const cvv = document.getElementById("cvv").value.trim();
         const discountCode = document.getElementById("discountCode").value.trim();
 
-        // Basic validation
+        // Validate required payment details
         if (!cardNumber || !expiration || !cvv) {
           messageDiv.textContent = "Please enter all required payment details.";
           messageDiv.style.color = "red";
           submitButton.disabled = false;
           return;
         }
-
         if (cart.length === 0) {
           messageDiv.textContent = "Your cart is empty. Add items before checkout.";
           messageDiv.style.color = "red";
@@ -167,10 +164,10 @@
           return;
         }
 
-        // === 3) Build Checkout Data ===
+        // Build checkout payload
         const checkoutData = {
           cart: cart,
-          amount: totalPrice.toFixed(2),
+          amount: parseFloat(totalPrice.toFixed(2)),
           payment_method: "Card",
           discount_code: discountCode
         };
@@ -178,7 +175,6 @@
         console.log("Sending checkout data:", checkoutData);
 
         try {
-          // === 4) Send POST request to /api/checkout ===
           const response = await fetch("/api/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -188,13 +184,10 @@
           const data = await response.json();
           console.log("Response from /api/checkout:", data);
 
-          // === 5) Handle Server Response ===
           if (data.success) {
             messageDiv.textContent = "Checkout successful! Redirecting to your rentals...";
             messageDiv.style.color = "green";
-            // Clear cart on success
-            localStorage.removeItem("cart");
-            // Redirect after a short delay
+            localStorage.removeItem("cart"); // Clear cart after checkout
             setTimeout(() => {
               window.location.href = "/user_rentals";
             }, 3000);

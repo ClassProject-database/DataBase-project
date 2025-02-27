@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 
 {% block title %}
     Inventory - Movie Store
@@ -41,14 +41,13 @@
                         <p>Price: ${{ movie.price }}</p>
                     </div>
                     <div class="card-footer text-center">
-                        <!-- After: No inline onclick -->
+                        <!-- "Add to Cart" action is handled by cart.js using data attributes -->
                         <button class="btn btn-outline-dark add-to-cart-btn"
-                        data-movie-id="{{ movie.movie_id }}"
-                        data-title="{{ movie.title|escape }}"
-                        data-price="{{ movie.price }}">
-                        Add to Cart
+                                data-movie-id="{{ movie.movie_id }}"
+                                data-title="{{ movie.title|escape }}"
+                                data-price="{{ movie.price }}">
+                            Add to Cart
                         </button>
-
                     </div>
                 </div>
             </div>

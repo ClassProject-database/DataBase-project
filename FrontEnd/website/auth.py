@@ -14,11 +14,13 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         try:
-            cursor.execute("SELECT * FROM Logins WHERE username = %s", (username,))
+            # Query the Users table instead of Logins
+            cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
             user = cursor.fetchone()
 
             if user and bcrypt.check_password_hash(user['password'], password):
-                login_user(User(user['login_id'], user['username'], user['role']))
+                # Use account_id as the unique identifier
+                login_user(User(user['account_id'], user['username'], user['role']))
                 flash("Login successful!", "success")
 
                 if user['role'] == 'admin':
@@ -56,42 +58,37 @@ def signUp():
         first_name = request.form['first_name'].strip()
         last_name = request.form['last_name'].strip()
         phone = request.form['phone'].strip()
+        email = request.form.get('email', '').strip()  # Optional email field
 
         if password != confirm_password:
             flash("Passwords do not match!", "danger")
             return redirect(url_for('auth.signUp'))
 
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')  # ✅ Use Flask-Bcrypt
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-
         try:
-            # Check if username already exists
-            cursor.execute("SELECT * FROM Logins WHERE username = %s", (username,))
+            # Check if username already exists in Users table
+            cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
             if cursor.fetchone():
                 flash("Username already exists! Choose a different one.", "warning")
                 return redirect(url_for('auth.signUp'))
 
-            # Insert into Logins table
-            cursor.execute("INSERT INTO Logins (username, password, role) VALUES (%s, %s, 'user')",
-                           (username, hashed_password))
-            conn.commit()
-            login_id = cursor.lastrowid  # Get generated login ID
-
-            # Insert into User_Accounts table
+            # Insert into Users table
             cursor.execute("""
-                INSERT INTO User_Accounts (first_name, last_name, phone, login_id)
-                VALUES (%s, %s, %s, %s)
-            """, (first_name, last_name, phone, login_id))
+                INSERT INTO Users (username, password, role, first_name, last_name, email, phone)
+                VALUES (%s, %s, 'user', %s, %s, %s, %s)
+            """, (username, hashed_password, first_name, last_name, email, phone))
             conn.commit()
+            account_id = cursor.lastrowid
 
-            # Automatically log in the new user
-            new_user = User(login_id, username, 'user')
+            # Automatically log in the new user using account_id
+            new_user = User(account_id, username, 'user')
             login_user(new_user)
 
             flash("Sign-up successful!", "success")
-            return redirect(url_for('views.HomePage'))
+            return redirect(url_for('views.home'))
         except Exception as e:
             flash("Error creating account. Try again.", "danger")
             print(f"Sign-up Error: {e}")

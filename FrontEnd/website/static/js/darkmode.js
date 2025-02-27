@@ -20,4 +20,3 @@ function toggleDarkMode() {
     const isDarkMode = document.body.classList.contains("dark-mode");
     localStorage.setItem("darkMode", isDarkMode);
 }
-

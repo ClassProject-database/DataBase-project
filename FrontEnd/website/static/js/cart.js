@@ -25,8 +25,6 @@ window.addToCart = function (movie_id, name, price) {
     }
 };
 
-
-
 // ✅ Updates the cart badge count
 function updateCartBadge() {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -71,7 +69,6 @@ document.addEventListener("click", function (event) {
     if (event.target.classList.contains("remove-btn")) {
         let index = parseInt(event.target.getAttribute("data-index"));
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
         if (index >= 0 && index < cart.length) {
             cart.splice(index, 1);
             localStorage.setItem("cart", JSON.stringify(cart));
@@ -82,7 +79,7 @@ document.addEventListener("click", function (event) {
     }
 });
 
-// ✅ Clears the entire cart
+// ✅ Clears the entire cart and handles checkout
 document.addEventListener("DOMContentLoaded", function () {
     console.log("cart.js initialized...");
     updateCartBadge();
@@ -118,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         cart,
-                        amount: totalPrice,  // ✅ Make sure this is a number
+                        amount: totalPrice,  // ✅ Ensure this is a number
                         payment_method: "Card", 
                         discount_code: discountCode
                     })
@@ -142,6 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// ✅ Modal display function
 function showModal(message) {
     const overlay = document.getElementById('customModalOverlay');
     const messageDiv = document.getElementById('customModalMessage');
@@ -152,14 +150,12 @@ function showModal(message) {
         return;
     }
 
-    // Set the message
+    // Set the message and display the modal
     messageDiv.textContent = message;
-    // Display the modal overlay
     overlay.classList.add('show');
 
-    // Reassign the click handler on the OK button to close the modal
+    // Attach click handler to close the modal
     okButton.onclick = function () {
         overlay.classList.remove('show');
     };
 }
-
