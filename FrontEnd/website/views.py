@@ -16,12 +16,16 @@ def HomePage():
 def inventory2():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
+
     cursor.execute("SELECT * FROM Genres;")
     genres = cursor.fetchall()
+    
     cursor.execute("SELECT * FROM Movies;")
     movies = cursor.fetchall()
+
     cursor.close()
     conn.close()
+
     return render_template("inventory2.html", movies=movies, genres=genres)
 
 # 3. API: Fetch Movies
@@ -31,7 +35,9 @@ def get_movies():
     cursor = conn.cursor(dictionary=True)
     try:
         genre_id = request.args.get('genre_id', type=int)
-        if genre_id:
+        
+        # ✅ Ensure genre_id is handled properly
+        if genre_id is not None:
             query = """
                 SELECT DISTINCT Movies.* 
                 FROM Movies 
@@ -40,15 +46,19 @@ def get_movies():
             """
             cursor.execute(query, (genre_id,))
         else:
-            cursor.execute("SELECT * FROM Movies")
+            query = "SELECT * FROM Movies"
+            cursor.execute(query)
+
         movies = cursor.fetchall()
         return jsonify(movies)
+
     except Exception as err:
         print(f"Database error: {err}")
         return jsonify({"error": "Database query failed"}), 500
     finally:
         cursor.close()
         conn.close()
+
 
 # 4. Admin Dashboard (Fetch all users from Users table)
 @views.route('/admin', methods=['GET'])
@@ -410,3 +420,35 @@ def add_movie():
     finally:
         cursor.close()
         conn.close()
+
+
+# ✅ API: Fetch Comments for a Review
+@views.route('/api/comments/<int:review_id>', methods=['GET'])
+def get_comments(review_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT username, text, timestamp FROM Comments WHERE review_id = %s ORDER BY timestamp DESC", (review_id,))
+    comments = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(comments)
+
+# ✅ API: Post Comment
+@views.route('/api/post_comment', methods=['POST'])
+def post_comment():
+    data = request.json
+    review_id = data.get('review_id')
+    comment_text = data.get('comment')
+
+    if not review_id or not comment_text:
+        return jsonify({"error": "Invalid data"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO Comments (review_id, username, text) VALUES (%s, %s, %s)", 
+                   (review_id, "CurrentUser", comment_text))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+    return jsonify({"success": True})

@@ -2,250 +2,210 @@
 {% block title %}Admin Dashboard - Movie Store{% endblock %}
 
 {% block content %}
-<div class="admin-dashboard container">
-  <h1 class="text-center my-4">Admin Dashboard</h1>
-  
-  <!-- Add New User Section -->
-  <section id="add-user" class="mb-5">
-    <h2>Add New User</h2>
-    <form id="add-user-form">
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" class="form-control" placeholder="e.g., johndoe" required>
+<div class="container-fluid py-4">
+  <h1 class="mb-4">Admin Dashboard</h1>
+
+  <div class="row g-4">
+    <!-- ========== Add New User Section ========== -->
+    <div class="col-md-4">
+      <div class="card bg-secondary border-0 h-100 shadow-lg text-white">
+        <div class="card-header border-bottom text-center">
+          <h4 class="mb-0">Add New User</h4>
         </div>
-    
-        <div class="form-group">
-            <label for="first_name">First Name</label>
-            <input type="text" id="first_name" class="form-control" placeholder="e.g., John" required>
-        </div>
-    
-        <div class="form-group">
-            <label for="last_name">Last Name</label>
-            <input type="text" id="last_name" class="form-control" placeholder="e.g., Doe" required>
-        </div>
-    
-        <div class="form-group">
-            <label for="phone">Phone</label>
-            <input type="text" id="phone" class="form-control" placeholder="e.g., 555-123-4567" required>
-        </div>
-    
-        <!-- ✅ Role Selection -->
-        <div class="form-group">
-            <label for="role">Role</label>
-            <select id="role" class="form-control">
+        <div class="card-body">
+          <form id="add-user-form">
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input 
+                type="text" 
+                id="username" 
+                class="form-control" 
+                placeholder="e.g., johndoe" 
+                required
+              >
+            </div>
+            <div class="mb-3">
+              <label for="first_name" class="form-label">First Name</label>
+              <input 
+                type="text" 
+                id="first_name" 
+                class="form-control" 
+                placeholder="e.g., John" 
+                required
+              >
+            </div>
+            <div class="mb-3">
+              <label for="last_name" class="form-label">Last Name</label>
+              <input 
+                type="text" 
+                id="last_name" 
+                class="form-control" 
+                placeholder="e.g., Doe" 
+                required
+              >
+            </div>
+            <div class="mb-3">
+              <label for="phone" class="form-label">Phone</label>
+              <input 
+                type="text" 
+                id="phone" 
+                class="form-control" 
+                placeholder="e.g., 555-123-4567" 
+                required
+              >
+            </div>
+            <div class="mb-3">
+              <label for="role" class="form-label">Role</label>
+              <select id="role" class="form-select" required>
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
-            </select>
+              </select>
+            </div>
+            <button 
+              type="submit" 
+              class="btn btn-success w-100 mt-2"
+            >
+              Add User
+            </button>
+          </form>
         </div>
-    
-        <button type="submit" class="btn btn-success mt-3">Add User</button>
-    </form>
-    
-  </section>
-  
-  <!-- User Management Section -->
-  <section id="user-management">
-    <h2>User Management</h2>
-    <!-- Optional search bar -->
-    <div class="input-group mb-3">
-        <input type="text" id="searchUsers" class="form-control" placeholder="Search by username or ID...">
-        <button id="searchBtn" class="btn btn-primary">Search</button>
+      </div>
     </div>
-      
-    <table id="users-table" class="table table-striped table-dark">
-      <thead>
-        <tr>
-          <th>Account ID</th>
-          <th>Username</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Phone</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="user-table-body">
-        {% for user in customers %}
-        <tr data-account-id="{{ user.account_id }}">
-          <td>{{ user.account_id }}</td>
-          <td>{{ user.username }}</td>
-          <td>{{ user.first_name }}</td>
-          <td>{{ user.last_name }}</td>
-          <td>{{ user.phone }}</td>
-          <td>
-            <!-- Edit user info -->
-            <button class="btn btn-sm btn-primary edit-user-btn" data-account-id="{{ user.account_id }}">Edit</button>
-            <a href="{{ url_for('views.view_user', account_id=user.account_id) }}" class="btn btn-sm btn-info">View</a>
-            <button class="btn btn-sm btn-danger delete-user-btn" data-account-id="{{ user.account_id }}">Delete</button>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
 
-  <!-- Movie Management Section -->
-  <section id="movie-management" class="my-5">
-    <h2>Movie Management</h2>
-    <form id="add-movie-form" class="mb-4">
-      <div class="form-group">
-        <label for="movieTitle">Title</label>
-        <input type="text" id="movieTitle" name="title" class="form-control" placeholder="e.g., Inception" required>
+    <!-- ========== User Management Section ========== -->
+    <div class="col-md-8">
+      <div class="card bg-secondary border-0 h-100 shadow-lg text-white">
+        <div class="card-header border-bottom d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">User Management</h4>
+          <div class="input-group" style="max-width: 250px;">
+            <input 
+              type="text" 
+              id="searchUsers" 
+              class="form-control" 
+              placeholder="Search by username or ID..." 
+              aria-label="Search"
+            >
+            <button id="searchBtn" class="btn btn-primary">Search</button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table id="users-table" class="table table-dark table-striped table-hover mb-0">
+            <thead>
+              <tr>
+                <th>Account ID</th>
+                <th>Username</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Phone</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="user-table-body">
+              <!-- Dynamically filled via JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="movieYear">Year</label>
-        <input type="number" id="movieYear" name="year" class="form-control" placeholder="e.g., 2010" required>
-      </div>
-      <div class="form-group">
-        <label for="movieRating">Rating</label>
-        <input type="text" id="movieRating" name="rating" class="form-control" placeholder="e.g., PG-13" required>
-      </div>
-      <div class="form-group">
-        <label for="moviePrice">Price</label>
-        <input type="number" step="0.01" id="moviePrice" name="price" class="form-control" placeholder="e.g., 3.99" required>
-      </div>
-      <div class="form-group">
-        <label for="movieImage">Image Filename</label>
-        <input type="text" id="movieImage" name="image" class="form-control" placeholder="e.g., inception.jpg">
-      </div>
-      <div class="form-group">
-        <label for="genreIds">Genres (Hold Ctrl or Cmd to select multiple)</label>
-        <select id="genreIds" name="genre_ids[]" class="form-control" multiple required>
-          <option value="1">Sci-Fi</option>
-          <option value="2">Action</option>
-          <option value="3">Family</option>
-          <option value="4">Romance</option>
-          <option value="5">Comedy</option>
-          <option value="6">Fantasy</option>
-        </select>
-      </div>
-      <button type="submit" class="btn btn-success mt-3">Add Movie</button>
-    </form>
-  </section>
-</div>
-
-<!-- Edit User Modal -->
-<div id="editUserModal" class="modal-overlay">
-    <div class="modal-content">
-      <span class="close-modal">&times;</span>
-      <h3>Edit User</h3>
-      
-      <form id="edit-user-form">
-          <!-- Hidden Input for Account ID -->
-          <input type="hidden" id="editCustomerId">
-  
-          <label>Username</label>
-          <input type="text" id="editUsername" class="form-control" placeholder="Enter username" required disabled>
-  
-          <label>First Name</label>
-          <input type="text" id="editFirstName" class="form-control" placeholder="Enter first name" required>
-  
-          <label>Last Name</label>
-          <input type="text" id="editLastName" class="form-control" placeholder="Enter last name" required>
-  
-          <label>Phone</label>
-          <input type="text" id="editPhone" class="form-control" placeholder="Enter phone number" required>
-  
-          <label>Role</label>
-          <select id="editRole" class="form-control" required>
-              <option value="user">User</option>
-              <option value="admin">Admin</option>
-          </select>
-  
-          <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
-      </form>
     </div>
-</div>
+  </div><!-- /row -->
 
+  <!-- ========== Movie Management Section ========== -->
+  <div class="row g-4 mt-4">
+    <div class="col-12">
+      <div class="card bg-secondary border-0 shadow-lg text-white">
+        <div class="card-header border-bottom text-center">
+          <h4 class="mb-0">Movie Management</h4>
+        </div>
+        <div class="card-body">
+          <form id="add-movie-form" class="row g-3">
+            <div class="col-md-6">
+              <label for="movieTitle" class="form-label">Title</label>
+              <input 
+                type="text" 
+                id="movieTitle" 
+                name="title" 
+                class="form-control" 
+                placeholder="e.g., Inception" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="movieYear" class="form-label">Year</label>
+              <input 
+                type="number" 
+                id="movieYear" 
+                name="year" 
+                class="form-control" 
+                placeholder="e.g., 2010" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="movieRating" class="form-label">Rating</label>
+              <input 
+                type="text" 
+                id="movieRating" 
+                name="rating" 
+                class="form-control" 
+                placeholder="e.g., PG-13" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="moviePrice" class="form-label">Price</label>
+              <input 
+                type="number" 
+                step="0.01" 
+                id="moviePrice" 
+                name="price" 
+                class="form-control" 
+                placeholder="e.g., 3.99" 
+                required
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="movieImage" class="form-label">Image Filename</label>
+              <input 
+                type="text" 
+                id="movieImage" 
+                name="image" 
+                class="form-control" 
+                placeholder="e.g., inception.jpg"
+              >
+            </div>
+            <div class="col-md-6">
+              <label for="genreIds" class="form-label">Genres (Ctrl/Cmd+Click to select multiple)</label>
+              <select 
+                id="genreIds" 
+                name="genre_ids[]" 
+                class="form-select" 
+                multiple 
+                required
+              >
+                <option value="1">Sci-Fi</option>
+                <option value="2">Action</option>
+                <option value="3">Family</option>
+                <option value="4">Romance</option>
+                <option value="5">Comedy</option>
+                <option value="6">Fantasy</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <button 
+                type="submit" 
+                class="btn btn-success w-100 mt-3"
+              >
+                Add Movie
+              </button>
+            </div>
+          </form>
+        </div><!-- /card-body -->
+      </div>
+    </div>
+  </div><!-- /row -->
+</div><!-- /container-fluid -->
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/adminDashboard.js') }}" defer></script>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const searchInput = document.getElementById('searchUsers');
-    const searchBtn = document.getElementById('searchBtn'); // Ensure this exists in HTML
-    const usersTable = document.querySelector('#users-table tbody');
-
-    // ✅ Function to Fetch & Display Users
-    function fetchUsers(searchQuery = '') {
-      fetch(`/api/search_users?query=${encodeURIComponent(searchQuery)}`)
-        .then(response => response.json())
-        .then(data => {
-          usersTable.innerHTML = ''; // Clear table before adding new rows
-          if (data.length === 0) {
-            usersTable.innerHTML = `<tr><td colspan="6" class="text-center">No users found</td></tr>`;
-          } else {
-            data.forEach(user => {
-              usersTable.innerHTML += `
-                <tr data-account-id="${user.account_id}">
-                  <td>${user.account_id}</td>
-                  <td>${user.username}</td>
-                  <td>${user.first_name}</td>
-                  <td>${user.last_name}</td>
-                  <td>${user.phone}</td>
-                  <td>
-                    <button class="btn btn-sm btn-primary edit-user-btn" data-account-id="${user.account_id}">Edit</button>
-                    <a href="/admin/user/${user.account_id}" class="btn btn-sm btn-info">View</a>
-                    <button class="btn btn-sm btn-danger delete-user-btn" data-account-id="${user.account_id}">Delete</button>
-                  </td>
-                </tr>`;
-            });
-          }
-        })
-        .catch(error => console.error("❌ Error fetching users:", error));
-    }
-
-    // ✅ Search Users on Button Click
-    if (searchBtn) {
-      searchBtn.addEventListener('click', function() {
-        fetchUsers(searchInput.value);
-      });
-    }
-
-    // ✅ Search Users on Enter Key Press
-    searchInput.addEventListener('keyup', function(event) {
-      if (event.key === "Enter") fetchUsers(searchInput.value);
-    });
-
-    // ✅ Handle Edit & Delete Button Clicks Using Event Delegation
-    usersTable.addEventListener('click', function(event) {
-      const target = event.target;
-      const accountId = target.dataset.accountId;
-
-      // Edit User
-      if (target.classList.contains('edit-user-btn')) {
-        alert(`Edit User: ${accountId}`);
-        // TODO: Implement edit functionality
-      }
-
-      // Delete User
-      if (target.classList.contains('delete-user-btn')) {
-        if (confirm("Are you sure you want to delete this user?")) {
-          fetch("/api/delete_user", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ account_id: accountId })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              alert("✅ User deleted successfully!");
-              fetchUsers(); // Refresh the table
-            } else {
-              alert("❌ Error: " + data.error);
-            }
-          })
-          .catch(error => console.error("❌ Error deleting user:", error));
-        }
-      }
-    });
-
-    // ✅ Initial Fetch of Users
-    fetchUsers();
-  });
-</script>
-{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/adminDashboard.css') }}">
 {% endblock %}

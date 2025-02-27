@@ -1,41 +1,65 @@
 {% extends "base.html" %}
+
 {% block title %}User Reviews - Movie Store{% endblock %}
 
 {% block content %}
-<div class="container">
-  <h1 class="text-center mt-4">User Reviews</h1>
+<div class="container py-5">
+    <h1 class="text-center fw-bold text-light">User Reviews</h1>
 
-  {% if reviews %}
-  <section class="reviews-section">
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <ul class="list-group mt-3 shadow-lg">
-          {% for review in reviews %}
-          <li class="list-group-item review-item">
-            <div class="review-header d-flex justify-content-between align-items-center">
-              <div class="review-info">
-                <strong class="review-movie">{{ review.title }}</strong>
-                <span class="review-rating">⭐ {{ review.rating }}/5</span>
-              </div>
-              <div class="review-meta text-muted">
-                <i class="fa fa-user" aria-hidden="true"></i>
-                <span class="review-user">{{ review.username }}</span>
-                &bull; 
-                <small>{{ review.review_date }}</small>
-              </div>
+    <!-- Reviews Section -->
+    <div class="row justify-content-center mt-4" id="reviews-container">
+        {% for review in reviews %}
+        <div class="col-md-6">
+            <div class="card review-card bg-dark text-white shadow-lg">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <strong>{{ review.title }}</strong> 
+                        <span class="text-warning">⭐ {{ review.rating }}/5</span>
+                    </h5>
+                    <p class="text-muted small">
+                        <i class="fa fa-user"></i> {{ review.username }} • {{ review.review_date }}
+                    </p>
+                    <p class="review-comment">{{ review.comment }}</p>
+                </div>
+                <div class="card-footer d-flex justify-content-between">
+                    <button class="btn btn-sm btn-outline-light comment-btn" data-review-id="{{ review.review_id }}">
+                        💬 Add Comment
+                    </button>
+                    <button class="btn btn-sm btn-outline-info view-comments-btn" data-review-id="{{ review.review_id }}">
+                        🔽 View Comments
+                    </button>
+                </div>
+                <div class="comments-section p-3" id="comments-{{ review.review_id }}" style="display: none;">
+                    <p class="text-muted small">Loading comments...</p>
+                </div>
             </div>
-            <p class="review-comment mt-2">{{ review.comment }}</p>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
+        </div>
+        {% endfor %}
     </div>
-  </section>
-  {% else %}
-  <div class="alert alert-info text-center mt-4">
-    <i class="fa fa-info-circle" aria-hidden="true"></i>
-    No reviews yet. Be the first to leave one!
-  </div>
-  {% endif %}
 </div>
+
+<!-- ✅ Comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="commentModalLabel">Post a Comment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control bg-secondary text-white" id="commentText" placeholder="Write your comment..." rows="3"></textarea>
+                <input type="hidden" id="currentReviewId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="postCommentBtn">Post Comment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/reviews.js') }}" defer></script>
 {% endblock %}

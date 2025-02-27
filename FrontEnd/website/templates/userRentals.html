@@ -1,143 +1,113 @@
 {% extends "base.html" %}
 
-{% block title %}My Rentals - Movie Store{% endblock %}
+{% block title %}My Dashboard - Movie Store{% endblock %}
 
 {% block content %}
-<section class="rental-container">
-  <header>
-    <h1 class="text-center">My Rentals</h1>
-  </header>
+<div class="container my-5">
+    <h1 class="text-center mb-4">My Dashboard</h1>
 
-  <!-- User Information -->
-  <article class="user-info mb-4">
-    <h3>User Information</h3>
-    <p><strong>Username:</strong> {{ user.username if user else "N/A" }}</p>
-    <p><strong>First Name:</strong> {{ user.first_name if user else "N/A" }}</p>
-    <p><strong>Last Name:</strong> {{ user.last_name if user else "N/A" }}</p>
-    <p><strong>Phone:</strong> {{ user.phone if user else "N/A" }}</p>
-  </article>
+    <div class="row">
+        <!-- ✅ Left Column: User Profile & Rentals -->
+        <div class="col-lg-8">
+            <div class="card shadow bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h3 class="mb-3"><i class="fa fa-user-circle"></i> User Profile</h3>
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>First Name:</strong> {{ user.first_name }}</p>
+                    <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+                    <p><strong>Phone:</strong> {{ user.phone }}</p>
+                </div>
+            </div>
 
-  <!-- Rental History -->
-  <article class="rental-history mb-5">
-    <h3>Rental History</h3>
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Movie Title</th>
-          <th>Rental Date</th>
-          <th>Return Date</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="rentalsTableBody">
-        {% for rental in rentals %}
-          <tr data-rental-id="{{ rental.rental_id }}">
-            <td>{{ rental.title }}</td>
-            <td>{{ rental.rental_date }}</td>
-            <td>{{ rental.return_date or 'Not Returned' }}</td>
-            <td>{{ rental.status }}</td>
-            <td>
-              <button class="btn btn-sm btn-danger delete-rental-btn" data-rental-id="{{ rental.rental_id }}">
-                Delete
-              </button>
-            </td>
-          </tr>
-        {% else %}
-          <tr>
-            <td colspan="5" class="text-center">No rentals found.</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </article>
+            <!-- ✅ Rental History Table -->
+            <div class="card shadow bg-dark text-white">
+                <div class="card-body">
+                    <h3 class="mb-3"><i class="fa fa-film"></i> My Rentals</h3>
+                    <table class="table table-dark table-hover text-center">
+                        <thead>
+                            <tr>
+                                <th>Movie</th>
+                                <th>Rented</th>
+                                <th>Return Date</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rentalsTableBody">
+                            {% for rental in rentals %}
+                            <tr>
+                                <td>{{ rental.title }}</td>
+                                <td>{{ rental.rental_date }}</td>
+                                <td>{{ rental.return_date or 'Not Returned' }}</td>
+                                <td class="{{ 'text-success' if rental.status == 'returned' else 'text-warning' }}">
+                                    {{ rental.status }}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-danger delete-rental-btn" data-rental-id="{{ rental.rental_id }}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr><td colspan="5" class="text-center">No rentals found.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-  <!-- Post a Review -->
-  <article class="post-review mb-5">
-    <h3>Post a Review</h3>
-    <div class="search-container mb-2">
-      <input type="text" id="movieSearch" class="form-control" placeholder="Search Movie..." autocomplete="off">
-      <input type="hidden" id="selectedMovieId" name="movie_id">
-      <div id="movieDropdown" class="dropdown-menu"></div>
+        <!-- ✅ Right Column: Reviews -->
+        <div class="col-lg-4">
+            <!-- ✅ Search & Post a Review -->
+            <div class="card shadow bg-dark text-white mb-4">
+                <div class="card-body">
+                    <h3 class="mb-3"><i class="fa fa-star"></i> Post a Review</h3>
+
+                    <!-- ✅ Search Movie -->
+                    <div class="mb-3">
+                        <input type="text" id="movieSearch" class="form-control" placeholder="Search Movie..." autocomplete="off">
+                        <input type="hidden" id="selectedMovieId" name="movie_id">
+                        <div id="movieDropdown" class="dropdown-menu"></div>
+                    </div>
+
+                    <!-- ✅ Review Form -->
+                    <form id="review-form">
+                        <div class="mb-3">
+                            <label for="reviewRating" class="form-label">Rating (1-5)</label>
+                            <input type="number" id="reviewRating" name="rating" class="form-control" min="1" max="5" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reviewComment" class="form-label">Your Review</label>
+                            <textarea id="reviewComment" name="comment" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Submit Review</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ✅ My Reviews -->
+            <div class="card shadow bg-dark text-white">
+                <div class="card-body">
+                    <h3 class="mb-3"><i class="fa fa-comments"></i> My Reviews</h3>
+                    <ul class="list-group list-group-flush">
+                        {% for review in reviews %}
+                        <li class="list-group-item bg-dark text-white">
+                            <strong>{{ review.title }}</strong> (⭐ {{ review.rating }}/5)
+                            <br>{{ review.comment }}
+                            <br><small>Posted: {{ review.review_date }}</small>
+                        </li>
+                        {% else %}
+                        <li class="list-group-item bg-dark text-white text-center">No reviews yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-    <form id="review-form">
-      <div class="form-group mb-3">
-        <label for="reviewRating">Rating (1-5)</label>
-        <input type="number" id="reviewRating" name="rating" class="form-control" min="1" max="5" required>
-      </div>
-      <div class="form-group mb-3">
-        <label for="reviewComment">Review</label>
-        <textarea id="reviewComment" name="comment" class="form-control" rows="3" required></textarea>
-      </div>
-      <button type="submit" class="btn btn-primary">Submit Review</button>
-    </form>
-  </article>
-
-  <!-- My Reviews -->
-  <article class="my-reviews">
-    <h3>My Reviews</h3>
-    <ul class="list-group">
-      {% for review in reviews %}
-        <li class="list-group-item">
-          <strong>{{ review.title }}</strong> ({{ review.rating }}/5)
-          <br>{{ review.comment }}
-          <br><small>Posted on: {{ review.review_date }}</small>
-        </li>
-      {% else %}
-        <li class="list-group-item text-center">No reviews yet.</li>
-      {% endfor %}
-    </ul>
-  </article>
-</section>
-
-<style>
-  /* Rental Container */
-  .rental-container {
-    position: relative;
-    max-width: 700px;
-    margin: auto;
-    padding: 20px;
-  }
-
-  /* Search Container for Review Section */
-  .search-container {
-    position: relative;
-  }
-
-  /* Dropdown Styling */
-  #movieDropdown {
-    position: absolute;
-    background: #222;
-    border: 1px solid #444;
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    display: none;
-    z-index: 1000;
-    left: 0;
-    top: 40px;
-    padding: 5px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  }
-
-  #movieDropdown .dropdown-item {
-    padding: 8px;
-    cursor: pointer;
-    color: white;
-    border-bottom: 1px solid #444;
-  }
-
-  #movieDropdown .dropdown-item:hover {
-    background: #007bff;
-  }
-</style>
+</div>
+{% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/userRentals.js') }}" defer></script>
-{% endblock %}
-
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/userRentals.css') }}">
-{% endblock %}
 {% endblock %}

@@ -1,134 +1,90 @@
-document.addEventListener("DOMContentLoaded", function () {
-    console.log("Filters loaded.");
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("✅ Filters script loaded.");
 
-    // ✅ 1. Fetch all movies on page load
-    fetchMovies();
-
-    /**
-     * ✅ 2. Fetch movies by optional genre ID
-     * @param {number|null} genreId - The ID of the genre to filter, or null for all.
-     */
-    function fetchMovies(genreId = null) {
-        let url = '/api/movies';
-        if (genreId) {
+    // ✅ Fetch & Display Movies
+    const fetchMovies = async (genreId = null) => {
+        let url = "/api/movies";
+        
+        // ✅ Ensure correct handling of genreId
+        if (genreId !== null && !isNaN(genreId)) {
             url += `?genre_id=${genreId}`;
         }
 
-        fetch(url)
-            .then(response => response.json())
-            .then(movies => {
-                displayMovies(movies);
-            })
-            .catch(error => {
-                console.error('❌ Error fetching movies:', error);
-            });
-    }
+        try {
+            console.log(`📡 Fetching movies (Genre ID: ${genreId ?? "All"})...`);
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
-    /**
-     * ✅ 3. Display fetched movies in the DOM
-     * @param {Array} movies - List of movie objects
-     */
-    function displayMovies(movies) {
-        const moviesContainer = document.getElementById('movies-container');
+            const movies = await response.json();
+            displayMovies(movies);
+        } catch (error) {
+            console.error("❌ Error fetching movies:", error);
+        }
+    };
+
+    // ✅ Display Movies in UI
+    const displayMovies = (movies) => {
+        const moviesContainer = document.getElementById("movies-container");
         if (!moviesContainer) {
-            console.error("❌ No element with ID 'movies-container' found in DOM.");
+            console.error("❌ No element with ID 'movies-container' found.");
             return;
         }
+        moviesContainer.innerHTML = "";
 
-        // Clear previous content
-        moviesContainer.innerHTML = '';
-
-        // Loop through each movie and create a card
-        movies.forEach(movie => {
-            // Create column container
-            const col = document.createElement('div');
-            col.classList.add('col', 'movie-card');
-            // Store genre info as a data attribute if needed
+        movies.forEach((movie) => {
+            const col = document.createElement("div");
+            col.classList.add("col", "movie-card");
             col.dataset.genre = movie.genre_id;
 
-            // Create card element
-            const card = document.createElement('div');
-            card.classList.add('card', 'h-100');
+            const card = document.createElement("div");
+            card.classList.add("card", "h-100");
 
-            // Movie image with fallback if missing
-            const img = document.createElement('img');
-            img.classList.add('card-img-top', 'movie-img');
-            img.src = movie.image ? `/static/images/${movie.image}` : '/static/images/keyboard.jpg';
+            const img = document.createElement("img");
+            img.classList.add("card-img-top", "movie-img");
+            img.src = movie.image ? `/static/images/${movie.image}` : "/static/images/keyboard.jpg";
             img.alt = movie.title;
 
-            // Card body (Title, Year, Rating, Price)
-            const cardBody = document.createElement('div');
-            cardBody.classList.add('card-body', 'text-center');
+            const cardBody = document.createElement("div");
+            cardBody.classList.add("card-body", "text-center");
+            cardBody.innerHTML = `
+                <h5 class="fw-bolder">${movie.title}</h5>
+                <p>Year: ${movie.year}</p>
+                <p>Rating: ${movie.rating}</p>
+                <p>Price: $${movie.price}</p>
+            `;
 
-            const title = document.createElement('h5');
-            title.classList.add('fw-bolder', 'card-title');
-            title.textContent = movie.title;
+            const cardFooter = document.createElement("div");
+            cardFooter.classList.add("card-footer", "text-center");
 
-            const year = document.createElement('p');
-            year.textContent = `Year: ${movie.year}`;
-
-            const rating = document.createElement('p');
-            rating.textContent = `Rating: ${movie.rating}`;
-
-            const priceP = document.createElement('p');
-            priceP.textContent = `Price: $${movie.price}`;
-
-            cardBody.appendChild(title);
-            cardBody.appendChild(year);
-            cardBody.appendChild(rating);
-            cardBody.appendChild(priceP);
-
-            // Card footer with Add to Cart button
-            const cardFooter = document.createElement('div');
-            cardFooter.classList.add('card-footer', 'text-center');
-
-            const button = document.createElement('button');
-            button.classList.add('btn', 'btn-outline-dark');
-            button.textContent = 'Add to Cart';
-            button.onclick = function () {
-                console.log(`🛒 Adding to cart: ID=${movie.movie_id}, Title=${movie.title}, Price=${movie.price}`);
-                addToCart(movie.movie_id, movie.title, movie.price);
+            const button = document.createElement("button");
+            button.classList.add("btn", "btn-outline-dark");
+            button.textContent = "Add to Cart";
+            button.onclick = () => {
+                console.log(`🛒 Adding: ${movie.title}`);
+                if (typeof addToCart === "function") {
+                    addToCart(movie.movie_id, movie.title, movie.price);
+                } else {
+                    console.warn("⚠️ addToCart function is not defined.");
+                }
             };
 
             cardFooter.appendChild(button);
-            card.appendChild(img);
-            card.appendChild(cardBody);
-            card.appendChild(cardFooter);
+            card.append(img, cardBody, cardFooter);
             col.appendChild(card);
             moviesContainer.appendChild(col);
         });
-    }
+    };
 
-    // ✅ Expose fetchMovies() globally so it can be used by other scripts (e.g., genre filters)
-    window.fetchMovies = fetchMovies;
-});
+    // ✅ Attach Click Event to Genre Buttons
+    document.querySelectorAll(".filter-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+            let genreId = button.dataset.genreId;
+            genreId = genreId === "null" ? null : parseInt(genreId); // ✅ Ensure it's null or number
+            console.log(`🔍 Filtering movies by Genre ID: ${genreId ?? "All"}`);
+            fetchMovies(genreId);
+        });
+    });
 
-// ===========================================
-// Safe Fetch JSON Helper (with improved error logging)
-// ===========================================
-async function safeFetchJson(response) {
-    let text;
-    try {
-        text = await response.text();
-        return JSON.parse(text);
-    } catch (e) {
-        console.error("Invalid JSON response:", text);
-        return { success: false, error: "Invalid server response" };
-    }
-}
-
-// ===========================================
-// OPTIONAL: Dark Mode Toggle
-// ===========================================
-function toggleDarkMode() {
-    document.body.classList.toggle("dark-mode");
-    // Store user preference in localStorage
-    const isDarkMode = document.body.classList.contains("dark-mode");
-    localStorage.setItem("darkMode", isDarkMode);
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-    if (localStorage.getItem("darkMode") === "true") {
-        document.body.classList.add("dark-mode");
-    }
+    // ✅ Load all movies initially
+    fetchMovies();
 });

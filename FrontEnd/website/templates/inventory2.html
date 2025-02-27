@@ -14,25 +14,27 @@
 
 <!-- Genre Filter Buttons -->
 <div class="container text-center my-4">
-    <button class="btn btn-secondary mx-2" onclick="fetchMovies()">All</button>
+    <!-- Use data attributes to store the genre_id for each filter button -->
+    <button class="btn btn-secondary mx-2 filter-btn" data-genre-id="null">All</button>
+
     {% for genre in genres %}
-        <button class="btn btn-primary mx-2" onclick="fetchMovies({{ genre.genre_id }})">
-            {{ genre.genre_name }}
-        </button>
+    <button class="btn btn-primary mx-2 filter-btn" data-genre-id="{{ genre.genre_id }}">
+        {{ genre.genre_name }}
+    </button>
     {% endfor %}
 </div>
 
-<!-- Movie Display -->
+<!-- Movie Display Section -->
 <section class="py-5">
     <div class="container">
         <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-4" id="movies-container">
             {% for movie in movies %}
             <div class="col movie-card" data-genre="{{ movie.genre_id }}">
-                <div class="card h-100">
+                <div class="card h-100 bg-dark text-white shadow">
                     <img 
-                         class="card-img-top movie-img"
-                         src="{{ url_for('static', filename='images/' ~ (movie.image if movie.image else 'keyboard.jpg')) }}"
-                         alt="{{ movie.title }}"
+                        class="card-img-top movie-img"
+                        src="{{ url_for('static', filename='images/' ~ (movie.image if movie.image else 'keyboard.jpg')) }}"
+                        alt="{{ movie.title }}"
                     >
                     <div class="card-body text-center">
                         <h5 class="fw-bolder">{{ movie.title }}</h5>
@@ -41,11 +43,13 @@
                         <p>Price: ${{ movie.price }}</p>
                     </div>
                     <div class="card-footer text-center">
-                        <!-- "Add to Cart" action is handled by cart.js using data attributes -->
-                        <button class="btn btn-outline-dark add-to-cart-btn"
-                                data-movie-id="{{ movie.movie_id }}"
-                                data-title="{{ movie.title|escape }}"
-                                data-price="{{ movie.price }}">
+                        <!-- "Add to Cart" action handled by cart.js using data attributes -->
+                        <button 
+                            class="btn btn-outline-light add-to-cart-btn"
+                            data-movie-id="{{ movie.movie_id }}"
+                            data-title="{{ movie.title|escape }}"
+                            data-price="{{ movie.price }}"
+                        >
                             Add to Cart
                         </button>
                     </div>
@@ -58,6 +62,8 @@
 {% endblock %}
 
 {% block extra_js %}
+<!-- cart.js handles adding items to the cart -->
 <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
+<!-- filters.js (or a similar file) should attach event listeners to .filter-btn and call fetchMovies(genreId) -->
 <script src="{{ url_for('static', filename='js/filters.js') }}" defer></script>
 {% endblock %}
