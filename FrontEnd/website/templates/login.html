@@ -11,7 +11,7 @@
     <form action="{{ url_for('auth.login') }}" method="POST" class="form-login">
       <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
 
-      <!--  Flash Messages for Errors -->
+      <!--  Messages for Errors -->
       {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
               {% for category, message in messages %}

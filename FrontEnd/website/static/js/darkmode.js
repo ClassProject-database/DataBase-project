@@ -1,22 +1,25 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Check if Dark Mode is enabled and apply it
-    if (localStorage.getItem("darkMode") === "true") {
-        document.body.classList.add("dark-mode");
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const darkModeIcon = darkModeToggle?.querySelector("i");
+
+    if (localStorage.getItem("darkMode") === "enabled") {
+        document.documentElement.classList.add("dark-mode");
+        darkModeIcon?.classList.replace("fa-moon", "fa-sun");
+        darkModeToggle?.classList.replace("btn-outline-dark", "btn-outline-light");
     }
 
-    // Find the button and attach the event listener
-    const darkModeButton = document.getElementById("darkModeToggle");
-    if (darkModeButton) {
-        darkModeButton.addEventListener("click", toggleDarkMode);
-    } else {
-        console.error("Dark mode button not found!");
-    }
+    // Toggle dark mode on button click
+    darkModeToggle?.addEventListener("click", () => {
+        document.documentElement.classList.toggle("dark-mode");
+
+        if (document.documentElement.classList.contains("dark-mode")) {
+            localStorage.setItem("darkMode", "enabled");
+            darkModeIcon?.classList.replace("fa-moon", "fa-sun");
+            darkModeToggle?.classList.replace("btn-outline-dark", "btn-outline-light");
+        } else {
+            localStorage.setItem("darkMode", "disabled");
+            darkModeIcon?.classList.replace("fa-sun", "fa-moon");
+            darkModeToggle?.classList.replace("btn-outline-light", "btn-outline-dark");
+        }
+    });
 });
-
-function toggleDarkMode() {
-    document.body.classList.toggle("dark-mode");
-
-    // Store user preference in localStorage
-    const isDarkMode = document.body.classList.contains("dark-mode");
-    localStorage.setItem("darkMode", isDarkMode);
-}

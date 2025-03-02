@@ -6,53 +6,29 @@
   <h1 class="mb-4">Admin Dashboard</h1>
 
   <div class="row g-4">
-    <!-- ========== Add New User Section ========== -->
+    <!--  Add New User Section  -->
     <div class="col-md-4">
       <div class="card bg-secondary border-0 h-100 shadow-lg text-white">
         <div class="card-header border-bottom text-center">
           <h4 class="mb-0">Add New User</h4>
         </div>
         <div class="card-body">
-          <form id="add-user-form">
+          <form id="add-user-form" aria-label="Add New User">
             <div class="mb-3">
               <label for="username" class="form-label">Username</label>
-              <input 
-                type="text" 
-                id="username" 
-                class="form-control" 
-                placeholder="e.g., johndoe" 
-                required
-              >
+              <input type="text" id="username" class="form-control" placeholder=" johndoe" required>
             </div>
             <div class="mb-3">
               <label for="first_name" class="form-label">First Name</label>
-              <input 
-                type="text" 
-                id="first_name" 
-                class="form-control" 
-                placeholder="e.g., John" 
-                required
-              >
+              <input type="text" id="first_name" class="form-control" placeholder=" John" required>
             </div>
             <div class="mb-3">
               <label for="last_name" class="form-label">Last Name</label>
-              <input 
-                type="text" 
-                id="last_name" 
-                class="form-control" 
-                placeholder="e.g., Doe" 
-                required
-              >
+              <input type="text" id="last_name" class="form-control" placeholder=" Doe" required>
             </div>
             <div class="mb-3">
               <label for="phone" class="form-label">Phone</label>
-              <input 
-                type="text" 
-                id="phone" 
-                class="form-control" 
-                placeholder="e.g., 555-123-4567" 
-                required
-              >
+              <input type="text" id="phone" class="form-control" placeholder=" 123-456-7890" required>
             </div>
             <div class="mb-3">
               <label for="role" class="form-label">Role</label>
@@ -61,35 +37,24 @@
                 <option value="admin">Admin</option>
               </select>
             </div>
-            <button 
-              type="submit" 
-              class="btn btn-success w-100 mt-2"
-            >
-              Add User
-            </button>
+            <button type="submit" class="btn btn-success w-100 mt-2">Add User</button>
           </form>
         </div>
       </div>
     </div>
 
-    <!-- ========== User Management Section ========== -->
+    <!--  User Management Section  -->
     <div class="col-md-8">
       <div class="card bg-secondary border-0 h-100 shadow-lg text-white">
         <div class="card-header border-bottom d-flex justify-content-between align-items-center">
           <h4 class="mb-0">User Management</h4>
-          <div class="input-group" style="max-width: 250px;">
-            <input 
-              type="text" 
-              id="searchUsers" 
-              class="form-control" 
-              placeholder="Search by username or ID..." 
-              aria-label="Search"
-            >
+          <div class="input-group" style="max-width: 300px;">
+            <input type="text" id="searchUsers" class="form-control" placeholder="Search by username or ID..." aria-label="Search">
             <button id="searchBtn" class="btn btn-primary">Search</button>
           </div>
         </div>
         <div class="card-body p-0">
-          <table id="users-table" class="table table-dark table-striped table-hover mb-0">
+          <table id="users-table" class="table table-dark table-striped table-hover mb-0" aria-label="User List">
             <thead>
               <tr>
                 <th>Account ID</th>
@@ -101,15 +66,14 @@
               </tr>
             </thead>
             <tbody id="user-table-body">
-              <!-- Dynamically filled via JS -->
             </tbody>
           </table>
         </div>
       </div>
     </div>
-  </div><!-- /row -->
+  </div>
 
-  <!-- ========== Movie Management Section ========== -->
+  <!--  Movie Management Section  -->
   <div class="row g-4 mt-4">
     <div class="col-12">
       <div class="card bg-secondary border-0 shadow-lg text-white">
@@ -117,71 +81,30 @@
           <h4 class="mb-0">Movie Management</h4>
         </div>
         <div class="card-body">
-          <form id="add-movie-form" class="row g-3">
+          <form id="add-movie-form" class="row g-3" aria-label="Add New Movie">
             <div class="col-md-6">
               <label for="movieTitle" class="form-label">Title</label>
-              <input 
-                type="text" 
-                id="movieTitle" 
-                name="title" 
-                class="form-control" 
-                placeholder="e.g., Inception" 
-                required
-              >
+              <input type="text" id="movieTitle" name="title" class="form-control" placeholder="Inception" required>
             </div>
             <div class="col-md-6">
               <label for="movieYear" class="form-label">Year</label>
-              <input 
-                type="number" 
-                id="movieYear" 
-                name="year" 
-                class="form-control" 
-                placeholder="e.g., 2010" 
-                required
-              >
+              <input type="number" id="movieYear" name="year" class="form-control" placeholder=" 2010" required>
             </div>
             <div class="col-md-6">
               <label for="movieRating" class="form-label">Rating</label>
-              <input 
-                type="text" 
-                id="movieRating" 
-                name="rating" 
-                class="form-control" 
-                placeholder="e.g., PG-13" 
-                required
-              >
+              <input type="text" id="movieRating" name="rating" class="form-control" placeholder=" PG-13" required>
             </div>
             <div class="col-md-6">
               <label for="moviePrice" class="form-label">Price</label>
-              <input 
-                type="number" 
-                step="0.01" 
-                id="moviePrice" 
-                name="price" 
-                class="form-control" 
-                placeholder="e.g., 3.99" 
-                required
-              >
+              <input type="number" step="0.01" id="moviePrice" name="price" class="form-control" placeholder=" 9.99" required>
             </div>
             <div class="col-md-6">
               <label for="movieImage" class="form-label">Image Filename</label>
-              <input 
-                type="text" 
-                id="movieImage" 
-                name="image" 
-                class="form-control" 
-                placeholder="e.g., inception.jpg"
-              >
+              <input type="text" id="movieImage" name="image" class="form-control" placeholder=" image.jpg">
             </div>
             <div class="col-md-6">
               <label for="genreIds" class="form-label">Genres (Ctrl/Cmd+Click to select multiple)</label>
-              <select 
-                id="genreIds" 
-                name="genre_ids[]" 
-                class="form-select" 
-                multiple 
-                required
-              >
+              <select id="genreIds" name="genre_ids[]" class="form-select" multiple required>
                 <option value="1">Sci-Fi</option>
                 <option value="2">Action</option>
                 <option value="3">Family</option>
@@ -191,19 +114,61 @@
               </select>
             </div>
             <div class="col-12">
-              <button 
-                type="submit" 
-                class="btn btn-success w-100 mt-3"
-              >
-                Add Movie
-              </button>
+              <button type="submit" class="btn btn-success w-100 mt-3">Add Movie</button>
             </div>
           </form>
-        </div><!-- /card-body -->
+        </div>
       </div>
     </div>
-  </div><!-- /row -->
-</div><!-- /container-fluid -->
+  </div>
+</div>
+
+<!--  Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+         <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+         <form id="edit-user-form" aria-label="Edit User Details">
+           <!-- Hidden input for the account_id -->
+           <input type="hidden" id="editCustomerId" name="customer_id">
+
+           <div class="mb-3">
+             <label for="editUsername" class="form-label">Username</label>
+             <input type="text" id="editUsername" name="username" class="form-control">
+           </div>
+           <div class="mb-3">
+             <label for="editFirstName" class="form-label">First Name</label>
+             <input type="text" id="editFirstName" name="first_name" class="form-control">
+           </div>
+           <div class="mb-3">
+             <label for="editLastName" class="form-label">Last Name</label>
+             <input type="text" id="editLastName" name="last_name" class="form-control">
+           </div>
+           <div class="mb-3">
+             <label for="editPhone" class="form-label">Phone</label>
+             <input type="tel" id="editPhone" name="phone" class="form-control">
+           </div>
+           <div class="mb-3">
+             <label for="editRole" class="form-label">Role</label>
+             <select id="editRole" name="role" class="form-select">
+               <option value="user">User</option>
+               <option value="admin">Admin</option>
+             </select>
+           </div>
+         </form>
+      </div>
+      <div class="modal-footer">
+         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+         <button type="submit" form="edit-user-form" class="btn btn-primary">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_js %}

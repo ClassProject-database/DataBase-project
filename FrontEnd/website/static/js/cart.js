@@ -38,7 +38,7 @@ function updateCartList() {
     let cartList = document.getElementById("cart-items");
     if (!cartList) return;
 
-    cartList.innerHTML = ""; // Clear existing content
+    cartList.innerHTML = ""; 
     let total = 0;
 
     if (cart.length === 0) {
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         cart,
-                        amount: totalPrice,  //  Ensure this is a number
+                        amount: totalPrice,  
                         payment_method: "Card", 
                         discount_code: discountCode
                     })
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (data.success) {
                     showModal(" Checkout successful! Redirecting...");
-                    localStorage.removeItem("cart");  // Clear cart after checkout
+                    localStorage.removeItem("cart");  
                     setTimeout(() => { window.location.href = "/user_rentals"; }, 2000);
                 } else {
                     showModal(" Error: " + data.error);
@@ -150,11 +150,11 @@ function showModal(message) {
         return;
     }
 
-    // Set the message and display the modal
+    // Set the message and display t
     messageDiv.textContent = message;
     overlay.classList.add('show');
 
-    // Attach click handler to close the modal
+    // Attac close the modal
     okButton.onclick = function () {
         overlay.classList.remove('show');
     };

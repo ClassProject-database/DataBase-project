@@ -35,7 +35,7 @@ nav.navbar {
 .form-signUp {
   max-width: 400px;
   padding: 2rem;
-  background: rgba(44, 47, 51, 0.9); /* Dark semi-transparent background */
+  background: rgba(44, 51, 49, 0.9); /* Dark semi-transparent background */
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px); /* Glassmorphism effect */

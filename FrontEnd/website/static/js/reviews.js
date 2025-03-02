@@ -1,37 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log(" Reviews page loaded!");
+    console.log("Reviews page loaded!");
 
-    const commentModal = new bootstrap.Modal(document.getElementById("commentModal"));
+    // Initialize Bootstrap Modal safely
+    const commentModalElem = document.getElementById("commentModal");
+    const commentModal = commentModalElem ? new bootstrap.Modal(commentModalElem) : null;
 
-    //  Open Comment Modal
+    // Open Comment Modal
     document.querySelectorAll(".comment-btn").forEach(button => {
         button.addEventListener("click", function () {
             const reviewId = this.getAttribute("data-review-id");
             document.getElementById("currentReviewId").value = reviewId;
             document.getElementById("commentText").value = "";
-            commentModal.show();
+            if (commentModal) commentModal.show();
         });
     });
 
-    //  Toggle Comments Section 
+    // Toggle Comments Section
     document.querySelectorAll(".view-comments-btn").forEach(button => {
         button.addEventListener("click", async function () {
             const reviewId = this.getAttribute("data-review-id");
             const commentsContainer = document.getElementById(`comments-${reviewId}`);
 
             if (!commentsContainer) {
-                console.error(" Comments container not found!");
+                console.error("Comments container not found!");
                 return;
             }
 
-            if (commentsContainer.innerHTML.trim() === "") {
-                await loadComments(reviewId); //  Load comments only if empty
+            // Load comments 
+            if (!commentsContainer.innerHTML.trim()) {
+                await loadComments(reviewId);
             }
 
-            //  Toggle Visibility
+            // Toggle Visibility
             if (commentsContainer.classList.contains("d-none")) {
                 commentsContainer.classList.remove("d-none");
-                this.innerHTML = "🔼 Hide Comments";
+                this.innerHTML = "🔼 Hide Comments"; 
             } else {
                 commentsContainer.classList.add("d-none");
                 this.innerHTML = "🔽 View Comments";
@@ -39,13 +42,13 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    //  Post Comment via AJAX
-    document.getElementById("postCommentBtn").addEventListener("click", async () => {
+    // Post Comment 
+    document.getElementById("postCommentBtn")?.addEventListener("click", async () => {
         const reviewId = document.getElementById("currentReviewId").value;
         const commentText = document.getElementById("commentText").value.trim();
 
         if (!commentText) {
-            showToast("⚠️ Comment cannot be empty!", "warning");
+            showToast(" Comment cannot be empty!", "warning");
             return;
         }
 
@@ -60,19 +63,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (data.success) {
                 showToast(" Comment posted!");
-                document.getElementById("commentText").value = ""; //  Clear input
+                document.getElementById("commentText").value = ""; // Clear input
                 await loadComments(reviewId);
-                commentModal.hide(); //  Close modal 
+                if (commentModal) commentModal.hide(); // Close modal
             } else {
-                showToast(" Error posting comment.", "error");
+                showToast(` Error: ${data.error}`, "error");
             }
         } catch (error) {
-            console.error(" Error posting comment:", error);
+            console.error("Error posting comment:", error);
             showToast(" Could not post comment. Try again.", "error");
         }
     });
 
-    //  Load Comments Function 
+    // Load Comments Function
     async function loadComments(reviewId) {
         try {
             const response = await fetch(`/api/comments/${reviewId}`);
@@ -82,9 +85,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const commentsContainer = document.getElementById(`comments-${reviewId}`);
 
             if (!commentsContainer) return;
-            
-            commentsContainer.innerHTML = comments.length === 0 
-                ? `<p class="text-muted">No comments yet.</p>` 
+
+            commentsContainer.innerHTML = comments.length === 0
+                ? `<p class="text-muted">No comments yet.</p>`
                 : comments.map(comment => `
                     <div class="comment border-bottom py-2">
                         <p><strong>${comment.username}</strong>: ${comment.text}</p>
@@ -92,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 `).join("");
         } catch (error) {
-            console.error(" Error loading comments:", error);
+            console.error("Error loading comments:", error);
         }
     }
 

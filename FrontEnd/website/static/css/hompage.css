@@ -1,0 +1,152 @@
+/* ================================
+   HOMEPAGE LAYOUT (CENTERED)
+================================ */
+.homepage-container {
+    display: flex;
+    justify-content: center; /* Center contents */
+    align-items: flex-start;
+    gap: 40px;
+    padding: 30px 5%;
+    max-width: 1400px;
+    margin: auto;
+}
+
+/* HERO SECTION (Centered & Scaled) */
+.hero-box {
+    background: #1a1a2e;
+    color: #ffffff;
+    text-align: center;
+    padding: 40px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    max-width: 1100px;
+    margin: auto;
+}
+
+.hero-box h1 {
+    font-size: 2.8rem;
+    font-weight: bold;
+}
+
+.hero-box p {
+    font-size: 1.3rem;
+    color: #bbbbbb;
+}
+
+/* ================================
+   LEFT SIDEBAR: REVIEWS (FIXED & RESPONSIVE)
+================================ */
+.latest-reviews-sidebar {
+    flex: 0 0 320px;
+    background: #1e1e2e;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ================================
+   MAIN CONTENT (CENTERED & ADJUSTED WIDTH)
+================================ */
+.main-content {
+    flex: 1;
+    min-width: 650px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ================================
+   MOVIE CAROUSEL (FIXED & RESPONSIVE)
+================================ */
+.carousel-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.carousel-track {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    white-space: nowrap;
+    padding: 10px;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+/* ================================
+   MOVIE CARDS (CONSISTENT SIZE)
+================================ */
+.movie-card {
+    flex: 0 0 180px;
+    height: 270px;
+    border-radius: 12px;
+    background: #25253a;
+    border: 1px solid #3a3a52;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.movie-card img {
+    width: 100%;
+    height: 80%;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+
+/* ================================
+   RESPONSIVE DESIGN FIXES
+================================ */
+@media screen and (max-width: 1200px) {
+    .homepage-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .latest-reviews-sidebar {
+        max-width: 90%;
+    }
+
+    .main-content {
+        min-width: 100%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .hero-box {
+        padding: 30px;
+        max-width: 90%;
+    }
+
+    .latest-reviews-sidebar {
+        flex: 1;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .main-content {
+        min-width: 100%;
+    }
+
+    .movie-card {
+        flex: 0 0 160px;
+        height: 240px;
+    }
+}

@@ -4,7 +4,6 @@
   <title>Checkout - Modern</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <!-- Your Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
   <style>
     .checkout-container {
@@ -84,20 +83,16 @@
     <div id="checkout-message" class="checkout-message"></div>
   </div>
 
-<<<<<<< HEAD
-=======
-  <!-- Bootstrap JS -->
->>>>>>> 71555c479a176f58de49488e65f7b1983e002b71
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      console.log("📌 Checkout page loaded!");
+      console.log(" Checkout page loaded!");
 
       const checkoutForm = document.getElementById("checkout-form");
       const messageDiv = document.getElementById("checkout-message");
       const submitButton = document.getElementById("submit-button");
 
-      // === 1) Populate Cart Summary ===
+      //  Populate Cart Summary
       const cart = JSON.parse(localStorage.getItem("cart")) || [];
       const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price || 0), 0);
       
@@ -106,18 +101,14 @@
         `<li>${item.name || item.title || "Movie"} - $${parseFloat(item.price).toFixed(2)}</li>`
       ).join("") : `<li class="text-center">Your cart is empty.</li>`;
 
-<<<<<<< HEAD
       document.getElementById("total-price").textContent = totalPrice.toFixed(2);
 
-      // === 2) Checkout Form Submission ===
-=======
-  
->>>>>>> 71555c479a176f58de49488e65f7b1983e002b71
+      //   Checkout Form Submission
       checkoutForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         
-        if (submitButton.disabled) return; // ✅ Prevent duplicate clicks
-        submitButton.disabled = true; // ✅ Disable the button after first click
+        if (submitButton.disabled) return; 
+        submitButton.disabled = true;  
       
         messageDiv.textContent = "Processing...";
         messageDiv.style.color = "blue";
@@ -127,7 +118,7 @@
         const cvv = document.getElementById("cvv").value.trim();
         const discountCode = document.getElementById("discountCode").value.trim();
       
-        // ✅ Validation Logic Here...
+        //  Validation Logic Here
       
         if (!valid) {
           messageDiv.textContent = "Please correct the highlighted fields.";
@@ -136,7 +127,7 @@
           return;
         }
       
-        // ✅ Checkout API Request
+        //  Checkout API Request
         const checkoutData = {
           cart, amount: totalPrice.toFixed(2), payment_method: "Card", discount_code: discountCode
         };
@@ -149,25 +140,25 @@
           });
       
           const data = await response.json();
-          console.log("📩 Checkout Response:", data);
+          console.log(" Checkout Response:", data);
       
           if (data.success) {
-            messageDiv.textContent = "✅ Checkout successful! Redirecting...";
+            messageDiv.textContent = " Checkout successful! Redirecting...";
             messageDiv.style.color = "green";
             localStorage.removeItem("cart");
             setTimeout(() => window.location.href = "/user_rentals", 3000);
           } else {
-            messageDiv.textContent = "❌ Checkout failed: " + (data.error || "Unknown error");
+            messageDiv.textContent = " Checkout failed: " + (data.error || "Unknown error");
             messageDiv.style.color = "red";
             submitButton.disabled = false;
           }
         } catch (error) {
-          console.error("❌ Checkout Error:", error);
-          messageDiv.textContent = "❌ An error occurred.";
+          console.error(" Checkout Error:", error);
+          messageDiv.textContent = " An error occurred.";
           messageDiv.style.color = "red";
           submitButton.disabled = false;
         }
-      }); // ✅ Now the event listener wraps the entire function correctly
+      });
       
     });
   </script>

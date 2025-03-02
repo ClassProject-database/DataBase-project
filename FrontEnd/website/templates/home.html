@@ -1,64 +1,77 @@
 {% extends "base.html" %}
-{% block title %}Home - Movie Store{% endblock %}
+{% block title %}Home - Movie Rental{% endblock %}
 
 {% block content %}
 
-<!--  Hero Section -->
-<section class="hero">
-  <div class="overlay"></div>
-  <div class="hero-content text-center">
-    <h1>Discover & Rent Your Favorite Movies</h1>
-    <p class="lead">Stream and enjoy top-rated movies from our vast collection.</p>
-    <div class="hero-buttons">
-      <a href="{{ url_for('views.inventory2') }}" class="btn btn-primary btn-lg">Browse Movies</a>
-      {% if not current_user.is_authenticated %}
-      <a href="{{ url_for('auth.signUp') }}" class="btn btn-outline-light btn-lg">Sign Up</a>
-      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg">Login</a>
-      {% endif %}
-    </div>
-  </div>
+<!--  BANNER -->
+<section class="hero-box text-center mx-auto">
+  <h1 class="fw-bold">Discover & Rent Movies</h1>
+  <p class="lead">Browse our collection and watch your favorite movies anytime, anywhere.</p>
 </section>
 
-<!--  Featured Movies -->
-<section class="featured-movies container my-5">
-  <h2 class="section-title text-center mb-4">Featured Movies</h2>
-  <div class="carousel-container position-relative">
-    <button class="carousel-btn prev"><i class="fa fa-chevron-left"></i></button>
-    <div class="carousel-track d-flex align-items-center"></div>
-    <button class="carousel-btn next"><i class="fa fa-chevron-right"></i></button>
-  </div>
-</section>
+<!-- HOMEPAGE  -->
+<div class="homepage-container d-flex flex-wrap justify-content-between align-items-start">
 
-<!--  How It Works -->
-<section class="how-it-works container my-5">
-  <h2 class="text-center mb-4">How It Works</h2>
-  <div class="row">
-    <div class="col-md-4 text-center">
-      <i class="fa fa-search fa-3x text-primary mb-3"></i>
-      <h4>Find a Movie</h4>
-      <p>Search and explore our vast collection.</p>
+  <!-- Left Sidebar Latest Reviews ) -->
+  <section class="latest-reviews-sidebar">
+    <h2 class="section-title text-center">Latest Reviews</h2>
+    <div class="reviews-list">
+      <div class="review-item">
+        <p><strong>User123</strong> rated <strong>Inception</strong> ⭐⭐⭐⭐⭐</p>
+        <p>"Amazing movie! Must watch!"</p>
+      </div>
+      <div class="review-item">
+        <p><strong>JohnDoe</strong> rated <strong>Interstellar</strong> ⭐⭐⭐⭐⭐</p>
+        <p>"Mind-blowing visuals and story!"</p>
+      </div>
+      <div class="review-item">
+        <p><strong>MovieFan99</strong> rated <strong>The Dark Knight</strong> ⭐⭐⭐⭐</p>
+        <p>"Heath Ledger was incredible!"</p>
+      </div>
     </div>
-    <div class="col-md-4 text-center">
-      <i class="fa fa-shopping-cart fa-3x text-primary mb-3"></i>
-      <h4>Rent or Buy</h4>
-      <p>Add movies to your cart and checkout easily.</p>
-    </div>
-    <div class="col-md-4 text-center">
-      <i class="fa fa-play-circle fa-3x text-primary mb-3"></i>
-      <h4>Watch Anytime</h4>
-      <p>Your movies on your time</p>
-    </div>
-  </div>
-</section>
+    <a href="{{ url_for('views.reviews_page') }}" class="btn btn-outline-primary w-100">View All Reviews</a>
+  </section>
 
-<!--  Latest Reviews Preview -->
-<section class="reviews-preview container my-5">
-  <h2 class="text-center mb-4">Latest Reviews</h2>
-  <div id="latestReviews" class="list-group">
+  <!-- Main Content (Carousel)-->
+  <div class="main-content flex-grow-1">
+
+    <!-- Featured Movies -->
+    <section class="featured-movies">
+      <h2 class="section-title text-center">Featured Movies</h2>
+      <div class="carousel-container position-relative">
+        <button class="carousel-btn prev"><i class="fa fa-chevron-left"></i></button>
+        <div class="carousel-track d-flex align-items-center overflow-hidden">
+        </div>
+        <button class="carousel-btn next"><i class="fa fa-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- How It Works Section-->
+    <section class="how-it-works">
+      <h2 class="section-title text-center">How It Works</h2>
+      <div class="how-it-works-grid d-flex justify-content-center flex-wrap gap-4">
+        <div class="step-card text-center">
+          <i class="fa fa-search step-icon"></i>
+          <h4>Find a Movie</h4>
+          <p>Explore our vast collection.</p>
+        </div>
+        <div class="step-card text-center">
+          <i class="fa fa-shopping-cart step-icon"></i>
+          <h4>Rent Instantly</h4>
+          <p>Seamless checkout & instant access.</p>
+        </div>
+        <div class="step-card text-center">
+          <i class="fa fa-play-circle step-icon"></i>
+          <h4>Watch Anywhere</h4>
+          <p>Enjoy your movies anytime.</p>
+        </div>
+      </div>
+    </section>
+
   </div>
-  <div class="text-center mt-3">
-    <a href="{{ url_for('views.reviews_page') }}" class="btn btn-outline-primary">View All Reviews</a>
-  </div>
-</section>
+</div>
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hompage.css') }}">
+{% endblock %}
 
 {% endblock %}

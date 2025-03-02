@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Page is loaded and ready!");
   
-    // Fetch movies using async/await
+    // Fetch movies
     const fetchMovies = async () => {
       try {
         const response = await fetch('/api/movies');
@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
         displayMovies(movies);
       } catch (error) {
         console.error("There has been a problem with your fetch operation:", error);
-        // If a customAlert function is defined, use it; otherwise, use alert
         if (typeof customAlert === "function") {
           customAlert("Failed to load movies. Please try again later.");
         } else {
@@ -28,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Could not find the '.row' element for displaying movies.");
         return;
       }
-      // Clear previous content
       moviesRow.innerHTML = '';
   
       movies.forEach(movie => {
@@ -39,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const card = document.createElement('div');
         card.classList.add('card', 'h-100');
   
-        // configure the movie image element
+        //  movie image element
         const img = document.createElement('img');
         img.classList.add('card-img-top', 'movie-img');
         img.src = movie.image ? `/static/images/${movie.image}` : '/static/images/keyboard.jpg';
@@ -76,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         cardFooter.appendChild(button);
   
-        // Assemble card components and add to the container
         card.append(img, cardBody, cardFooter);
         col.appendChild(card);
         moviesRow.appendChild(col);

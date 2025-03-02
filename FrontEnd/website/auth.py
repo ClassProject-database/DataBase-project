@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
-from . import bcrypt, get_db_connection, User  # Import our initialized objects and User class
+from . import bcrypt, get_db_connection, User  # Import our initialized objects & class
 
 auth = Blueprint('auth', __name__)
 
@@ -14,7 +14,6 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
         try:
-            # Query the Users table instead of Logins
             cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
             user = cursor.fetchone()
 
@@ -48,7 +47,7 @@ def logout():
     flash("Logged out successfully.", "info")
     return redirect(url_for('auth.login'))
 
-# Sign-Up Route (with Duplicate Username Check)
+# Sign-Up Route 
 @auth.route('/signUp', methods=['GET', 'POST'])
 def signUp():
     if request.method == 'POST':
@@ -98,7 +97,7 @@ def signUp():
 
     return render_template("signUp.html")
 
-# Cart Route (Protected)
+# Cart Route 
 @auth.route('/UserCart')
 @login_required
 def UserCart():

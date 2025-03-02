@@ -5,17 +5,16 @@ import mysql.connector
 from mysql.connector import pooling
 import os
 
-# Initialize Flask Extensions
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 
-# MySQL Connection Pool (Safe Handling)
+# MySQL Connection P
 db_config = {
     "host": "127.0.0.1",
     "user": "root",
     "password": "root",
     "database": "movie_rental",
-    "port": 8889
+    "port": 3306
 }
 try:
     connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=10, **db_config)
@@ -34,15 +33,15 @@ def get_db_connection():
         print(f" Database connection error: {err}")
         return None
 
-# Define User Class for Flask-Login using account_id
+# Define User Class for Flask-Login 
 class User(UserMixin):
     def __init__(self, account_id, username, role):
-        self.id = account_id  # Using account_id as the unique user identifier
+        self.id = account_id  
         self.username = username
         self.role = role
 
     def get_id(self):
-        return str(self.id)  # Flask-Login requires a string ID
+        return str(self.id) 
 
 def create_app():
     app = Flask(__name__)
@@ -60,7 +59,7 @@ def create_app():
     def load_user(user_id):
         conn = get_db_connection()
         if conn is None:
-            return None  # Return None if DB connection fails
+            return None  
 
         cursor = conn.cursor(dictionary=True)
         cursor.execute("SELECT * FROM Users WHERE account_id = %s", (user_id,))
@@ -82,5 +81,4 @@ def create_app():
 
     return app
 
-# Make User and get_db_connection importable
 __all__ = ['User', 'get_db_connection']

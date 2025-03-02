@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 });
 
-//  Global Cart Function (Prevents Duplicates)
+//  Global Cart Function 
 if (!window.addToCart) {
     window.addToCart = function (movie_id, name, price) {
         console.log(" Adding to Cart:", { movie_id, name, price });
@@ -155,54 +155,64 @@ document.getElementById("movieSearch")?.addEventListener("input", function () {
 
 //  Review Form Submission 
 function setupReviewForm() {
-    document.getElementById("review-form")?.addEventListener("submit", function (e) {
+    document.getElementById("review-form")?.addEventListener("submit", async function (e) {
         e.preventDefault();
 
+        const userId = document.getElementById("currentUserId")?.value; // Get user ID
         const movieId = document.getElementById("selectedMovieId").value;
         const rating = document.getElementById("reviewRating").value;
         const review = document.getElementById("reviewComment").value;
         const reviewList = document.getElementById("review-list");
 
-        if (!movieId || !rating || !review) {
+        if (!userId || !movieId || !rating || !review) {
             showToast("All fields are required!", "error");
             return;
         }
 
-        fetch("/api/post_review", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ movie_id: movieId, rating, review }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showToast(" Review submitted successfully!");
+        console.log("Sending review:", { user_id: userId, movie_id: movieId, rating, comment: review });
 
-                //  Clear input fields
+        try {
+            const response = await fetch("/api/post_review", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: userId, movie_id: movieId, rating, comment: review }),
+            });
+
+            const text = await response.text();
+            let data;
+            try {
+                data = JSON.parse(text);
+            } catch {
+                throw new Error("Invalid JSON response: " + text);
+            }
+
+            if (data.success) {
+                showToast("Review submitted successfully!");
+
+                // Clear input fields
                 document.getElementById("reviewRating").value = "";
                 document.getElementById("reviewComment").value = "";
                 document.getElementById("movieSearch").value = "";
                 document.getElementById("selectedMovieId").value = "";
 
-                //  Dynamically Update Review List 
                 const newReview = document.createElement("li");
                 newReview.classList.add("list-group-item");
                 newReview.innerHTML = `
-                    <strong>${data.movie_title}</strong> (${rating}/5) 
+                    <strong>${data.movie_title || "Unknown Movie"}</strong> (${rating}/5) 
                     <br>${review}
                     <br><small>Just now</small>
                 `;
-                reviewList.prepend(newReview); // Add to the top of the list
+                reviewList.prepend(newReview);
             } else {
-                showToast(" Error: " + data.error, "error");
+                showToast("Error: " + data.error, "error");
             }
-        })
-        .catch(error => {
-            console.error(" Error submitting review:", error);
-            showToast(" Error submitting review.", "error");
-        });
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            showToast("Error submitting review.", "error");
+        }
     });
 }
+
 
 
 //  User Table Actions (Delete/Edit)

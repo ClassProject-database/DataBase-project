@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort
+from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from . import get_db_connection, bcrypt
 
@@ -15,15 +15,18 @@ def HomePage():
 def inventory2():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("SELECT * FROM Genres;")
-    genres = cursor.fetchall()
-    
-    cursor.execute("SELECT * FROM Movies;")
-    movies = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
+    try:
+        cursor.execute("SELECT * FROM Genres;")
+        genres = cursor.fetchall()
+        
+        cursor.execute("SELECT * FROM Movies;")
+        movies = cursor.fetchall()
+    except Exception as err:
+        current_app.logger.error(f"Database error in inventory2: {err}")
+        genres, movies = [], []
+    finally:
+        cursor.close()
+        conn.close()
 
     return render_template("inventory2.html", movies=movies, genres=genres)
 
@@ -34,8 +37,6 @@ def get_movies():
     cursor = conn.cursor(dictionary=True)
     try:
         genre_id = request.args.get('genre_id', type=int)
-        
-        #  Ensure genre_id is handled properly
         if genre_id is not None:
             query = """
                 SELECT DISTINCT Movies.* 
@@ -47,17 +48,14 @@ def get_movies():
         else:
             query = "SELECT * FROM Movies"
             cursor.execute(query)
-
         movies = cursor.fetchall()
         return jsonify(movies)
-
     except Exception as err:
-        print(f"Database error: {err}")
+        current_app.logger.error(f"Database error in get_movies: {err}")
         return jsonify({"error": "Database query failed"}), 500
     finally:
         cursor.close()
         conn.close()
-
 
 # 4. Admin Dashboard (Fetch all users from Users table)
 @views.route('/admin', methods=['GET'])
@@ -80,7 +78,7 @@ def admin_dashboard():
             cursor.execute("SELECT * FROM Users")
         users = cursor.fetchall()
     except Exception as err:
-        print(f"Database error: {err}")
+        current_app.logger.error(f"Database error in admin_dashboard: {err}")
         users = []
     finally:
         cursor.close()
@@ -92,15 +90,15 @@ def admin_dashboard():
 @views.route('/user_rentals', methods=['GET'])
 @login_required
 def user_rentals():
-    account_id = current_user.id  # current_user.id is now account_id
+    account_id = current_user.id 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        # Fetch user info directly from Users table
+        # Fetch user info
         cursor.execute("SELECT * FROM Users WHERE account_id = %s", (account_id,))
         user_info = cursor.fetchone()
         if not user_info:
-            flash(" User not found.", "error")
+            flash("❌ User not found.", "error")
             return redirect(url_for('views.HomePage'))
 
         # Fetch rental history using account_id
@@ -121,7 +119,7 @@ def user_rentals():
         """, (account_id,))
         reviews = cursor.fetchall()
     except Exception as err:
-        print(f"Database error: {err}")
+        current_app.logger.error(f"Database error in user_rentals: {err}")
         user_info, rentals, reviews = None, [], []
     finally:
         cursor.close()
@@ -137,7 +135,7 @@ def add_user():
         return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
 
     data = request.get_json()
-    print("\n Received Data:", data)
+    current_app.logger.info(f"Received add_user data: {data}")
     if not data:
         return jsonify({'success': False, 'error': 'No data received'}), 400
 
@@ -158,8 +156,8 @@ def add_user():
         if cursor.fetchone():
             return jsonify({'success': False, 'error': 'Username already exists.'}), 400
 
-        # Hash default password "changeme"
-        hashed_password = bcrypt.generate_password_hash("changeme").decode('utf-8')
+        # Hash default password "cat"
+        hashed_password = bcrypt.generate_password_hash("cat").decode('utf-8')
 
         # Insert directly into Users table
         cursor.execute("""
@@ -167,10 +165,10 @@ def add_user():
             VALUES (%s, %s, %s, %s, %s, %s)
         """, (username, hashed_password, role, first_name, last_name, phone))
         conn.commit()
-        print("User added successfully!")
+        current_app.logger.info("User added successfully!")
         return jsonify({'success': True})
     except Exception as e:
-        print("Error adding user:", e)
+        current_app.logger.error(f"Error adding user: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         cursor.close()
@@ -184,7 +182,7 @@ def delete_user():
         return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
 
     data = request.get_json()
-    print(" Received Data:", data)
+    current_app.logger.info(f"Received delete_user data: {data}")
     if not data or 'account_id' not in data:
         return jsonify({'success': False, 'error': 'Missing account_id'}), 400
 
@@ -196,7 +194,7 @@ def delete_user():
         conn.commit()
         return jsonify({'success': True, 'message': 'User deleted successfully'})
     except Exception as e:
-        print(" Error deleting user:", e)
+        current_app.logger.error(f"Error deleting user: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         cursor.close()
@@ -209,47 +207,63 @@ def post_review():
     data = request.get_json()
     movie_id = data.get('movie_id')
     rating = data.get('rating')
-    comment = data.get('review')
+    comment = data.get('comment')  
+
     if not movie_id or not rating or not comment:
         return jsonify({'success': False, 'error': 'All fields are required'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        # current_user.id is account_id
+        # Verify the user exists
         cursor.execute("SELECT account_id FROM Users WHERE account_id = %s", (current_user.id,))
         user = cursor.fetchone()
         if not user:
             return jsonify({'success': False, 'error': 'User account not found'}), 400
+
         account_id = user['account_id']
+
         # Check if the user has already reviewed this movie
         cursor.execute("SELECT * FROM Reviews WHERE movie_id = %s AND account_id = %s", (movie_id, account_id))
         if cursor.fetchone():
             return jsonify({'success': False, 'error': 'You have already reviewed this movie'}), 400
-        cursor.execute("INSERT INTO Reviews (movie_id, account_id, rating, comment) VALUES (%s, %s, %s, %s)",
-                       (movie_id, account_id, rating, comment))
+
+        # Insert the review
+        cursor.execute(
+            "INSERT INTO Reviews (movie_id, account_id, rating, comment) VALUES (%s, %s, %s, %s)",
+            (movie_id, account_id, rating, comment)
+        )
         conn.commit()
+
     except Exception as e:
+        current_app.logger.error(f"Error posting review: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         cursor.close()
         conn.close()
+
     return jsonify({'success': True})
+
 
 # 9. Reviews Page
 @views.route('/reviews')
 def reviews_page():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT r.*, m.title 
-        FROM Reviews r 
-        JOIN Movies m ON r.movie_id = m.movie_id 
-        ORDER BY r.review_date DESC
-    """)
-    reviews = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    try:
+        cursor.execute("""
+            SELECT r.*, m.title 
+            FROM Reviews r 
+            JOIN Movies m ON r.movie_id = m.movie_id 
+            ORDER BY r.review_date DESC
+        """)
+        reviews = cursor.fetchall()
+    except Exception as err:
+        current_app.logger.error(f"Database error in reviews_page: {err}")
+        reviews = []
+    finally:
+        cursor.close()
+        conn.close()
     return render_template("reviews.html", reviews=reviews)
 
 # 10. API: Search Users (Admin Only)
@@ -270,7 +284,7 @@ def search_users():
         """, (f"%{search_query}%", f"%{search_query}%"))
         users = cursor.fetchall()
     except Exception as err:
-        print(f"Database error: {err}")
+        current_app.logger.error(f"Database error in search_users: {err}")
         users = []
     finally:
         cursor.close()
@@ -294,14 +308,7 @@ def checkout():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-<<<<<<< HEAD
-        account_id = current_user.id  # current_user.id is account_id
-        
-        # ✅ Insert into Transactions table
-=======
-        account_id = current_user.id  
-        # Insert into Transactions table
->>>>>>> 71555c479a176f58de49488e65f7b1983e002b71
+        account_id = current_user.id
         cursor.execute("""
             INSERT INTO Transactions (account_id, total_price, payment_status, purchase_date)
             VALUES (%s, %s, %s, NOW())
@@ -309,22 +316,20 @@ def checkout():
         conn.commit()
         transaction_id = cursor.lastrowid
 
-        # ✅ Insert Rentals, preventing duplicates
         for item in cart_items:
             if "movie_id" not in item:
-                print("Missing movie_id in cart item:", item)
+                current_app.logger.warning(f"Missing movie_id in cart item: {item}")
                 continue
 
             movie_id = item["movie_id"]
 
-            # ✅ Check if rental already exists
             cursor.execute("""
                 SELECT COUNT(*) as count FROM Rentals 
                 WHERE account_id = %s AND movie_id = %s AND status = 'rented'
             """, (account_id, movie_id))
             existing_rental = cursor.fetchone()
 
-            if existing_rental["count"] == 0:  # ✅ Only insert if not rented
+            if existing_rental["count"] == 0:
                 cursor.execute("""
                     INSERT INTO Rentals (account_id, movie_id, rental_date, return_date, status, transaction_id)
                     VALUES (%s, %s, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'rented', %s)
@@ -333,12 +338,11 @@ def checkout():
         conn.commit()
         return jsonify({"success": True, "message": "Checkout successful!"})
     except Exception as e:
-        print(" Checkout Error:", e)
+        current_app.logger.error(f"Checkout Error: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
-
 
 # 12. Checkout Page
 @views.route('/checkout', methods=['GET'])
@@ -351,28 +355,27 @@ def checkout_page():
 @login_required
 def delete_rental():
     data = request.get_json()
-    print(f"🗑️ Received DELETE request: {data} from user ID {current_user.id}")
+    current_app.logger.info(f"Received DELETE request: {data} from user ID {current_user.id}")
     rental_id = data.get('rental_id')
     if not rental_id:
-        print(" Missing rental_id in request")
+        current_app.logger.error("Missing rental_id in request")
         return jsonify({'success': False, 'error': 'Missing rental_id'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     try:
-        # Verify that the rental belongs to the current user
         cursor.execute("SELECT rental_id FROM Rentals WHERE rental_id = %s AND account_id = %s",
                        (rental_id, current_user.id))
         if not cursor.fetchone():
-            print(f" Rental ID {rental_id} not found or unauthorized for account {current_user.id}.")
+            current_app.logger.error(f"Rental ID {rental_id} not found or unauthorized for account {current_user.id}.")
             return jsonify({'success': False, 'error': 'Rental not found or unauthorized'}), 400
 
         cursor.execute("DELETE FROM Rentals WHERE rental_id = %s", (rental_id,))
         conn.commit()
-        print(f" Successfully deleted rental ID {rental_id} for account {current_user.id}")
+        current_app.logger.info(f"Successfully deleted rental ID {rental_id} for account {current_user.id}")
         return jsonify({'success': True})
     except Exception as e:
-        print(" Error deleting rental:", e)
+        current_app.logger.error(f"Error deleting rental: {e}")
         return jsonify({'success': False, 'error': str(e)}), 500
     finally:
         cursor.close()
@@ -393,7 +396,7 @@ def get_rentals():
         """, (current_user.id,))
         rentals = cursor.fetchall()
     except Exception as err:
-        print(f"Database error: {err}")
+        current_app.logger.error(f"Database error in get_rentals: {err}")
         rentals = []
     finally:
         cursor.close()
@@ -435,27 +438,33 @@ def add_movie():
         conn.commit()
         return jsonify({"success": True, "message": "Movie added successfully", "movie_id": movie_id}), 201
     except Exception as e:
+        current_app.logger.error(f"Error adding movie: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
     finally:
         cursor.close()
         conn.close()
 
-
-#  API: Fetch Comments for a Review
+# 16. API: Fetch Comments for a Review
 @views.route('/api/comments/<int:review_id>', methods=['GET'])
 def get_comments(review_id):
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT username, text, timestamp FROM Comments WHERE review_id = %s ORDER BY timestamp DESC", (review_id,))
-    comments = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    try:
+        cursor.execute("SELECT username, text, timestamp FROM Comments WHERE review_id = %s ORDER BY timestamp DESC", (review_id,))
+        comments = cursor.fetchall()
+    except Exception as err:
+        current_app.logger.error(f"Database error in get_comments: {err}")
+        comments = []
+    finally:
+        cursor.close()
+        conn.close()
     return jsonify(comments)
 
-#  API: Post Comment
+# 17. API: Post Comment
 @views.route('/api/post_comment', methods=['POST'])
+@login_required
 def post_comment():
-    data = request.json
+    data = request.get_json()
     review_id = data.get('review_id')
     comment_text = data.get('comment')
 
@@ -464,10 +473,79 @@ def post_comment():
 
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO Comments (review_id, username, text) VALUES (%s, %s, %s)", 
-                   (review_id, "CurrentUser", comment_text))
-    conn.commit()
-    cursor.close()
-    conn.close()
+    try:
+        username = current_user.username if hasattr(current_user, "username") else "Anonymous"
+        cursor.execute("INSERT INTO Comments (review_id, username, text) VALUES (%s, %s, %s)", 
+                       (review_id, username, comment_text))
+        conn.commit()
+    except Exception as e:
+        current_app.logger.error(f"Error posting comment: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
     
     return jsonify({"success": True})
+
+# 18. API: Get User (Admin Only)
+@views.route('/api/get_user', methods=['GET'])
+@login_required
+def get_user():
+    if current_user.role != 'admin':
+        return jsonify({'error': 'Unauthorized access'}), 403
+
+    account_id = request.args.get('account_id')
+    if not account_id:
+        return jsonify({'error': 'Missing account_id'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("SELECT * FROM Users WHERE account_id = %s", (account_id,))
+        user = cursor.fetchone()
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        return jsonify(user)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()
+
+# 19. API: Update User (Admin Only)
+@views.route('/api/update_user', methods=['POST'])
+@login_required
+def update_user():
+    if current_user.role != 'admin':
+        return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
+
+    data = request.get_json()
+    if not data:
+        return jsonify({'success': False, 'error': 'No data received'}), 400
+
+    account_id = data.get('account_id')
+    username = data.get('username')
+    first_name = data.get('first_name')
+    last_name = data.get('last_name')
+    phone = data.get('phone')
+    role = data.get('role')
+
+    if not account_id or not username or not first_name or not last_name or not phone or not role:
+        return jsonify({'success': False, 'error': 'Missing fields'}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    try:
+        cursor.execute("""
+            UPDATE Users 
+            SET username = %s, first_name = %s, last_name = %s, phone = %s, role = %s
+            WHERE account_id = %s
+        """, (username, first_name, last_name, phone, role, account_id))
+        conn.commit()
+        return jsonify({'success': True})
+    except Exception as e:
+        current_app.logger.error(f"Error updating user: {e}")
+        return jsonify({'success': False, 'error': str(e)}), 500
+    finally:
+        cursor.close()
+        conn.close()

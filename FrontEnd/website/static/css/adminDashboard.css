@@ -1,9 +1,39 @@
-/*
-   General Admin Dashboard 
-*/
+/* ==========================
+   CSS Variables for Consistency
+========================== */
+:root {
+  --padding: 20px;
+  --margin-bottom: 40px;
+  --header-bg: #212529;
+  --row-hover-bg: #343a40;
+  --border-color: #ccc;
+  --border-radius: 4px;
+  --input-padding: 8px;
+  --focus-border-color: #80bdff;
+  --focus-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  --modal-overlay-bg: rgba(0, 0, 0, 0.6);
+  --modal-content-bg: #3c3a41;
+  --modal-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  --btn-transition: 0.2s ease-in-out;
+  --btn-radius: 4px;
+  --btn-primary-bg: #007bff;
+  --btn-primary-hover-bg: #0056b3;
+  --btn-info-bg: #9705aab6;
+  --btn-info-hover-bg: #8b118b;
+  --btn-danger-bg: #dc3545;
+  --btn-danger-hover-bg: #c82333;
+  --dropdown-bg: #333;
+  --dropdown-border: #444;
+  --dropdown-item-bg: #222;
+  --dropdown-item-hover-bg: #007bff;
+}
+
+/* ==========================
+   General Admin Dashboard
+========================== */
 .admin-dashboard {
-  padding: 20px;
-  margin-bottom: 40px;
+  padding: var(--padding);
+  margin-bottom: var(--margin-bottom);
 }
 
 .admin-dashboard h1,
@@ -11,15 +41,17 @@
   margin-bottom: 20px;
 }
 
-/* User Table & Search */
+/* ==========================
+   User Table & Search
+========================== */
 #searchUsers {
   width: 50%;
   min-width: 200px;
-  margin: 0 auto 1rem auto;
+  margin: 0 auto 1rem;
   display: block;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: var(--input-padding);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
 }
 
 #users-table {
@@ -28,7 +60,7 @@
 }
 
 #users-table thead th {
-  background-color: #212529; /* Darker header for contrast */
+  background-color: var(--header-bg);
 }
 
 #users-table th,
@@ -37,13 +69,44 @@
   text-align: center;
 }
 
-/* Hover effect for rows */
 #users-table tbody tr:hover {
-  background-color: #343a40; /* Slightly darker row on hover */
+  background-color: var(--row-hover-bg);
   transition: background-color 0.2s ease-in-out;
 }
 
-/* Movie Form */
+/* ==========================
+   Placeholder & Dark Mode Fixes
+========================== */
+::placeholder {
+  color: #b0b0b0; /* Light gray for readability */
+  opacity: 1;
+}
+
+.dark-mode ::placeholder {
+  color: #f0f0f0 !important; /* Almost white for better contrast */
+  opacity: 1 !important;
+}
+
+.dark-mode input,
+.dark-mode textarea,
+.dark-mode select {
+  background-color: #25253a !important; /* Dark background */
+  color: #ffffff !important;
+  border: 1px solid #3a3a52 !important;
+}
+
+/* Autofill fields should inherit dark mode */
+.dark-mode input:-webkit-autofill,
+.dark-mode textarea:-webkit-autofill,
+.dark-mode select:-webkit-autofill {
+  background-color: #25253a !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0px 1000px #25253a inset !important;
+}
+
+/* ==========================
+   Movie Form
+========================== */
 #add-movie-form .form-group {
   margin-bottom: 15px;
 }
@@ -57,111 +120,122 @@
 #add-movie-form input,
 #add-movie-form select {
   width: 100%;
-  padding: 8px;
+  padding: var(--input-padding);
   box-sizing: border-box;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
 }
 
-#add-movie-form select:focus,
-#add-movie-form input:focus {
+#add-movie-form input:focus,
+#add-movie-form select:focus {
   outline: none;
-  border-color: #80bdff; /* Bootstrap-like focus */
-  box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+  border-color: var(--focus-border-color);
+  box-shadow: var(--focus-box-shadow);
 }
 
-/* Modal Styling */
+/* ==========================
+   Modal (Edit User)
+========================== */
 .modal-overlay {
-  visibility: hidden;
-  opacity: 0;
+  display: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.6);
-  display: flex;
+  background: var(--modal-overlay-bg);
   justify-content: center;
   align-items: center;
-  z-index: 2000;
+  z-index: 1000;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .modal-overlay.show {
-  visibility: visible;
-  opacity: 1;
+  display: flex;
 }
 
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-  text-align: center;
-  position: relative;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+/* ==========================
+   Enforce Dark Modal Theme
+========================== */
+.modal-content,
+.modal-header,
+.modal-footer,
+.modal-body {
+  background-color: var(--modal-content-bg);
+  color: #f541bf;
+  border: 1px solid var(--border-color);
 }
 
-.close-modal {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 20px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: black;
+.modal-backdrop.show {
+  background-color: rgba(0, 0, 0, 0.85);
 }
 
-.close-modal:hover {
-  color: #000;
+/* Ensure Form Fields Follow Dark Theme */
+.modal-content .form-control {
+  background-color: var(--modal-content-bg);
+  color: #ffffff;
+  border: 1px solid var(--border-color);
 }
 
-/* Button Hover Enhancements */
+.modal-content .form-control:focus {
+  border-color: var(--focus-border-color);
+  box-shadow: var(--focus-box-shadow);
+}
+
+/* Autofill Handling */
+.modal-content input:-webkit-autofill,
+.modal-content textarea:-webkit-autofill,
+.modal-content select:-webkit-autofill {
+  background-color: var(--modal-content-bg);
+  -webkit-text-fill-color: #ffffff;
+  box-shadow: 0 0 0px 1000px var(--modal-content-bg) inset;
+  transition: background-color 5000s ease-in-out;
+}
+
+/* ==========================
+   Buttons
+========================== */
 .btn {
-  transition: all 0.2s ease-in-out;
-  border-radius: 4px;
+  transition: all var(--btn-transition);
+  border-radius: var(--btn-radius);
 }
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* For "Edit", "View", "Delete" buttons */
 .btn.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: var(--btn-primary-bg);
 }
+
 .btn.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004494;
+  background-color: var(--btn-primary-hover-bg);
 }
 
 .btn.btn-info {
-  background-color: #17a2b8;
-  border-color: #17a2b8;
+  background-color: var(--btn-info-bg);
 }
+
 .btn.btn-info:hover {
-  background-color: #117a8b;
-  border-color: #0f6c7a;
+  background-color: var(--btn-info-hover-bg);
 }
 
 .btn.btn-danger {
-  background-color: #dc3545;
-  border-color: #dc3545;
-}
-.btn.btn-danger:hover {
-  background-color: #c82333;
-  border-color: #bd2130;
+  background-color: var(--btn-danger-bg);
 }
 
-/* Movie Dropdown Styling */
+.btn.btn-danger:hover {
+  background-color: var(--btn-danger-hover-bg);
+}
+
+/* ==========================
+   Movie Dropdown
+========================== */
 #movieDropdown {
   position: absolute;
-  background: #333;
-  border: 1px solid #444;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
@@ -178,11 +252,11 @@
   padding: 10px;
   cursor: pointer;
   color: white;
-  background-color: #222;
-  border-bottom: 1px solid #444;
+  background-color: var(--dropdown-item-bg);
+  border-bottom: 1px solid var(--dropdown-border);
   transition: background 0.2s;
 }
 
 #movieDropdown .dropdown-item:hover {
-  background: #007bff;
+  background: var(--dropdown-item-hover-bg);
 }

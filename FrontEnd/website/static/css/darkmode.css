@@ -1,159 +1,102 @@
-:root {
-  /* Dark Mode Color Variables */
-  --dark-bg: #12121b;
-  --dark-text: #dcdcdc;
-  --dark-nav-bg-start: #1c1c2e;
-  --dark-nav-bg-end: #1a1a2e;
-  --dark-nav-border: #29293d;
-  --dark-header-bg: #25253a;
-  --dark-header-border: #3a3a52;
-  --dark-card-bg: #29293d;
-  --dark-card-border: #3a3a52;
-  --dark-card-hover-bg: #32324a;
-  --btn-primary-bg: #007bff;
-  --btn-primary-border: #0056b3;
-  --btn-primary-hover-bg: #0056b3;
-  --btn-primary-hover-border: #004494;
-  --outline-bg: #2d2d45;
-  --outline-border: #4a4a6a;
-  --outline-hover-bg: #4a4a6a;
-  --outline-hover-border: #707090;
-  --dark-footer-bg-start: #1a1a2e;
-  --dark-footer-bg-end: #12121b;
-  --dark-footer-border: #3a3a52;
-  --section-bg: #1e1e2f;
-  --list-bg: #29293d;
-  --list-border: #3a3a52;
-  --modal-bg: #202030;
-  --modal-border: #3a3a52;
-  --form-bg: #29293d;
-  --form-border: #4a4a6a;
-  --form-focus-border: #707090;
-  --scrollbar-thumb: #4a4a6a;
-  --scrollbar-track: #1e1e2f;
-
-  --transition-speed: 0.3s;
-}
-
-/* Apply Dark Mode to Entire Page */
+/* ================================
+   DARK MODE FIXES (GLOBAL)
+================================ */
 .dark-mode {
-  background-color: var(--dark-bg);
-  color: var(--dark-text);
+  background-color: #12121b !important;
+  color: #dcdcdc !important;
 }
 
-/* Navbar */
-.dark-mode nav {
-  background: linear-gradient(to bottom, var(--dark-nav-bg-start), var(--dark-nav-bg-end));
-  border-bottom: 1px solid var(--dark-nav-border);
-}
-
-/* Navbar Links */
-.dark-mode .navbar-nav .nav-link {
-  color: var(--dark-text);
-  transition: color var(--transition-speed) ease-in-out;
-}
-.dark-mode .navbar-nav .nav-link:hover {
-  color: #bbbbbb;
-}
-
-/* Header */
-.dark-mode header {
-  background-color: var(--dark-header-bg);
-  color: #ffffff;
-  border-bottom: 2px solid var(--dark-header-border);
-}
-
-/* Cards */
-.dark-mode .card {
-  background-color: var(--dark-card-bg);
-  border: 1px solid var(--dark-card-border);
-  color: var(--dark-text);
-  transition: background var(--transition-speed) ease-in-out;
-}
-.dark-mode .card:hover {
-  background-color: var(--dark-card-hover-bg);
-}
-
-/* Buttons */
-.dark-mode .btn-primary {
-  background-color: var(--btn-primary-bg);
-  border-color: var(--btn-primary-border);
-  color: #ffffff;
-  transition: background var(--transition-speed) ease-in-out;
-}
-.dark-mode .btn-primary:hover {
-  background-color: var(--btn-primary-hover-bg);
-  border-color: var(--btn-primary-hover-border);
-}
-
-/* Secondary & Outline Buttons */
-.dark-mode .btn-outline-dark,
-.dark-mode .btn-secondary {
-  background-color: var(--outline-bg);
-  border: 1px solid var(--outline-border);
-  color: var(--dark-text);
-}
-.dark-mode .btn-outline-dark:hover,
-.dark-mode .btn-secondary:hover {
-  background-color: var(--outline-hover-bg);
-  border-color: var(--outline-hover-border);
-}
-
-/* Footer */
-.dark-mode footer {
-  background: linear-gradient(to bottom, var(--dark-footer-bg-start), var(--dark-footer-bg-end));
-  color: var(--dark-text);
-  border-top: 2px solid var(--dark-footer-border);
-}
-
-/* Sections */
+/* Apply dark mode to all sections */
 .dark-mode section {
-  background-color: var(--section-bg);
-  color: var(--dark-text);
+  background-color: #181828 !important;
+  color: #dcdcdc !important;
 }
 
-/* List Group Items */
-.dark-mode .list-group-item {
-  background-color: var(--list-bg);
-  border-color: var(--list-border);
-  color: var(--dark-text);
+/* Fix Navbar in Dark Mode */
+.dark-mode nav {
+  background: linear-gradient(to bottom, #1c1c2e, #1a1a2e) !important;
+  border-bottom: 1px solid #3a3a52 !important;
 }
 
-/* Modals */
-.dark-mode .custom-modal {
-  background: var(--modal-bg);
-  color: var(--dark-text);
-  border: 1px solid var(--modal-border);
-}
-.dark-mode .custom-modal-overlay {
-  background-color: rgba(0, 0, 0, 0.7);
+.dark-mode .navbar-nav .nav-link {
+  color: #dcdcdc !important;
 }
 
-/* Form Elements */
-.dark-mode input,
-.dark-mode select,
-.dark-mode textarea {
-  background-color: var(--form-bg);
-  color: var(--dark-text);
-  border: 1px solid var(--form-border);
-  padding: 8px;
-}
-.dark-mode input:focus,
-.dark-mode select:focus,
-.dark-mode textarea:focus {
-  outline: none;
-  border-color: var(--form-focus-border);
-  background-color: var(--dark-card-hover-bg);
+.dark-mode .navbar-nav .nav-link:hover {
+  color: #bbbbbb !important;
 }
 
-/* Scrollbar Customization */
+/* Fix Hero Banner */
+.dark-mode .hero {
+  background: url('/static/images/dark-hero-bg.jpg') no-repeat center center/cover !important;
+  color: #ffffff !important;
+}
+
+.dark-mode .hero h1 {
+  color: #ffffff !important;
+}
+
+/* Fix Buttons */
+.dark-mode .btn-primary {
+  background-color: #007bff !important;
+  border-color: #0056b3 !important;
+  color: #ffffff !important;
+}
+
+.dark-mode .btn-primary:hover {
+  background-color: #0056b3 !important;
+  border-color: #004494 !important;
+}
+
+.dark-mode .btn-outline-dark {
+  background-color: transparent !important;
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.dark-mode .btn-outline-dark:hover {
+  background-color: #ffffff !important;
+  color: #000 !important;
+}
+
+/* Fix Movie Cards */
+.dark-mode .movie-card {
+  background: #29293d !important;
+}
+
+.dark-mode .movie-card:hover {
+  background: #32324a !important;
+}
+
+/* Fix Sidebar */
+.dark-mode .latest-reviews-sidebar {
+  background: #29293d !important;
+}
+
+/* Fix Modals */
+.dark-mode .modal-content {
+  background: #202030 !important;
+  color: #dcdcdc !important;
+  border: 1px solid #3a3a52 !important;
+}
+
+/* Fix Footer */
+.dark-mode footer {
+  background: linear-gradient(to bottom, #1a1a2e, #12121b) !important;
+  color: #dcdcdc !important;
+  border-top: 2px solid #3a3a52 !important;
+}
+
+/* Scrollbar Fix */
 .dark-mode ::-webkit-scrollbar {
   width: 10px;
 }
+
 .dark-mode ::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
+  background: #4a4a6a;
   border-radius: 5px;
 }
+
 .dark-mode ::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
+  background: #1e1e2f;
 }

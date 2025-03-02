@@ -42,7 +42,7 @@
                         <p>Price: ${{ movie.price }}</p>
                     </div>
                     <div class="card-footer text-center">
-                        <!-- "Add to Cart" action handled by cart.js using data attributes -->
+                        <!-- "Add to Cart" -->
                         <button 
                             class="btn btn-outline-light add-to-cart-btn"
                             data-movie-id="{{ movie.movie_id }}"
@@ -61,7 +61,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<!-- cart.js handles adding items to the cart -->
+<!--  handles adding items to the cart -->
 <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
 <script src="{{ url_for('static', filename='js/filters.js') }}" defer></script>
 {% endblock %}
