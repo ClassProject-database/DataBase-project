@@ -1,15 +1,15 @@
 --- 1. Create
-CREATE DATABASE IF NOT EXISTS movie_rental;
+CREATE DATABASE  movie_rental;
 USE movie_rental;
 
 -- 2. Genres Table
-CREATE TABLE IF NOT EXISTS Genres (
+CREATE TABLE  Genres (
     genre_id INT AUTO_INCREMENT PRIMARY KEY,
     genre_name VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- 3. Movies Table
-CREATE TABLE IF NOT EXISTS Movies (
+CREATE TABLE  Movies (
     movie_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     year INT,
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS Movies (
 );
 
 -- 4. MovieGenres Table (Many-to-Many Relationship)
-CREATE TABLE IF NOT EXISTS MovieGenres (
+CREATE TABLE  MovieGenres (
     movie_id INT,
     genre_id INT,
     PRIMARY KEY (movie_id, genre_id),
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS MovieGenres (
 );
 
 -- 5. Users Table
-CREATE TABLE IF NOT EXISTS Users (
+CREATE TABLE  Users (
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL, 
