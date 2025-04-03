@@ -1,3 +1,4 @@
+<<<<<<< HEAD:db Structure
 -- 1. Create/Use Database
 CREATE DATABASE IF NOT EXISTS movie_rental;
 USE movie_rental;
@@ -5,15 +6,30 @@ USE movie_rental;
 -------------------------------------------------
 -- 2. Genres Table
 -------------------------------------------------
+=======
+CREATE DATABASE 
+USE movie_rental;
+
+
+--  Genres
+
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
 CREATE TABLE IF NOT EXISTS Genres (
     genre_id INT AUTO_INCREMENT PRIMARY KEY,
     genre_name VARCHAR(50) NOT NULL UNIQUE
 );
 
+<<<<<<< HEAD:db Structure
 -------------------------------------------------
 -- 3. Movies Table
 -------------------------------------------------
 CREATE TABLE IF NOT EXISTS Movies (
+=======
+
+--  Movies 
+
+CREATE TABLE Movies (
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
     movie_id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     year INT,
@@ -22,10 +38,17 @@ CREATE TABLE IF NOT EXISTS Movies (
     image VARCHAR(100) DEFAULT 'default.jpg'
 );
 
+<<<<<<< HEAD:db Structure
 -------------------------------------------------
 -- 4. MovieGenres Table (Many-to-Many Relationship)
 -------------------------------------------------
 CREATE TABLE IF NOT EXISTS MovieGenres (
+=======
+
+--  MovieGenres  
+
+CREATE Table MovieGenres (
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
     movie_id INT,
     genre_id INT,
     PRIMARY KEY (movie_id, genre_id),
@@ -33,10 +56,17 @@ CREATE TABLE IF NOT EXISTS MovieGenres (
     FOREIGN KEY (genre_id) REFERENCES Genres(genre_id) ON DELETE CASCADE
 );
 
+<<<<<<< HEAD:db Structure
 -------------------------------------------------
 -- 5. Users Table (Combined Login & Profile)
 -------------------------------------------------
 CREATE TABLE IF NOT EXISTS Users (
+=======
+
+--  Users
+
+CREATE TABLE Users (
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
     account_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,       -- Store hashed passwords
@@ -47,10 +77,16 @@ CREATE TABLE IF NOT EXISTS Users (
     phone VARCHAR(15)
 );
 
+<<<<<<< HEAD:db Structure
 -------------------------------------------------
 -- 6. Transactions Table
 -------------------------------------------------
 CREATE TABLE IF NOT EXISTS Transactions (
+=======
+--  Transactions Table
+
+CREATE TABLE Transactions (
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
     transaction_id INT AUTO_INCREMENT PRIMARY KEY,
     account_id INT NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
@@ -62,10 +98,17 @@ CREATE TABLE IF NOT EXISTS Transactions (
 
 
 
+<<<<<<< HEAD:db Structure
 -------------------------------------------------
 -- 7. Rentals Table
 -------------------------------------------------
 CREATE TABLE IF NOT EXISTS Rentals (
+=======
+
+--  Rentals Table
+
+CREATE TABLE  Rentals (
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
     rental_id INT AUTO_INCREMENT PRIMARY KEY,
     account_id INT NOT NULL,
     movie_id INT NOT NULL,
@@ -78,10 +121,17 @@ CREATE TABLE IF NOT EXISTS Rentals (
     FOREIGN KEY (transaction_id) REFERENCES Transactions(transaction_id) ON DELETE CASCADE
 );
 
+<<<<<<< HEAD:db Structure
 -------------------------------------------------
 -- 7. Payments Table
 -------------------------------------------------
 CREATE TABLE IF NOT EXISTS Payments (
+=======
+
+--  Payments Table
+
+CREATE TABLE Payments (
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
     payment_id INT AUTO_INCREMENT PRIMARY KEY,
     account_id INT NOT NULL,
     amount DECIMAL(10,2) NOT NULL,
@@ -90,6 +140,7 @@ CREATE TABLE IF NOT EXISTS Payments (
     FOREIGN KEY (account_id) REFERENCES Users(account_id) ON DELETE CASCADE
 );
 
+<<<<<<< HEAD:db Structure
 -------------------------------------------------
 -- 8. Watchlist Table
 -------------------------------------------------
@@ -105,6 +156,12 @@ CREATE TABLE IF NOT EXISTS Watchlist (
 -- 9. rReviews
 ---------------------------------
 CREATE TABLE IF NOT EXISTS Reviews (
+=======
+
+--  rReviews
+
+CREATE TABLE Reviews (
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     movie_id INT NOT NULL,
     account_id INT NOT NULL,
@@ -123,16 +180,18 @@ CREATE TABLE Comments (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (review_id) REFERENCES Reviews(review_id) ON DELETE CASCADE
 );
+<<<<<<< HEAD:db Structure
 --------------------------------------------
 -- Insert Sample Data
 -------------------------------------------------
+=======
+>>>>>>> 5ed48247297989cf9581f480c2282d38f73af452:SQL db
 
--- Insert default Genres data
 INSERT INTO Genres (genre_name) VALUES
 ('Sci-Fi'), ('Action'), ('Family'), ('Romance'), ('Comedy'), ('Fantasy')
 ON DUPLICATE KEY UPDATE genre_name = genre_name;
 
--- Insert Movies Data (21 Movies)
+
 INSERT INTO Movies (title, year, rating, price, image) VALUES
 ('Interstellar', 2014, 'PG-13', 13.99, 'interstellar.jpg'),
 ('The Matrix', 1999, 'R', 12.99, 'the_matrix.jpg'),
@@ -155,9 +214,9 @@ INSERT INTO Movies (title, year, rating, price, image) VALUES
 ('Despicable Me', 2010, 'PG', 13.99, 'despicable_me.jpg'),
 ('Avatar', 2009, 'PG-13', 13.99, 'avatar.jpg'),
 ('Forrest Gump', 1994, 'PG-13', 12.99, 'forrest_gump.jpg')
-ON DUPLICATE KEY UPDATE title = title;
 
--- Insert MovieGenres Data
+
+
 INSERT INTO MovieGenres (movie_id, genre_id) VALUES
 (1, 1), (1, 6), 
 (2, 1), (2, 2),  
@@ -180,7 +239,6 @@ INSERT INTO MovieGenres (movie_id, genre_id) VALUES
 (19, 3), (19, 5),  
 (20, 1), (20, 6),  
 (21, 4), (21, 5)
-ON DUPLICATE KEY UPDATE movie_id = movie_id;
 
 select * from users;
 
@@ -194,4 +252,3 @@ VALUES (
   'admin@example.com', 
   '1234567890'
 )
-ON DUPLICATE KEY UPDATE username = username;
