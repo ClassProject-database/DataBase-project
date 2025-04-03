@@ -1,8 +1,18 @@
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from . import get_db_connection, bcrypt
-
+import requests
 views = Blueprint('views', __name__)
+
+API_KEY = "7eab2ecc1d3452857bd81b52d644fbfa" 
+
+@views.route('/api/movie/info/<title>')
+def get_movie_info(title):
+    # Make the request to OMDb with title
+    url = f"http://www.omdbapi.com/?t={title}&apikey={API_KEY}"
+    response = requests.get(url)
+    data = response.json()
+    return jsonify(data)
 
 # 1. Homepage
 @views.route('/')
