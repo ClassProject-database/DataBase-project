@@ -129,3 +129,18 @@
         font-size: 1rem;
     }
 }
+/* Hide all validation error messages by default */
+.invalid-feedback {
+    display: none;
+    color: #ccc; /* neutral color, not red */
+    font-size: 0.9rem;
+  }
+  
+  /* Only show the error message when input is marked invalid */
+  input.is-invalid + .invalid-feedback,
+  textarea.is-invalid + .invalid-feedback,
+  select.is-invalid + .invalid-feedback {
+    display: block;
+    color: #ff4d4d; /* bright red when invalid */
+  }
+  

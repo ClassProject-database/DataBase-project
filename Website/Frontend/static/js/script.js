@@ -1,85 +1,79 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Page is loaded and ready!");
-  
-    // Fetch movies
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch('/api/movies');
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.status}`);
-        }
-        const movies = await response.json();
-        displayMovies(movies);
-      } catch (error) {
-        console.error("There has been a problem with your fetch operation:", error);
-        if (typeof customAlert === "function") {
-          customAlert("Failed to load movies. Please try again later.");
+  console.log("📽️ Movie listing page ready!");
+
+  const moviesRow = document.querySelector(".row");
+  if (!moviesRow) {
+    console.error("❌ .row container not found for displaying movies.");
+    return;
+  }
+
+  const fetchMovies = async () => {
+    try {
+      const res = await fetch("/api/movies");
+      if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+      const movies = await res.json();
+      displayMovies(movies);
+    } catch (err) {
+      console.error("❌ Failed to fetch movies:", err);
+      typeof customAlert === "function"
+        ? customAlert("⚠️ Failed to load movies. Try again later.")
+        : alert("⚠️ Failed to load movies. Try again later.");
+    }
+  };
+
+  const displayMovies = (movies) => {
+    moviesRow.innerHTML = ""; // Clear previous content
+
+    movies.forEach((movie) => {
+      const col = document.createElement("div");
+      col.className = "col";
+
+      const card = document.createElement("div");
+      card.className = "card h-100";
+
+      const img = document.createElement("img");
+      img.className = "card-img-top movie-img";
+      img.src = movie.image ? `/static/images/${movie.image}` : "/static/images/keyboard.jpg";
+      img.alt = movie.title || "Untitled";
+
+      const cardBody = document.createElement("div");
+      cardBody.className = "card-body text-center";
+
+      const title = document.createElement("h5");
+      title.className = "fw-bolder card-title";
+      title.textContent = movie.title || "Untitled";
+
+      const year = document.createElement("p");
+      year.textContent = `Year: ${movie.year ?? "N/A"}`;
+
+      const rating = document.createElement("p");
+      rating.textContent = `Rating: ${movie.rating ?? "Unrated"}`;
+
+      const price = document.createElement("p");
+      price.textContent = `Price: $${parseFloat(movie.price).toFixed(2)}`;
+
+      cardBody.append(title, year, rating, price);
+
+      const cardFooter = document.createElement("div");
+      cardFooter.className = "card-footer text-center";
+
+      const addButton = document.createElement("button");
+      addButton.className = "btn btn-outline-dark";
+      addButton.textContent = "Add to Cart";
+      addButton.onclick = () => {
+        if (typeof addToCart === "function") {
+          addToCart(movie.movie_id, movie.title, movie.price);
         } else {
-          alert("Failed to load movies. Please try again later.");
+          console.warn("addToCart function is not available.");
         }
-      }
-    };
-  
-    // Display movies on the page
-    const displayMovies = (movies) => {
-      const moviesRow = document.querySelector('.row');
-      if (!moviesRow) {
-        console.error("Could not find the '.row' element for displaying movies.");
-        return;
-      }
-      moviesRow.innerHTML = '';
-  
-      movies.forEach(movie => {
-        const col = document.createElement('div');
-        col.classList.add('col');
-  
-        // Create the card element
-        const card = document.createElement('div');
-        card.classList.add('card', 'h-100');
-  
-        //  movie image element
-        const img = document.createElement('img');
-        img.classList.add('card-img-top', 'movie-img');
-        img.src = movie.image ? `/static/images/${movie.image}` : '/static/images/keyboard.jpg';
-        img.alt = movie.title || movie.name;
-  
-        // body with movie details
-        const cardBody = document.createElement('div');
-        cardBody.classList.add('card-body', 'text-center');
-        const title = document.createElement('h5');
-        title.classList.add('fw-bolder', 'card-title');
-        title.textContent = movie.title || movie.name;
-        const year = document.createElement('p');
-        year.textContent = `Year: ${movie.year}`;
-        const rating = document.createElement('p');
-        rating.textContent = `Rating: ${movie.rating}`;
-        const priceP = document.createElement('p');
-        priceP.textContent = `Price: $${movie.price}`;
-  
-        cardBody.append(title, year, rating, priceP);
-  
-        // footer with "Add to Cart" button
-        const cardFooter = document.createElement('div');
-        cardFooter.classList.add('card-footer', 'text-center');
-        const button = document.createElement('button');
-        button.classList.add('btn', 'btn-outline-dark');
-        button.textContent = 'Add to Cart';
-        button.onclick = () => {
-          console.log(`Adding to cart: ID=${movie.movie_id}, Title=${movie.title || movie.name}, Price=${movie.price}`);
-          if (typeof addToCart === 'function') {
-            addToCart(movie.movie_id, movie.title || movie.name, movie.price);
-          } else {
-            console.warn("addToCart function is not defined.");
-          }
-        };
-        cardFooter.appendChild(button);
-  
-        card.append(img, cardBody, cardFooter);
-        col.appendChild(card);
-        moviesRow.appendChild(col);
-      });
-    };
-  
-    fetchMovies();
-  });
-  
+      };
+
+      cardFooter.appendChild(addButton);
+      card.append(img, cardBody, cardFooter);
+      col.appendChild(card);
+      moviesRow.appendChild(col);
+    });
+  };
+
+  fetchMovies();
+});

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}User Reviews - Movie Store{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+    <h1 class="fw-bold text-light mb-3 mb-md-0">User Reviews</h1>
+    <div style="min-width: 200px;">
+      <select id="sortReviews" class="form-select bg-dark text-white border-secondary">
+        <option value="date_desc">Newest First</option>
+        <option value="date_asc">Oldest First</option>
+        <option value="rating_desc">Highest Rated</option>
+        <option value="rating_asc">Lowest Rated</option>
+      </select>
+    </div>
+  </div>
+
+  {% if reviews %}
+  <div class="row justify-content-center" id="reviews-container">
+    {% for review in reviews %}
+      <div class="col-md-6 col-lg-5 mb-4 review-card-wrapper" 
+           data-rating="{{ review.rating }}" 
+           data-date="{{ review.review_date|datetimeformat('%Y-%m-%d') }}">
+        <div class="card bg-dark text-white shadow-sm h-100 border border-secondary">
+          <div class="card-body">
+            <h5 class="card-title mb-2">
+              <strong>{{ review.title }}</strong>
+              <span class="text-warning ms-2">⭐ {{ review.rating }}/5</span>
+            </h5>
+            <p class="text-muted small mb-2">
+              <i class="fa fa-user"></i> {{ review.username }} &bull;
+              {{ review.review_date|datetimeformat('%b %d, %Y') }}
+            </p>
+            {% if review.review_comment %}
+              <p class="mb-0">{{ review.review_comment }}</p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="text-center py-5">
+      <p class="fs-5 text-muted">No reviews available yet. Be the first to leave one!</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const sortSelect = document.getElementById("sortReviews");
+    const container = document.getElementById("reviews-container");
+
+    if (!sortSelect || !container) return;
+
+    sortSelect.addEventListener("change", () => {
+      const cards = Array.from(container.querySelectorAll(".review-card-wrapper"));
+      const mode = sortSelect.value;
+
+      cards.sort((a, b) => {
+        if (mode === "rating_desc") return b.dataset.rating - a.dataset.rating;
+        if (mode === "rating_asc") return a.dataset.rating - b.dataset.rating;
+        if (mode === "date_desc") return new Date(b.dataset.date) - new Date(a.dataset.date);
+        if (mode === "date_asc") return new Date(a.dataset.date) - new Date(b.dataset.date);
+      });
+
+      container.innerHTML = "";
+      cards.forEach(card => container.appendChild(card));
+    });
+  });
+</script>
+{% endblock %}

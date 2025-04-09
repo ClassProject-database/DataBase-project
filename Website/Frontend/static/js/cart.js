@@ -1,161 +1,178 @@
-console.log("cart.js loaded!");
+console.log("✅ cart.js loaded!");
 
-//  Adds an item to the cart
+// ===============================
+// Add item to cart
+// ===============================
 window.addToCart = function (movie_id, name, price) {
-    console.log(" addToCart called with:", movie_id, name, price);
+    console.log("🛒 Adding to cart:", movie_id, name, price);
     try {
         if (!movie_id || !name || isNaN(price)) {
-            console.error(" Invalid item data:", { movie_id, name, price });
+            console.error("❌ Invalid item data", { movie_id, name, price });
             return;
         }
+
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        // Check for duplicate:
         if (cart.some(item => item.movie_id === movie_id)) {
-            console.warn(`Item with movie_id ${movie_id} already in cart.`);
+            console.warn(`⚠️ Movie ID ${movie_id} is already in the cart.`);
             return;
         }
+
         cart.push({ movie_id, name, price: parseFloat(price) });
         localStorage.setItem("cart", JSON.stringify(cart));
-
         updateCartBadge();
         updateCartList();
         showModal(`${name} has been added to your cart!`);
-    } catch (error) {
-        console.error(" Error adding item to cart:", error);
+    } catch (err) {
+        console.error("❌ Error adding to cart:", err);
     }
 };
 
-//  Updates the cart badge count
+// ===============================
+// Update cart badge in nav
+// ===============================
 function updateCartBadge() {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let cartBadge = document.querySelector(".cart-badge");
-    if (cartBadge) cartBadge.innerText = cart.length;
-}
-
-//  Updates the cart list display
-function updateCartList() {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    let cartList = document.getElementById("cart-items");
-    if (!cartList) return;
-
-    cartList.innerHTML = ""; 
-    let total = 0;
-
-    if (cart.length === 0) {
-        cartList.innerHTML = `<li class="list-group-item text-center">Your cart is empty.</li>`;
-    } else {
-        cart.forEach((item, index) => {
-            total += item.price;
-            let listItem = document.createElement("li");
-            listItem.className = "list-group-item d-flex justify-content-between align-items-center";
-            listItem.innerHTML = `
-                <div>
-                    <strong>${item.name}</strong> - $${item.price.toFixed(2)}
-                </div>
-                <button class="btn btn-sm btn-danger remove-btn" data-index="${index}">Remove</button>
-            `;
-            cartList.appendChild(listItem);
-        });
+    try {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const badge = document.querySelector(".cart-badge");
+        if (badge) badge.innerText = cart.length;
+    } catch (err) {
+        console.error("❌ Error updating cart badge:", err);
     }
-
-    let totalPriceElement = document.getElementById("total-price");
-    let totalItemsElement = document.getElementById("total-items");
-    if (totalItemsElement) totalItemsElement.innerText = cart.length;
-    if (totalPriceElement) totalPriceElement.innerText = total.toFixed(2);
 }
 
-//  Removes item from the cart
-document.addEventListener("click", function (event) {
-    if (event.target.classList.contains("remove-btn")) {
-        let index = parseInt(event.target.getAttribute("data-index"));
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
-        if (index >= 0 && index < cart.length) {
-            cart.splice(index, 1);
-            localStorage.setItem("cart", JSON.stringify(cart));
-            updateCartList();
-            updateCartBadge();
-            showModal("🛒 Item removed from your cart!");
+// ===============================
+// Calculate discount rate
+// ===============================
+function getDiscountRate(code) {
+    switch ((code || "").toUpperCase().trim()) {
+        case "VIP": return 0.20;
+        case "ADMIN": return 1.00;
+        default: return 0;
+    }
+}
+
+// ===============================
+// Re-render cart list and save pricing summary to localStorage
+// ===============================
+function updateCartList() {
+    try {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartList = document.getElementById("cart-items");
+        const totalPriceEl = document.getElementById("total-price");
+        const totalItemsEl = document.getElementById("total-items");
+
+        if (!cartList) return;
+
+        cartList.innerHTML = "";
+        let total = 0;
+
+        if (!cart.length) {
+            cartList.innerHTML = `<li class="list-group-item text-center">Your cart is empty.</li>`;
+        } else {
+            cart.forEach((item, i) => {
+                total += item.price;
+                cartList.innerHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><strong>${item.name}</strong> - $${item.price.toFixed(2)}</div>
+                        <button class="btn btn-sm btn-danger remove-btn" data-index="${i}">Remove</button>
+                    </li>`;
+            });
         }
+
+        const discountCode = localStorage.getItem("discount_code") || "";
+        const discountRate = getDiscountRate(discountCode);
+        const taxRate = 0.08;
+
+        const discountAmount = total * discountRate;
+        const subtotal = total;
+        const totalAfterDiscount = subtotal - discountAmount;
+        const taxedTotal = totalAfterDiscount * (1 + taxRate);
+
+        // Save summary to localStorage for the checkout page
+        localStorage.setItem("pricing_summary", JSON.stringify({
+            subtotal: subtotal.toFixed(2),
+            discount_code: discountCode,
+            discount_percent: (discountRate * 100).toFixed(0),
+            tax_percent: (taxRate * 100).toFixed(0),
+            final_total: taxedTotal.toFixed(2)
+        }));
+
+        if (totalItemsEl) totalItemsEl.innerText = cart.length;
+        if (totalPriceEl) totalPriceEl.innerText = taxedTotal.toFixed(2);
+    } catch (err) {
+        console.error("❌ Error updating cart list:", err);
+    }
+}
+
+// ===============================
+// Remove item from cart
+// ===============================
+document.addEventListener("click", function (e) {
+    if (!e.target.classList.contains("remove-btn")) return;
+
+    const i = parseInt(e.target.getAttribute("data-index"));
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    if (i >= 0 && i < cart.length) {
+        cart.splice(i, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartList();
+        updateCartBadge();
+        showModal("🗑️ Item removed from your cart.");
     }
 });
 
-//  Clears the entire cart and handles checkout
+// ===============================
+// Init on DOM load
+// ===============================
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("cart.js initialized...");
     updateCartBadge();
     updateCartList();
 
-    let clearCartBtn = document.getElementById("clear-cart-btn");
+    const discountInput = document.getElementById("discount-code");
+    if (discountInput) {
+        const saved = localStorage.getItem("discount_code") || "";
+        discountInput.value = saved;
+        discountInput.addEventListener("input", function () {
+            localStorage.setItem("discount_code", this.value.trim().toUpperCase());
+            updateCartList();
+        });
+    }
+
+    const clearCartBtn = document.getElementById("clear-cart-btn");
     if (clearCartBtn) {
         clearCartBtn.addEventListener("click", function () {
             localStorage.removeItem("cart");
             updateCartList();
             updateCartBadge();
-            showModal(" Your cart has been cleared.");
+            showModal("🧹 Cart cleared.");
         });
     }
 
-    let checkoutBtn = document.getElementById("checkout-btn");
+    const checkoutBtn = document.getElementById("checkout-btn");
     if (checkoutBtn) {
-        checkoutBtn.addEventListener("click", async function () {
-            let cart = JSON.parse(localStorage.getItem("cart")) || [];
-            let totalPrice = parseFloat(document.getElementById("total-price").innerText);
-            let discountCode = document.getElementById("discount-code")?.value || "";
-
-            if (cart.length === 0) {
-                showModal(" Your cart is empty. Add items before proceeding.");
+        checkoutBtn.addEventListener("click", function () {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            if (!cart.length) {
+                showModal("🛒 Your cart is empty. Add something first!");
                 return;
             }
-
-            console.log(" Sending checkout request...", { cart, totalPrice, discountCode });
-
-            try {
-                const response = await fetch("/api/checkout", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        cart,
-                        amount: totalPrice,  
-                        payment_method: "Card", 
-                        discount_code: discountCode
-                    })
-                });
-
-                const data = await response.json();
-                console.log(" Checkout Response:", data);
-
-                if (data.success) {
-                    showModal(" Checkout successful! Redirecting...");
-                    localStorage.removeItem("cart");  
-                    setTimeout(() => { window.location.href = "/user_rentals"; }, 2000);
-                } else {
-                    showModal(" Error: " + data.error);
-                }
-            } catch (error) {
-                console.error(" Checkout Error:", error);
-                showModal(" Error processing checkout.");
-            }
+            window.location.href = "/checkout";
         });
     }
 });
 
-//  Modal display function
+// ===============================
+// Custom Modal Handler
+// ===============================
 function showModal(message) {
-    const overlay = document.getElementById('customModalOverlay');
-    const messageDiv = document.getElementById('customModalMessage');
-    const okButton = document.getElementById('customModalOkBtn');
+    const overlay = document.getElementById("customModalOverlay");
+    const messageDiv = document.getElementById("customModalMessage");
+    const okBtn = document.getElementById("customModalOkBtn");
 
-    if (!overlay || !messageDiv || !okButton) {
-        console.error("Modal elements not found in the DOM.");
-        return;
-    }
+    if (!overlay || !messageDiv || !okBtn) return;
 
-    // Set the message and display t
     messageDiv.textContent = message;
-    overlay.classList.add('show');
-
-    // Attac close the modal
-    okButton.onclick = function () {
-        overlay.classList.remove('show');
-    };
+    overlay.classList.add("show");
+    okBtn.onclick = () => overlay.classList.remove("show");
 }

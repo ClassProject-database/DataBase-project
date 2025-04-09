@@ -3,52 +3,64 @@
 
 {% block content %}
 
-<!--  BANNER -->
-<section class="hero-box text-center mx-auto">
+<!-- HERO SECTION -->
+<section class="hero-box text-center mx-auto my-5">
   <h1 class="fw-bold">Discover & Rent Movies</h1>
   <p class="lead">Browse our collection and watch your favorite movies anytime, anywhere.</p>
 </section>
 
-<!-- HOMEPAGE  -->
-<div class="homepage-container d-flex flex-wrap justify-content-between align-items-start">
+<!-- MAIN CONTAINER -->
+<div class="homepage-container d-flex flex-wrap justify-content-between align-items-start px-3">
 
-  <!-- Left Sidebar Latest Reviews ) -->
-  <section class="latest-reviews-sidebar">
+  <!-- SIDEBAR: Latest Reviews -->
+  <aside class="latest-reviews-sidebar mb-4">
     <h2 class="section-title text-center">Latest Reviews</h2>
     <div class="reviews-list">
-      <div class="review-item">
+      <!-- TODO: Replace with dynamic reviews from database -->
+      <div class="review-item mb-3">
         <p><strong>User123</strong> rated <strong>Inception</strong> ⭐⭐⭐⭐⭐</p>
         <p>"Amazing movie! Must watch!"</p>
       </div>
-      <div class="review-item">
+      <div class="review-item mb-3">
         <p><strong>JohnDoe</strong> rated <strong>Interstellar</strong> ⭐⭐⭐⭐⭐</p>
         <p>"Mind-blowing visuals and story!"</p>
       </div>
-      <div class="review-item">
+      <div class="review-item mb-3">
         <p><strong>MovieFan99</strong> rated <strong>The Dark Knight</strong> ⭐⭐⭐⭐</p>
         <p>"Heath Ledger was incredible!"</p>
       </div>
     </div>
-    <a href="{{ url_for('views.reviews_page') }}" class="btn btn-outline-primary w-100">View All Reviews</a>
-  </section>
+    <a href="{{ url_for('views.reviews_page') }}" class="btn btn-outline-primary w-100 mt-3">View All Reviews</a>
+  </aside>
 
-  <!-- Main Content (Carousel)-->
-  <div class="main-content flex-grow-1">
+  <!-- MAIN CONTENT AREA -->
+  <main class="main-content flex-grow-1 ps-lg-4">
 
-    <!-- Featured Movies -->
-    <section class="featured-movies">
+    <!-- FEATURED MOVIES CAROUSEL -->
+    <section class="featured-movies mb-5">
       <h2 class="section-title text-center">Featured Movies</h2>
+
       <div class="carousel-container position-relative">
-        <button class="carousel-btn prev"><i class="fa fa-chevron-left"></i></button>
-        <div class="carousel-track d-flex align-items-center overflow-hidden">
+        <!-- Prev button -->
+        <button class="carousel-btn prev" aria-label="Previous">
+          <i class="fa fa-chevron-left"></i>
+        </button>
+
+        <!-- Carousel Track (populated by JS) -->
+        <div id="carousel-track" class="carousel-track d-flex align-items-center overflow-hidden">
+          <!-- JavaScript will populate this -->
         </div>
-        <button class="carousel-btn next"><i class="fa fa-chevron-right"></i></button>
+
+        <!-- Next button -->
+        <button class="carousel-btn next" aria-label="Next">
+          <i class="fa fa-chevron-right"></i>
+        </button>
       </div>
     </section>
 
-    <!-- How It Works Section-->
+    <!-- HOW IT WORKS SECTION -->
     <section class="how-it-works">
-      <h2 class="section-title text-center">How It Works</h2>
+      <h2 class="section-title text-center mb-4">How It Works</h2>
       <div class="how-it-works-grid d-flex justify-content-center flex-wrap gap-4">
         <div class="step-card text-center">
           <i class="fa fa-search step-icon"></i>
@@ -68,10 +80,11 @@
       </div>
     </section>
 
-  </div>
+  </main>
 </div>
-{% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/hompage.css') }}">
+
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/homepage.css') }}">
 {% endblock %}

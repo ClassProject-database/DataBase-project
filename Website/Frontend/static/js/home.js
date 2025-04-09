@@ -2,21 +2,21 @@ document.addEventListener("DOMContentLoaded", () => {
     initializePage();
 });
 
-//  Initialize Page 
+// Initialize the Homepage
 const initializePage = () => {
     fetchMovies();
     setupCarousel();
     setupDarkMode();
 };
 
-//  Fetch Movies for Carousel 
+// Fetch Movies from /api/movies/random
 const fetchMovies = async () => {
     try {
-        const response = await fetch("/api/movies");
+        const response = await fetch("/api/movies/random");
         if (!response.ok) throw new Error(`Server responded with ${response.status}`);
 
         const movies = await response.json();
-        const carouselTrack = document.querySelector(".carousel-track");
+        const carouselTrack = document.getElementById("carousel-track");
 
         if (!carouselTrack) {
             console.error("Carousel track element not found.");
@@ -25,15 +25,16 @@ const fetchMovies = async () => {
 
         carouselTrack.innerHTML = "";
 
-        // Display movies
-        movies.slice(0, 10).forEach(movie => {
+        movies.forEach(movie => {
             const movieCard = document.createElement("div");
-            movieCard.classList.add("movie-card");
+            movieCard.classList.add("movie-card", "text-center", "px-2");
             movieCard.innerHTML = `
-                <img src="${movie.image ? `/static/images/${movie.image}` : "/static/images/default.jpg"}" 
+                <img src="${movie.image_path ? `/static/images/${movie.image_path}` : "/static/images/keyboard.jpg"}"
                      alt="${movie.title}" 
-                     onerror="this.onerror=null; this.src='/static/images/default.jpg';">
-                <p>${movie.title}</p>
+                     class="img-fluid rounded shadow-sm"
+                     style="max-height: 200px; object-fit: cover;"
+                     onerror="this.onerror=null; this.src='/static/images/keyboard.jpg';">
+                <h5 class="mt-2">${movie.title}</h5>
             `;
             movieCard.addEventListener("click", () => {
                 window.location.href = `/movie/${movie.movie_id}`;
@@ -48,7 +49,7 @@ const fetchMovies = async () => {
     }
 };
 
-//   Carousel Navigation 
+// Carousel Navigation Setup
 const setupCarousel = () => {
     const prevBtn = document.querySelector(".prev");
     const nextBtn = document.querySelector(".next");
@@ -62,7 +63,7 @@ const setupCarousel = () => {
     carouselTrack.addEventListener("scroll", updateCarouselButtons);
 };
 
-//  Scroll Carousel & Update Button  
+// Scroll carousel left/right
 const scrollCarousel = (amount) => {
     const carouselTrack = document.querySelector(".carousel-track");
     carouselTrack.scrollBy({ left: amount, behavior: "smooth" });
@@ -70,6 +71,7 @@ const scrollCarousel = (amount) => {
     setTimeout(updateCarouselButtons, 300);
 };
 
+// Enable/disable carousel buttons based on scroll
 const updateCarouselButtons = () => {
     const prevBtn = document.querySelector(".prev");
     const nextBtn = document.querySelector(".next");
@@ -86,11 +88,11 @@ const updateCarouselButtons = () => {
     nextBtn.disabled = carouselTrack.scrollLeft >= maxScrollLeft;
 };
 
+// Dark Mode Toggle
 const setupDarkMode = () => {
     const darkModeToggle = document.getElementById("darkModeToggle");
     if (!darkModeToggle) return;
 
-    // Apply saved theme preference
     if (localStorage.getItem("darkMode") === "enabled") {
         document.body.classList.add("dark-mode");
     }

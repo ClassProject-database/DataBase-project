@@ -1,14 +1,14 @@
+import os
 from flask import Flask
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin
 import mysql.connector
 from mysql.connector import pooling
-import os
+from datetime import datetime
+
 
 bcrypt = Bcrypt()
 login_manager = LoginManager()
-
-# MySQL Connection P
 db_config = {
     "host": "127.0.0.1",
     "user": "root",
@@ -16,69 +16,74 @@ db_config = {
     "database": "movie_rental",
     "port": 3306
 }
-try:
-    connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=10, **db_config)
-except mysql.connector.Error as err:
-    print(f" Database connection pool error: {err}")
-    connection_pool = None
 
-# Function to get a database connection safely
+connection_pool = pooling.MySQLConnectionPool(
+    pool_name="mypool",
+    pool_size=10,
+    **db_config
+)
+
+
 def get_db_connection():
-    if connection_pool is None:
-        print("⚠️ No database connection pool available.")
-        return None
-    try:
-        return connection_pool.get_connection()
-    except mysql.connector.Error as err:
-        print(f" Database connection error: {err}")
-        return None
+    return connection_pool.get_connection()
 
-# Define User Class for Flask-Login 
 class User(UserMixin):
     def __init__(self, account_id, username, role):
-        self.id = account_id  
+        self.id = account_id
         self.username = username
         self.role = role
 
     def get_id(self):
-        return str(self.id) 
+        return str(self.id)
+
 
 def create_app():
-    app = Flask(__name__)
-    
-    # Secure secret key
+    app = Flask(
+        __name__,
+        static_folder=os.path.join(os.path.dirname(__file__), "..", "Frontend", "static"),
+        template_folder=os.path.join(os.path.dirname(__file__), "templates")
+    )
+
     app.config['SECRET_KEY'] = os.urandom(24).hex()
 
-    # Initialize Flask extensions
     bcrypt.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'  # Redirect unauthorized users to login
+    login_manager.login_view = 'auth.login'
 
-    # User Loader Function: fetch user from Users table using account_id
+    @app.template_filter('datetimeformat')
+    def datetimeformat(value, format="%Y-%m-%d"):
+        if isinstance(value, str):
+            try:
+                value = datetime.fromisoformat(value)
+            except ValueError:
+                return value
+        return value.strftime(format) if isinstance(value, datetime) else value
+
+    # Flask-Login user loader
     @login_manager.user_loader
     def load_user(user_id):
         conn = get_db_connection()
-        if conn is None:
-            return None  
-
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM Users WHERE account_id = %s", (user_id,))
+        cursor.execute("SELECT account_id, username, role FROM users WHERE account_id = %s", (user_id,))
         user_data = cursor.fetchone()
-
         cursor.close()
         conn.close()
 
         if user_data:
-            return User(user_data['account_id'], user_data['username'], user_data['role'])
+            return User(
+                account_id=user_data['account_id'],
+                username=user_data['username'],
+                role=user_data['role']
+            )
         return None
 
-    # Import & Register Blueprints
+    # Register blueprints
     from .views import views
     from .auth import auth
-
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
 
     return app
 
-__all__ = ['User', 'get_db_connection']
+__all__ = ['User', 'get_db_connection', 'create_app']
+

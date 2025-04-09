@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("User Rentals Page Loaded. Initializing Features...");
 
-    //  Initialize Rentals, Reviews, and Dropdown Search
+    // 1) Initialize Rentals, Reviews, and any dropdown search.
     if (document.getElementById("rentalsTableBody")) {
         await refreshRentals();
         setupDeleteRentalListener();
@@ -15,18 +15,21 @@ document.addEventListener("DOMContentLoaded", async function () {
         await fetchMoviesForDropdown();
     }
 
+    // If you have a separate user table (admin side), we set it up here:
     if (document.getElementById("user-table-body")) {
         setupUserTableListeners();
     }
 });
 
-//  Global Cart Function 
+// =======================
+//  ADD TO CART (Global)
+// =======================
 if (!window.addToCart) {
     window.addToCart = function (movie_id, name, price) {
-        console.log(" Adding to Cart:", { movie_id, name, price });
+        console.log("Adding to Cart:", { movie_id, name, price });
 
         if (!movie_id || !name || isNaN(price)) {
-            console.error(" Invalid item data:", { movie_id, name, price });
+            console.error("Invalid item data:", { movie_id, name, price });
             return;
         }
 
@@ -38,22 +41,25 @@ if (!window.addToCart) {
 
         cart.push({ movie_id, name, price: parseFloat(price) });
         localStorage.setItem("cart", JSON.stringify(cart));
-        updateCartBadge();
+        updateCartBadge();    // If you have a navbar/cart icon counter
         showToast(`${name} added to cart!`);
     };
 }
 
-//  Fetch Rentals & Update Table
+// =======================
+//  RENTALS
+// =======================
+// Fetch rentals via `/api/rentals`
 async function refreshRentals() {
     try {
-        console.log(" Fetching Rentals...");
+        console.log("Fetching Rentals...");
         const response = await fetch("/api/rentals");
         if (!response.ok) throw new Error(`Failed to fetch rentals. Status: ${response.status}`);
 
         const rentals = await response.json();
         updateRentalsTable(rentals);
     } catch (error) {
-        console.error(" Failed to load rentals:", error);
+        console.error("Failed to load rentals:", error);
     }
 }
 
@@ -61,82 +67,172 @@ function updateRentalsTable(rentals) {
     const tableBody = document.getElementById("rentalsTableBody");
     if (!tableBody) return;
 
-    tableBody.innerHTML = rentals.length === 0
-        ? `<tr><td colspan="5" class="text-center">No rentals found.</td></tr>`
-        : rentals.map(rental => `
-            <tr data-rental-id="${rental.rental_id}">
-                <td>${rental.title}</td>
-                <td>${rental.rental_date}</td>
-                <td>${rental.return_date || "Not returned"}</td>
-                <td class="${rental.status === "returned" ? "text-success" : "text-warning"}">
-                    ${rental.status}
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-danger delete-rental-btn" data-rental-id="${rental.rental_id}">
-                        <i class="fa fa-trash"></i>
-                    </button>
-                </td>
-            </tr>`).join("");
+    // If no rentals, show a single row with 'No rentals found.'
+    if (!rentals.length) {
+        tableBody.innerHTML = `
+            <tr><td colspan="5" class="text-center">No rentals found.</td></tr>
+        `;
+        return;
+    }
+
+    // Build table rows for each rental
+    tableBody.innerHTML = rentals.map(rental => `
+        <tr data-rental-id="${rental.rentalID}">
+            <td>${rental.title}</td>
+            <td>${rental.rental_date}</td>
+            <td>${rental.return_date || "Not returned"}</td>
+            <td>$${rental.rental_price}</td>
+            <td>
+                <button 
+                    class="btn btn-sm btn-danger delete-rental-btn" 
+                    data-rental-id="${rental.rentalID}"
+                >
+                    <i class="fa fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join("");
 }
 
-//  Handle Rental Deletions
+// Listen for delete clicks on rentals
 function setupDeleteRentalListener() {
-    document.getElementById("rentalsTableBody")?.addEventListener("click", function (e) {
-        if (!e.target.classList.contains("delete-rental-btn")) return;
+    const rentalsTable = document.getElementById("rentalsTableBody");
+    if (!rentalsTable) return;
 
-        const rentalId = e.target.getAttribute("data-rental-id");
-        if (!rentalId || !confirm("Are you sure you want to delete this rental?")) return;
+    rentalsTable.addEventListener("click", function (e) {
+        const deleteBtn = e.target.closest(".delete-rental-btn");
+        if (!deleteBtn) return;
 
-        fetch("/api/delete_rental", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ rental_id: rentalId }),
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                document.querySelector(`tr[data-rental-id="${rentalId}"]`)?.remove();
-                showToast("Rental deleted successfully!");
-            } else {
-                showToast("Error: " + data.error, "error");
-            }
-        })
-        .catch(error => console.error(" Error deleting rental:", error));
+        const rentalId = deleteBtn.getAttribute("data-rental-id");
+        if (!rentalId) return;
+
+        if (confirm("Are you sure you want to delete this rental?")) {
+            fetch("/api/delete_rental", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ rental_id: rentalId }), // or { rentalID: rentalId } if your backend expects that
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector(`tr[data-rental-id="${rentalId}"]`)?.remove();
+                    showToast("Rental deleted successfully!");
+                } else {
+                    showToast("Error: " + data.error, "error");
+                }
+            })
+            .catch(error => console.error("Error deleting rental:", error));
+        }
     });
 }
 
-//  Fetch Movies for Dropdown Search
-async function fetchMoviesForDropdown() {
-    console.log(" Fetching movies for review search...");
+// =======================
+//  REVIEW
+//  This depends on your /api/post_review route
+//  If your server expects 'comment' vs 'review_comment', we pass that accordingly.
+// =======================
+function setupReviewForm() {
+    const reviewForm = document.getElementById("review-form");
+    if (!reviewForm) return;
 
+    reviewForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+
+        // Validate required fields (movie_id, rating, review_comment)
+        const movieId = document.getElementById("selectedMovieId").value;
+        const rating = document.getElementById("reviewRating").value;
+        const reviewText = document.getElementById("reviewComment").value.trim();
+        const reviewList = document.getElementById("review-list");
+        
+        if (!movieId || !rating || !reviewText) {
+            showToast("All fields are required!", "error");
+            return;
+        }
+        
+        console.log("Sending review:", { movie_id: movieId, rating, review_comment: reviewText });
+        
+        try {
+            const response = await fetch("/api/post_review", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    movie_id: movieId,
+                    rating: rating,
+                    review_comment: reviewText  // ✅ Required by backend
+                })
+            });
+        
+
+            const data = await response.json();
+            if (data.success) {
+                showToast("Review submitted successfully!", "success");
+
+                // Clear form fields
+                document.getElementById("reviewRating").value = "";
+                document.getElementById("reviewComment").value = "";
+                document.getElementById("movieSearch").value = "";
+                document.getElementById("selectedMovieId").value = "";
+
+                // If reviews are updated dynamically, prepend the new review to the list
+                if (reviewList) {
+                    const newReview = document.createElement("li");
+                    newReview.classList.add("list-group-item", "bg-dark", "text-white");
+                    newReview.innerHTML = `
+                        <strong>${data.movie_title || "Unknown Movie"}</strong> (⭐${rating}/5)
+                        <br>${reviewText}
+                        <br><small>Just now</small>
+                    `;
+                    reviewList.prepend(newReview);
+                }
+            } else {
+                showToast("Error: " + data.error, "error");
+            }
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            showToast("Error submitting review.", "error");
+        }
+    });
+}
+
+// =======================
+//  MOVIE SEARCH FOR REVIEWS
+// =======================
+async function fetchMoviesForDropdown() {
+    console.log("Fetching movies for review search...");
     try {
         const response = await fetch("/api/movies");
         if (!response.ok) throw new Error(`Error: ${response.status}`);
 
         window.moviesList = await response.json();
-        console.log(" Movies loaded for dropdown successfully.");
+        console.log("Movies loaded for dropdown successfully.");
     } catch (error) {
-        console.error(" Error fetching movies:", error);
+        console.error("Error fetching movies:", error);
     }
 }
 
-//  Movie Search Input Filtering
+// Filter displayed movies in dropdown as user types
 document.getElementById("movieSearch")?.addEventListener("input", function () {
     const query = this.value.trim().toLowerCase();
     const dropdown = document.getElementById("movieDropdown");
     const movieIdField = document.getElementById("selectedMovieId");
 
+    if (!dropdown || !movieIdField || !window.moviesList) return;
+
     dropdown.innerHTML = "";
     dropdown.style.display = "none";
 
-    if (!query.length) {
+    if (!query) {
         movieIdField.value = "";
         return;
     }
 
-    const filteredMovies = window.moviesList.filter(movie => movie.title.toLowerCase().includes(query));
+    const filteredMovies = window.moviesList.filter(movie =>
+        movie.title.toLowerCase().includes(query)
+    );
     if (!filteredMovies.length) return;
 
+    // Build dropdown items
     filteredMovies.forEach(movie => {
         let option = document.createElement("div");
         option.classList.add("dropdown-item");
@@ -153,84 +249,27 @@ document.getElementById("movieSearch")?.addEventListener("input", function () {
     dropdown.style.display = "block";
 });
 
-//  Review Form Submission 
-function setupReviewForm() {
-    document.getElementById("review-form")?.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const userId = document.getElementById("currentUserId")?.value; // Get user ID
-        const movieId = document.getElementById("selectedMovieId").value;
-        const rating = document.getElementById("reviewRating").value;
-        const review = document.getElementById("reviewComment").value;
-        const reviewList = document.getElementById("review-list");
-
-        if (!userId || !movieId || !rating || !review) {
-            showToast("All fields are required!", "error");
-            return;
-        }
-
-        console.log("Sending review:", { user_id: userId, movie_id: movieId, rating, comment: review });
-
-        try {
-            const response = await fetch("/api/post_review", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: userId, movie_id: movieId, rating, comment: review }),
-            });
-
-            const text = await response.text();
-            let data;
-            try {
-                data = JSON.parse(text);
-            } catch {
-                throw new Error("Invalid JSON response: " + text);
-            }
-
-            if (data.success) {
-                showToast("Review submitted successfully!");
-
-                // Clear input fields
-                document.getElementById("reviewRating").value = "";
-                document.getElementById("reviewComment").value = "";
-                document.getElementById("movieSearch").value = "";
-                document.getElementById("selectedMovieId").value = "";
-
-                const newReview = document.createElement("li");
-                newReview.classList.add("list-group-item");
-                newReview.innerHTML = `
-                    <strong>${data.movie_title || "Unknown Movie"}</strong> (${rating}/5) 
-                    <br>${review}
-                    <br><small>Just now</small>
-                `;
-                reviewList.prepend(newReview);
-            } else {
-                showToast("Error: " + data.error, "error");
-            }
-        } catch (error) {
-            console.error("Error submitting review:", error);
-            showToast("Error submitting review.", "error");
-        }
-    });
-}
-
-
-
-//  User Table Actions (Delete/Edit)
+// =======================
+//  ADMIN USER TABLE
+// =======================
 function setupUserTableListeners() {
-    document.getElementById("user-table-body")?.addEventListener("click", function (event) {
+    const userTableBody = document.getElementById("user-table-body");
+    if (!userTableBody) return;
+
+    userTableBody.addEventListener("click", function (event) {
         const target = event.target;
         const accountId = target.dataset.accountId;
 
-        if (target.classList.contains("delete-user-btn") && confirm("Delete this user?")) {
-            deleteUser(accountId);
+        if (target.classList.contains("delete-user-btn") && accountId) {
+            if (confirm("Delete this user?")) {
+                deleteUser(accountId);
+            }
         }
     });
 }
 
 async function deleteUser(accountId) {
-    if (!accountId) return;
-    console.log(" Deleting User:", accountId);
-
+    console.log("Deleting User:", accountId);
     try {
         const response = await fetch("/api/delete_user", {
             method: "POST",
@@ -246,6 +285,7 @@ async function deleteUser(accountId) {
             showToast("Error: " + data.error, "error");
         }
     } catch (error) {
-        console.error(" Error deleting user:", error);
+        console.error("Error deleting user:", error);
     }
 }
+

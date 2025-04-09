@@ -1,10 +1,14 @@
 /* ================================
-   GLOBAL DARK THEME (APPLIES TO ENTIRE PAGE)
+   GLOBAL + DARK MODE THEME
 ================================ */
-body {
+body, .dark-mode {
   background-color: #12121b;
   color: #dcdcdc;
   font-family: 'Poppins', sans-serif;
+}
+
+.dark-mode section {
+  background-color: #181828;
 }
 
 /* Navbar */
@@ -12,10 +16,67 @@ body {
   padding: 1rem 2rem;
   font-size: 1.2rem;
 }
+.dark-mode nav {
+  background: linear-gradient(to bottom, #1c1c2e, #1a1a2e);
+  border-bottom: 1px solid #3a3a52;
+}
+.dark-mode .navbar-nav .nav-link {
+  color: #dcdcdc;
+}
+.dark-mode .navbar-nav .nav-link:hover {
+  color: #bbbbbb;
+}
 
 /* Buttons */
 .btn-outline-light {
   font-size: 1.1rem;
+}
+.dark-mode .btn-primary {
+  background-color: #007bff;
+  border-color: #0056b3;
+  color: #fff;
+}
+.dark-mode .btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004494;
+}
+.dark-mode .btn-outline-dark {
+  background-color: transparent;
+  border-color: #ffffff;
+  color: #ffffff;
+}
+.dark-mode .btn-outline-dark:hover {
+  background-color: #ffffff;
+  color: #000;
+}
+
+/* Hero Banner */
+.dark-mode .hero {
+  background: url('/static/images/dark-hero-bg.jpg') no-repeat center center/cover;
+  color: #fff;
+}
+.dark-mode .hero h1 {
+  color: #fff;
+}
+
+/* Movie Cards */
+.dark-mode .movie-card {
+  background: #29293d;
+}
+.dark-mode .movie-card:hover {
+  background: #32324a;
+}
+
+/* Sidebar */
+.dark-mode .latest-reviews-sidebar {
+  background: #29293d;
+}
+
+/* Modals */
+.dark-mode .modal-content {
+  background: #202030;
+  color: #dcdcdc;
+  border: 1px solid #3a3a52;
 }
 
 /* Footer */
@@ -24,12 +85,25 @@ footer {
   padding: 20px;
   text-align: center;
 }
+.dark-mode footer {
+  background: linear-gradient(to bottom, #1a1a2e, #12121b);
+  border-top: 2px solid #3a3a52;
+}
 
-/* Scrollbar Fix */
+/* Scrollbars */
 ::-webkit-scrollbar {
   width: 8px;
 }
 ::-webkit-scrollbar-thumb {
   background: #3a3a52;
   border-radius: 10px;
+}
+.dark-mode ::-webkit-scrollbar {
+  width: 10px;
+}
+.dark-mode ::-webkit-scrollbar-thumb {
+  background: #4a4a6a;
+}
+.dark-mode ::-webkit-scrollbar-track {
+  background: #1e1e2f;
 }

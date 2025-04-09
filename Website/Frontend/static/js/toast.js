@@ -3,11 +3,21 @@ window.showToast = function (message, type = "success") {
     const toast = document.createElement("div");
     toast.classList.add("toast-message", type);
     toast.textContent = message;
+    
+    // Accessibility attributes
+    toast.setAttribute("role", "alert");
+    toast.setAttribute("aria-live", "assertive");
+
     document.body.appendChild(toast);
 
-    setTimeout(() => toast.classList.add("show"), 100);
+    // Timeout durations (in ms)
+    const fadeInDelay = 100;
+    const displayDuration = 3000;
+    const fadeOutDuration = 300;
+
+    setTimeout(() => toast.classList.add("show"), fadeInDelay);
     setTimeout(() => {
         toast.classList.remove("show");
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
+        setTimeout(() => toast.remove(), fadeOutDuration);
+    }, displayDuration);
 };

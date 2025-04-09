@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
     console.log(" Filters script loaded.");
 
-    //  Fetch & Display Movies
+    // Fetch & Display Movies
     const fetchMovies = async (genreId = null) => {
         let url = "/api/movies";
         
-        //  Ensure correct handling of genreId
+        // Append ?genre_id=X if a valid genreId was given
         if (genreId !== null && !isNaN(genreId)) {
             url += `?genre_id=${genreId}`;
         }
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-    //  Display Movies in UI
+    // Display Movies in UI
     const displayMovies = (movies) => {
         const moviesContainer = document.getElementById("movies-container");
         if (!moviesContainer) {
@@ -34,21 +34,37 @@ document.addEventListener("DOMContentLoaded", () => {
         movies.forEach((movie) => {
             const col = document.createElement("div");
             col.classList.add("col", "movie-card");
-            col.dataset.genre = movie.genre_id;
+            
+            // If your API returns one genre_id per movie, store it in data-attribute
+            // for potential filtering. Remove if you have multiple genres.
+            if (movie.genre_id) {
+                col.dataset.genre = movie.genre_id;
+            }
 
             const card = document.createElement("div");
-            card.classList.add("card", "h-100");
+            card.classList.add("card", "h-100", "bg-dark", "text-white");
 
-            const img = document.createElement("img");
-            img.classList.add("card-img-top", "movie-img");
-            img.src = movie.image ? `/static/images/${movie.image}` : "/static/images/keyboard.jpg";
-            img.alt = movie.title;
+            // Use movie.image_path with a fallback (keyboard.jpg)
+            // Use movie.image_path with a fallback (keyboard.jpg)
+        const img = document.createElement("img");
+        img.classList.add("card-img-top", "movie-img");
+        img.src = movie.image_path 
+            ? `/static/images/${movie.image_path}`
+            : "/static/images/keyboard.jpg";
+        img.alt = movie.title || "Movie poster";
+
+        // Catch broken image URLs
+        img.onerror = () => {
+            img.onerror = null;
+            img.src = "/static/images/keyboard.jpg";
+};
+            img.alt = movie.title || "Movie poster";
 
             const cardBody = document.createElement("div");
             cardBody.classList.add("card-body", "text-center");
             cardBody.innerHTML = `
                 <h5 class="fw-bolder">${movie.title}</h5>
-                <p>Year: ${movie.year}</p>
+                <p>Year: ${movie.release_year}</p>
                 <p>Rating: ${movie.rating}</p>
                 <p>Price: $${movie.price}</p>
             `;
@@ -57,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cardFooter.classList.add("card-footer", "text-center");
 
             const button = document.createElement("button");
-            button.classList.add("btn", "btn-outline-dark");
+            button.classList.add("btn", "btn-outline-light");  // or 'btn-outline-dark' if you prefer
             button.textContent = "Add to Cart";
             button.onclick = () => {
                 console.log(`🛒 Adding: ${movie.title}`);
@@ -75,16 +91,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     };
 
-    //  Attach Click Event to Genre Buttons
+    // Attach Click Event to Genre Buttons
     document.querySelectorAll(".filter-btn").forEach((button) => {
         button.addEventListener("click", () => {
             let genreId = button.dataset.genreId;
+            // "null" means show all
             genreId = genreId === "null" ? null : parseInt(genreId); 
             console.log(`🔍 Filtering movies by Genre ID: ${genreId ?? "All"}`);
             fetchMovies(genreId);
         });
     });
 
-    //  Load all movies initially
+    // Load all movies on page load
     fetchMovies();
 });

@@ -1,537 +1,483 @@
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from . import get_db_connection, bcrypt
-import requests
+
 views = Blueprint('views', __name__)
 
-API_KEY = "7eab2ecc1d3452857bd81b52d644fbfa" 
 
-@views.route('/api/movie/info/<title>')
-def get_movie_info(title):
-    # Make the request to OMDb with title
-    url = f"http://www.omdbapi.com/?t={title}&apikey={API_KEY}"
-    response = requests.get(url)
-    data = response.json()
-    return jsonify(data)
-
-# 1. Homepage
+# 1) Home Page
 @views.route('/')
 def HomePage():
-    return render_template("home.html")
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
 
-# 2. Restricted Inventory Page
+    cursor.execute("SELECT movie_id, title, image_path FROM movies ORDER BY RAND() LIMIT 10")
+    featured_movies = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('home.html', featured_movies=featured_movies)
+
+
+# 2) Inventory Page
 @views.route('/inventory2')
-@login_required
 def inventory2():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT * FROM Genres;")
-        genres = cursor.fetchall()
-        
-        cursor.execute("SELECT * FROM Movies;")
-        movies = cursor.fetchall()
-    except Exception as err:
-        current_app.logger.error(f"Database error in inventory2: {err}")
-        genres, movies = [], []
-    finally:
-        cursor.close()
-        conn.close()
+
+    cursor.execute("SELECT * FROM genres;")
+    genres = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM movies;")
+    movies = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template("inventory2.html", movies=movies, genres=genres)
 
-# 3. API: Fetch Movies
+
+# 3) API to Fetch Movies
 @views.route('/api/movies')
 def get_movies():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        genre_id = request.args.get('genre_id', type=int)
-        if genre_id is not None:
-            query = """
-                SELECT DISTINCT Movies.* 
-                FROM Movies 
-                JOIN MovieGenres ON Movies.movie_id = MovieGenres.movie_id
-                WHERE MovieGenres.genre_id = %s;
-            """
-            cursor.execute(query, (genre_id,))
-        else:
-            query = "SELECT * FROM Movies"
-            cursor.execute(query)
-        movies = cursor.fetchall()
-        return jsonify(movies)
-    except Exception as err:
-        current_app.logger.error(f"Database error in get_movies: {err}")
-        return jsonify({"error": "Database query failed"}), 500
-    finally:
-        cursor.close()
-        conn.close()
 
-# 4. Admin Dashboard (Fetch all users from Users table)
+    genre_id = request.args.get('genre_id', type=int)
+    if genre_id is not None:
+        cursor.execute("""
+            SELECT DISTINCT m.* 
+            FROM movies m
+            JOIN moviegenres mg ON m.movie_id = mg.movie_id
+            WHERE mg.genre_id = %s
+        """, (genre_id,))
+        movies = cursor.fetchall()
+    else:
+        cursor.execute("SELECT * FROM movies")
+        movies = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(movies)
+
+
+# 4) Admin Dashboard
 @views.route('/admin', methods=['GET'])
 @login_required
 def admin_dashboard():
-    if current_user.role != 'admin':
-        abort(403)
+    if current_user.role != 'employee':
+        abort(403, description="Only employees can access the admin dashboard.")
 
     search_query = request.args.get('search', '')
-
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        if search_query:
-            cursor.execute("""
-                SELECT * FROM Users 
-                WHERE username LIKE %s OR account_id LIKE %s
-            """, (f"%{search_query}%", f"%{search_query}%"))
-        else:
-            cursor.execute("SELECT * FROM Users")
-        users = cursor.fetchall()
-    except Exception as err:
-        current_app.logger.error(f"Database error in admin_dashboard: {err}")
-        users = []
-    finally:
-        cursor.close()
-        conn.close()
+
+    if search_query:
+        cursor.execute("""
+            SELECT * FROM users 
+            WHERE username LIKE %s OR account_id LIKE %s
+        """, (f"%{search_query}%", f"%{search_query}%"))
+    else:
+        cursor.execute("SELECT * FROM users")
+    users = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template("adminDashboard.html", users=users, search_query=search_query)
 
-# 5. User Rentals Page
+
+# 5) User Rentals Page
 @views.route('/user_rentals', methods=['GET'])
 @login_required
 def user_rentals():
-    account_id = current_user.id 
+    if current_user.role != 'customer':
+        flash("Only customers can view personal rentals.", "error")
+        return redirect(url_for('views.HomePage'))
+
+    account_id = current_user.id
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        # Fetch user info
-        cursor.execute("SELECT * FROM Users WHERE account_id = %s", (account_id,))
-        user_info = cursor.fetchone()
-        if not user_info:
-            flash("❌ User not found.", "error")
-            return redirect(url_for('views.HomePage'))
 
-        # Fetch rental history using account_id
-        cursor.execute("""
-            SELECT r.rental_id, r.rental_date, r.return_date, r.status, m.title
-            FROM Rentals r
-            JOIN Movies m ON r.movie_id = m.movie_id
-            WHERE r.account_id = %s
-        """, (account_id,))
-        rentals = cursor.fetchall()
+    cursor.execute("SELECT * FROM users WHERE account_id = %s", (account_id,))
+    user_info = cursor.fetchone()
 
-        # Fetch user's reviews using account_id
-        cursor.execute("""
-            SELECT rev.review_id, rev.review_date, rev.rating, rev.comment, m.title
-            FROM Reviews rev
-            JOIN Movies m ON rev.movie_id = m.movie_id
-            WHERE rev.account_id = %s
-        """, (account_id,))
-        reviews = cursor.fetchall()
-    except Exception as err:
-        current_app.logger.error(f"Database error in user_rentals: {err}")
-        user_info, rentals, reviews = None, [], []
-    finally:
-        cursor.close()
-        conn.close()
+    cursor.execute("""
+        SELECT r.rentalID,
+               r.rental_date,
+               r.return_date,
+               r.total_price,
+               m.title,
+               rm.price AS rental_price
+        FROM rentals r
+        JOIN rental_movies rm ON r.rentalID = rm.rental_id
+        JOIN movies m ON rm.movie_id = m.movie_id
+        WHERE r.account_id = %s
+    """, (account_id,))
+    rentals = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT rev.review_id,
+               rev.review_date,
+               rev.rating,
+               rev.review_comment,
+               m.title
+        FROM reviews rev
+        JOIN movies m ON rev.movie_id = m.movie_id
+        WHERE rev.account_id = %s
+    """, (account_id,))
+    reviews = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
 
     return render_template("userRentals.html", user=user_info, rentals=rentals, reviews=reviews)
 
-# 6. API: Add User (Admin Only)
+
+# 6) API: Add User
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
-    if current_user.role != 'admin':
-        return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
+    if current_user.role != 'employee':
+        return '', 403
 
     data = request.get_json()
-    current_app.logger.info(f"Received add_user data: {data}")
-    if not data:
-        return jsonify({'success': False, 'error': 'No data received'}), 400
-
     username = data.get('username')
     first_name = data.get('first_name')
     last_name = data.get('last_name')
     phone = data.get('phone')
-    role = data.get('role')
-
-    if not username or not first_name or not last_name or not phone or not role:
-        return jsonify({'success': False, 'error': 'All fields are required'}), 400
+    role = data.get('role')  
+    email = data.get('email', '')  
+    address = data.get('address', 'N/A')  
+    job_title = data.get('job_title', 'Staff')
+    salary = data.get('salary', 0.00)
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        # Check if the username already exists in Users
-        cursor.execute("SELECT * FROM Users WHERE username = %s", (username,))
-        if cursor.fetchone():
-            return jsonify({'success': False, 'error': 'Username already exists.'}), 400
 
-        # Hash default password "cat"
-        hashed_password = bcrypt.generate_password_hash("cat").decode('utf-8')
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    if cursor.fetchone():
+        return jsonify({'success': False, 'error': 'Username already exists.'}), 400
 
-        # Insert directly into Users table
+    hashed_password = bcrypt.generate_password_hash("cat").decode('utf-8')
+
+    cursor.execute("""
+        INSERT INTO users (username, password_, role, first_name, last_name, email, phone)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (username, hashed_password, role, first_name, last_name, email, phone))
+    conn.commit()
+    new_account_id = cursor.lastrowid
+
+    if role == 'customer':
         cursor.execute("""
-            INSERT INTO Users (username, password, role, first_name, last_name, phone)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (username, hashed_password, role, first_name, last_name, phone))
+            INSERT INTO customers (account_id, address)
+            VALUES (%s, %s)
+        """, (new_account_id, address))
         conn.commit()
-        current_app.logger.info("User added successfully!")
-        return jsonify({'success': True})
-    except Exception as e:
-        current_app.logger.error(f"Error adding user: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
 
-# 7. API: Delete User (Admin Only)
+    if role == 'employee':
+        cursor.execute("""
+            INSERT INTO employees (account_id, job_title, salary)
+            VALUES (%s, %s, %s)
+        """, (new_account_id, job_title, salary))
+        conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({'success': True, 'message': 'User added successfully!'})
+
+
+# 7) API: Delete User
 @views.route('/api/delete_user', methods=['POST'])
 @login_required
 def delete_user():
-    if current_user.role != 'admin':
-        return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
+    if current_user.role != 'employee':
+        return '', 403
 
     data = request.get_json()
-    current_app.logger.info(f"Received delete_user data: {data}")
-    if not data or 'account_id' not in data:
-        return jsonify({'success': False, 'error': 'Missing account_id'}), 400
-
     account_id = data['account_id']
+
     conn = get_db_connection()
     cursor = conn.cursor()
-    try:
-        cursor.execute("DELETE FROM Users WHERE account_id = %s", (account_id,))
-        conn.commit()
-        return jsonify({'success': True, 'message': 'User deleted successfully'})
-    except Exception as e:
-        current_app.logger.error(f"Error deleting user: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
 
-# 8. API: Post Review
+    cursor.execute("DELETE FROM users WHERE account_id = %s", (account_id,))
+    conn.commit()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify({'success': True, 'message': 'User deleted successfully'})
+
+
+# 8) API: Post Review
 @views.route('/api/post_review', methods=['POST'])
 @login_required
 def post_review():
     data = request.get_json()
+
     movie_id = data.get('movie_id')
     rating = data.get('rating')
-    comment = data.get('comment')  
-
-    if not movie_id or not rating or not comment:
-        return jsonify({'success': False, 'error': 'All fields are required'}), 400
+    review_comment = data.get('review_comment') 
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        # Verify the user exists
-        cursor.execute("SELECT account_id FROM Users WHERE account_id = %s", (current_user.id,))
-        user = cursor.fetchone()
-        if not user:
-            return jsonify({'success': False, 'error': 'User account not found'}), 400
 
-        account_id = user['account_id']
+    cursor.execute("SELECT account_id FROM users WHERE account_id = %s", (current_user.id,))
+    user = cursor.fetchone()
 
-        # Check if the user has already reviewed this movie
-        cursor.execute("SELECT * FROM Reviews WHERE movie_id = %s AND account_id = %s", (movie_id, account_id))
-        if cursor.fetchone():
-            return jsonify({'success': False, 'error': 'You have already reviewed this movie'}), 400
+    cursor.execute("""
+        INSERT INTO reviews (movie_id, account_id, rating, review_comment)
+        VALUES (%s, %s, %s, %s)
+    """, (movie_id, user['account_id'], rating, review_comment))
+    conn.commit()
 
-        # Insert the review
-        cursor.execute(
-            "INSERT INTO Reviews (movie_id, account_id, rating, comment) VALUES (%s, %s, %s, %s)",
-            (movie_id, account_id, rating, comment)
-        )
-        conn.commit()
-
-    except Exception as e:
-        current_app.logger.error(f"Error posting review: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
+    cursor.close()
+    conn.close()
 
     return jsonify({'success': True})
 
 
-# 9. Reviews Page
+# 9) Reviews Page
 @views.route('/reviews')
 def reviews_page():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("""
-            SELECT r.*, m.title 
-            FROM Reviews r 
-            JOIN Movies m ON r.movie_id = m.movie_id 
-            ORDER BY r.review_date DESC
-        """)
-        reviews = cursor.fetchall()
-    except Exception as err:
-        current_app.logger.error(f"Database error in reviews_page: {err}")
-        reviews = []
-    finally:
-        cursor.close()
-        conn.close()
+
+    cursor.execute("""
+        SELECT r.*, m.title 
+        FROM reviews r 
+        JOIN movies m ON r.movie_id = m.movie_id 
+        ORDER BY r.review_date DESC
+    """)
+    reviews = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
     return render_template("reviews.html", reviews=reviews)
 
-# 10. API: Search Users (Admin Only)
+
+# 10) API: Search Users
 @views.route('/api/search_users')
 @login_required
 def search_users():
-    if current_user.role != 'admin':
-        return jsonify([])
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
 
     search_query = request.args.get('query', '').strip()
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("""
-            SELECT account_id, first_name, last_name, phone, username
-            FROM Users
-            WHERE username LIKE %s OR account_id LIKE %s
-        """, (f"%{search_query}%", f"%{search_query}%"))
-        users = cursor.fetchall()
-    except Exception as err:
-        current_app.logger.error(f"Database error in search_users: {err}")
-        users = []
-    finally:
-        cursor.close()
-        conn.close()
+
+    cursor.execute("""
+        SELECT account_id, first_name, last_name, phone, username, email
+        FROM users
+        WHERE username LIKE %s OR account_id LIKE %s
+    """, (f"%{search_query}%", f"%{search_query}%"))
+    users = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
     return jsonify(users)
 
-# 11. API: Checkout (Create Transaction & Rentals)
-@views.route('/api/checkout', methods=['POST'])
-@login_required
-def checkout():
-    data = request.get_json()
-    if not data or "cart" not in data or "amount" not in data:
-        return jsonify({"success": False, "error": "Invalid checkout data"}), 400
-    
-    cart_items = data["cart"]
-    try:
-        amount = float(data["amount"])
-    except ValueError:
-        return jsonify({"success": False, "error": "Invalid amount format"}), 400
 
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    try:
-        account_id = current_user.id
-        cursor.execute("""
-            INSERT INTO Transactions (account_id, total_price, payment_status, purchase_date)
-            VALUES (%s, %s, %s, NOW())
-        """, (account_id, amount, 'Completed'))
-        conn.commit()
-        transaction_id = cursor.lastrowid
-
-        for item in cart_items:
-            if "movie_id" not in item:
-                current_app.logger.warning(f"Missing movie_id in cart item: {item}")
-                continue
-
-            movie_id = item["movie_id"]
-
-            cursor.execute("""
-                SELECT COUNT(*) as count FROM Rentals 
-                WHERE account_id = %s AND movie_id = %s AND status = 'rented'
-            """, (account_id, movie_id))
-            existing_rental = cursor.fetchone()
-
-            if existing_rental["count"] == 0:
-                cursor.execute("""
-                    INSERT INTO Rentals (account_id, movie_id, rental_date, return_date, status, transaction_id)
-                    VALUES (%s, %s, NOW(), DATE_ADD(NOW(), INTERVAL 7 DAY), 'rented', %s)
-                """, (account_id, movie_id, transaction_id))
-
-        conn.commit()
-        return jsonify({"success": True, "message": "Checkout successful!"})
-    except Exception as e:
-        current_app.logger.error(f"Checkout Error: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
-
-# 12. Checkout Page
+# 11) Checkout Page
 @views.route('/checkout', methods=['GET'])
 @login_required
 def checkout_page():
     return render_template("checkout.html")
 
-# 13. API: Delete Rental
+
+# 12) API: Delete Rental
 @views.route('/api/delete_rental', methods=['POST'])
 @login_required
 def delete_rental():
     data = request.get_json()
-    current_app.logger.info(f"Received DELETE request: {data} from user ID {current_user.id}")
     rental_id = data.get('rental_id')
-    if not rental_id:
-        current_app.logger.error("Missing rental_id in request")
-        return jsonify({'success': False, 'error': 'Missing rental_id'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT rental_id FROM Rentals WHERE rental_id = %s AND account_id = %s",
-                       (rental_id, current_user.id))
-        if not cursor.fetchone():
-            current_app.logger.error(f"Rental ID {rental_id} not found or unauthorized for account {current_user.id}.")
-            return jsonify({'success': False, 'error': 'Rental not found or unauthorized'}), 400
 
-        cursor.execute("DELETE FROM Rentals WHERE rental_id = %s", (rental_id,))
-        conn.commit()
-        current_app.logger.info(f"Successfully deleted rental ID {rental_id} for account {current_user.id}")
-        return jsonify({'success': True})
-    except Exception as e:
-        current_app.logger.error(f"Error deleting rental: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
+    cursor.execute("DELETE FROM rentals WHERE rentalID = %s AND account_id = %s", (rental_id, current_user.id))
+    conn.commit()
 
-# 14. API: Get Rentals for Current User
+    cursor.close()
+    conn.close()
+
+    return jsonify({'success': True})
+
+
+# 13) API: Get Rentals
 @views.route('/api/rentals', methods=['GET'])
 @login_required
 def get_rentals():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("""
-            SELECT r.rental_id, r.rental_date, r.return_date, r.status, m.title
-            FROM Rentals r
-            JOIN Movies m ON r.movie_id = m.movie_id
-            WHERE r.account_id = %s
-        """, (current_user.id,))
-        rentals = cursor.fetchall()
-    except Exception as err:
-        current_app.logger.error(f"Database error in get_rentals: {err}")
-        rentals = []
-    finally:
-        cursor.close()
-        conn.close()
+
+    cursor.execute("""
+        SELECT r.rentalID,
+               r.rental_date,
+               r.return_date,
+               r.total_price,
+               m.title,
+               rm.price AS rental_price
+        FROM rentals r
+        JOIN rental_movies rm ON r.rentalID = rm.rental_id
+        JOIN movies m ON rm.movie_id = m.movie_id
+        WHERE r.account_id = %s
+    """, (current_user.id,))
+    rentals = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
     return jsonify(rentals)
 
-# 15. API: Add Movie (Admin Only)
+
+# 15) API: Checkout
+@views.route('/api/checkout', methods=['POST'])
+@login_required
+def checkout():
+    data = request.get_json()
+
+    cart_items = data["cart"]
+    total_price = float(data["amount"])
+    discount_code = data.get("discount_code", "").upper().strip()
+    card_number = data.get("card_number", "").strip()
+    card_name = data.get("card_holder_name", "").strip()
+    expiration = data.get("expiration", "").strip()
+
+    expiration_month, expiration_year = map(int, expiration.split("/"))
+    if expiration_year < 100:
+        expiration_year += 2000
+
+    if discount_code == "VIP":
+        final_price = round(total_price * 0.80, 2)
+    elif discount_code == "ADMIN":
+        final_price = 0.00
+    else:
+        final_price = round(total_price, 2)
+        discount_code = None
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        INSERT INTO payment (
+            account_id, card_holder_name, card_number,
+            expiration_month, expiration_year,
+            discount_code, discounted_amount
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
+    """, (
+        current_user.id,
+        card_name,
+        card_number,
+        expiration_month,
+        expiration_year,
+        discount_code,
+        final_price
+    ))
+    conn.commit()
+    payment_id = cursor.lastrowid
+
+    cursor.execute("""
+        INSERT INTO rentals (
+            account_id, payment_id, rental_date, return_date, total_price
+        )
+        VALUES (%s, %s, CURDATE(), NULL, %s)
+    """, (current_user.id, payment_id, final_price))
+    conn.commit()
+    rental_id = cursor.lastrowid
+
+    for item in cart_items:
+        movie_id = item.get("movie_id")
+        original_price = float(item.get("price", 0.00))
+        line_price = 0.00 if discount_code == "ADMIN" else original_price
+
+        cursor.execute("""
+            INSERT INTO rental_movies (rental_id, movie_id, price)
+            VALUES (%s, %s, %s)
+        """, (rental_id, movie_id, line_price))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True, "message": "Checkout complete!"})
+
+
+# 14) API: Add Movie
 @views.route('/api/add_movie', methods=['POST'])
 @login_required
 def add_movie():
-    if current_user.role != 'admin':
-        return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
+    if current_user.role != 'employee':
+        return '', 403
 
     data = request.get_json()
     title = data.get("title")
-    year = data.get("year")
+    release_year = data.get("release_year")
     rating = data.get("rating")
     price = data.get("price")
-    image = data.get("image") if "image" in data else "default.jpg"
-    genre_ids = data.get("genre_ids", [])  
-
-    if not title or not year or not rating or not price:
-        return jsonify({"success": False, "error": "Missing required fields"}), 400
+    image_path = data.get("image_path", "keyboard.jpg")
+    genre_ids = data.get("genre_ids", [])
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute(
-            "INSERT INTO Movies (title, year, rating, price, image) VALUES (%s, %s, %s, %s, %s)",
-            (title, year, rating, price, image)
-        )
-        movie_id = cursor.lastrowid
 
-        for genre_id in genre_ids:
-            cursor.execute(
-                "INSERT INTO MovieGenres (movie_id, genre_id) VALUES (%s, %s)", 
-                (movie_id, genre_id)
-            )
-        conn.commit()
-        return jsonify({"success": True, "message": "Movie added successfully", "movie_id": movie_id}), 201
-    except Exception as e:
-        current_app.logger.error(f"Error adding movie: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
+    cursor.execute("""
+        INSERT INTO movies (title, release_year, rating, price, image_path)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (title, release_year, rating, price, image_path))
+    movie_id = cursor.lastrowid
 
-# 16. API: Fetch Comments for a Review
-@views.route('/api/comments/<int:review_id>', methods=['GET'])
-def get_comments(review_id):
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT username, text, timestamp FROM Comments WHERE review_id = %s ORDER BY timestamp DESC", (review_id,))
-        comments = cursor.fetchall()
-    except Exception as err:
-        current_app.logger.error(f"Database error in get_comments: {err}")
-        comments = []
-    finally:
-        cursor.close()
-        conn.close()
-    return jsonify(comments)
+    for g_id in genre_ids:
+        cursor.execute("""
+            INSERT INTO moviegenres (movie_id, genre_id)
+            VALUES (%s, %s)
+        """, (movie_id, g_id))
 
-# 17. API: Post Comment
-@views.route('/api/post_comment', methods=['POST'])
-@login_required
-def post_comment():
-    data = request.get_json()
-    review_id = data.get('review_id')
-    comment_text = data.get('comment')
+    conn.commit()
+    cursor.close()
+    conn.close()
 
-    if not review_id or not comment_text:
-        return jsonify({"error": "Invalid data"}), 400
+    return jsonify({
+        "success": True,
+        "message": "Movie added successfully",
+        "movie_id": movie_id
+    }), 201
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    try:
-        username = current_user.username if hasattr(current_user, "username") else "Anonymous"
-        cursor.execute("INSERT INTO Comments (review_id, username, text) VALUES (%s, %s, %s)", 
-                       (review_id, username, comment_text))
-        conn.commit()
-    except Exception as e:
-        current_app.logger.error(f"Error posting comment: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
-    
-    return jsonify({"success": True})
 
-# 18. API: Get User (Admin Only)
+# 15) API: Get User
 @views.route('/api/get_user', methods=['GET'])
 @login_required
 def get_user():
-    if current_user.role != 'admin':
-        return jsonify({'error': 'Unauthorized access'}), 403
+    if current_user.role != 'employee':
+        return '', 403
 
     account_id = request.args.get('account_id')
-    if not account_id:
-        return jsonify({'error': 'Missing account_id'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("SELECT * FROM Users WHERE account_id = %s", (account_id,))
-        user = cursor.fetchone()
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        return jsonify(user)
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
 
-# 19. API: Update User (Admin Only)
+    cursor.execute("SELECT * FROM users WHERE account_id = %s", (account_id,))
+    user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(user)
+
+
+# 16) API: Update User
 @views.route('/api/update_user', methods=['POST'])
 @login_required
 def update_user():
-    if current_user.role != 'admin':
-        return jsonify({'success': False, 'error': 'Unauthorized access'}), 403
+    if current_user.role != 'employee':
+        return '', 403
 
     data = request.get_json()
-    if not data:
-        return jsonify({'success': False, 'error': 'No data received'}), 400
 
     account_id = data.get('account_id')
     username = data.get('username')
@@ -539,23 +485,59 @@ def update_user():
     last_name = data.get('last_name')
     phone = data.get('phone')
     role = data.get('role')
-
-    if not account_id or not username or not first_name or not last_name or not phone or not role:
-        return jsonify({'success': False, 'error': 'Missing fields'}), 400
+    email = data.get('email')
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
-    try:
-        cursor.execute("""
-            UPDATE Users 
-            SET username = %s, first_name = %s, last_name = %s, phone = %s, role = %s
-            WHERE account_id = %s
-        """, (username, first_name, last_name, phone, role, account_id))
-        conn.commit()
-        return jsonify({'success': True})
-    except Exception as e:
-        current_app.logger.error(f"Error updating user: {e}")
-        return jsonify({'success': False, 'error': str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
+
+    cursor.execute("""
+        UPDATE users 
+        SET username = %s, 
+            first_name = %s, 
+            last_name = %s, 
+            phone = %s, 
+            role = %s,
+            email = %s
+        WHERE account_id = %s
+    """, (username, first_name, last_name, phone, role, email, account_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({'success': True})
+
+
+# 17) API: random movue
+@views.route('/api/movies/random')
+def get_random_movies():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT movie_id, title, image_path FROM movies ORDER BY RAND() LIMIT 10")
+    movies = cursor.fetchall()
+
+    for movie in movies:
+        if not movie['image_path']:
+            movie['image_path'] = 'keyboard.jpg'
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(movies)
+
+# 18) API: all movies
+@views.route('/api/movies/all')
+def get_all_movies():
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("SELECT * FROM movies")
+    movies = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(movies)
+
+

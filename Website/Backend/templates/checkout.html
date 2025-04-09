@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout - Movie Store</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+  {% block extra_css %}{% endblock %}
+
+  <style>
+    .checkout-container {
+      max-width: 600px;
+      margin: 40px auto;
+    }
+
+    .summary-list {
+      margin-bottom: 1rem;
+      padding-left: 1rem;
+    }
+
+    .invalid-feedback {
+      display: none;
+      color: #ff4c4c;
+      font-size: 0.9rem;
+      margin-top: 4px;
+    }
+
+    .form-control.is-invalid + .invalid-feedback {
+      display: block;
+    }
+
+    .checkout-message {
+      margin-top: 1rem;
+      font-weight: 500;
+    }
+
+    .checkout-message.error {
+      color: #ff4c4c;
+    }
+
+    .checkout-message.success {
+      color: #28a745;
+    }
+  </style>
+</head>
+<body class="bg-dark text-white">
+  <div class="container checkout-container">
+    <div class="card bg-dark text-white p-4 shadow">
+      <div class="checkout-header text-center">
+        <h1>Checkout</h1>
+        <p class="text-muted">Complete your purchase</p>
+      </div>
+
+      <div id="cart-summary" class="mb-4">
+        <h5>Order Summary</h5>
+        <ul id="cart-items" class="summary-list"></ul>
+        <p><strong>Subtotal:</strong> $<span id="subtotal">0.00</span></p>
+        <p><strong>Discount Code:</strong> <span id="discount-code-text">None</span></p>
+        <p><strong>Discount:</strong> <span id="discount-percent">0%</span></p>
+        <p><strong>Tax:</strong> <span id="tax-percent">0%</span></p>
+        <p class="fw-bold">Total: $<span id="total-price">0.00</span></p>
+      </div>
+
+      <form id="checkout-form" novalidate>
+        <div class="mb-3">
+          <label for="cardHolder" class="form-label">Cardholder Name</label>
+          <input type="text" id="cardHolder" class="form-control">
+          <div class="invalid-feedback">Enter the name on your card.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="cardNumber" class="form-label">Card Number</label>
+          <input type="text" id="cardNumber" class="form-control">
+          <div class="invalid-feedback">Enter a valid 13–19 digit card number.</div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="expiration" class="form-label">Expiration (MM/YY)</label>
+            <input type="text" id="expiration" class="form-control" placeholder="MM/YY">
+            <div class="invalid-feedback">Enter a valid expiration date.</div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label for="cvv" class="form-label">CVV</label>
+            <input type="text" id="cvv" class="form-control" placeholder="3 or 4 digits">
+            <div class="invalid-feedback">Enter a valid CVV.</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" id="submit-button">Complete Purchase</button>
+      </form>
+
+      <div id="checkout-message" class="checkout-message"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  {% block extra_js %}
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const pricing = JSON.parse(localStorage.getItem("pricing_summary") || "{}");
+
+      document.getElementById("subtotal").textContent = pricing.subtotal || "0.00";
+      document.getElementById("discount-code-text").textContent = pricing.discount_code || "None";
+      document.getElementById("discount-percent").textContent = (pricing.discount_percent || "0") + "%";
+      document.getElementById("tax-percent").textContent = (pricing.tax_percent || "0") + "%";
+      document.getElementById("total-price").textContent = pricing.final_total || "0.00";
+
+      const cartList = document.getElementById("cart-items");
+      cartList.innerHTML = cart.length
+        ? cart.map(item => `<li>${item.name} - $${(+item.price).toFixed(2)}</li>`).join("")
+        : `<li class="text-center">Your cart is empty.</li>`;
+
+      const checkoutForm = document.getElementById("checkout-form");
+      const messageDiv = document.getElementById("checkout-message");
+      const submitButton = document.getElementById("submit-button");
+
+      checkoutForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        messageDiv.textContent = "";
+        messageDiv.className = "checkout-message";
+        submitButton.disabled = true;
+
+        const fields = {
+          cardHolder: document.getElementById("cardHolder"),
+          cardNumber: document.getElementById("cardNumber"),
+          expiration: document.getElementById("expiration"),
+          cvv: document.getElementById("cvv")
+        };
+
+        let valid = true;
+        for (const field in fields) fields[field].classList.remove("is-invalid");
+
+        if (!fields.cardHolder.value.trim()) {
+          fields.cardHolder.classList.add("is-invalid");
+          valid = false;
+        }
+
+        if (!/^\d{13,19}$/.test(fields.cardNumber.value.trim())) {
+          fields.cardNumber.classList.add("is-invalid");
+          valid = false;
+        }
+
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(fields.expiration.value.trim())) {
+          fields.expiration.classList.add("is-invalid");
+          valid = false;
+        }
+
+        if (!/^\d{3,4}$/.test(fields.cvv.value.trim())) {
+          fields.cvv.classList.add("is-invalid");
+          valid = false;
+        }
+
+        if (!valid) {
+          messageDiv.textContent = "❌ Please correct the highlighted fields.";
+          messageDiv.classList.add("error");
+          submitButton.disabled = false;
+          return;
+        }
+
+        const payload = {
+          cart,
+          amount: pricing.final_total,
+          discount_code: pricing.discount_code,
+          card_holder_name: fields.cardHolder.value.trim(),
+          card_number: fields.cardNumber.value.trim(),
+          expiration: fields.expiration.value.trim()
+        };
+
+        try {
+          const res = await fetch("/api/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json();
+          if (data.success) {
+            messageDiv.textContent = "✅ Purchase complete! Redirecting...";
+            messageDiv.classList.add("success");
+            localStorage.clear();
+            setTimeout(() => window.location.href = "/user_rentals", 1500);
+          } else {
+            messageDiv.textContent = "❌ " + (data.error || "Checkout failed.");
+            messageDiv.classList.add("error");
+            submitButton.disabled = false;
+          }
+        } catch (err) {
+          console.error("❌ Checkout error:", err);
+          messageDiv.textContent = "An error occurred. Please try again.";
+          messageDiv.classList.add("error");
+          submitButton.disabled = false;
+        }
+      });
+    });
+  </script>
+  {% endblock %}
+</body>
+</html>
