@@ -1,6 +1,4 @@
-/* ==========================
-   CSS Variables for Consistency
-========================== */
+
 :root {
   --padding: 20px;
   --margin-bottom: 40px;
@@ -28,9 +26,7 @@
   --dropdown-item-hover-bg: #007bff;
 }
 
-/* ==========================
-   General Admin Dashboard
-========================== */
+
 .admin-dashboard {
   padding: var(--padding);
   margin-bottom: var(--margin-bottom);
@@ -41,9 +37,7 @@
   margin-bottom: 20px;
 }
 
-/* ==========================
-   User Table & Search
-========================== */
+
 #searchUsers {
   width: 50%;
   min-width: 200px;
@@ -74,28 +68,26 @@
   transition: background-color 0.2s ease-in-out;
 }
 
-/* ==========================
-   Placeholder & Dark Mode Fixes
-========================== */
+
 ::placeholder {
-  color: #b0b0b0; /* Light gray for readability */
+  color: #b0b0b0; 
   opacity: 1;
 }
 
 .dark-mode ::placeholder {
-  color: #f0f0f0 !important; /* Almost white for better contrast */
+  color: #f0f0f0 !important; 
   opacity: 1 !important;
 }
 
 .dark-mode input,
 .dark-mode textarea,
 .dark-mode select {
-  background-color: #25253a !important; /* Dark background */
+  background-color: #25253a !important; 
   color: #ffffff !important;
   border: 1px solid #3a3a52 !important;
 }
 
-/* Autofill fields should inherit dark mode */
+
 .dark-mode input:-webkit-autofill,
 .dark-mode textarea:-webkit-autofill,
 .dark-mode select:-webkit-autofill {
@@ -104,9 +96,7 @@
   box-shadow: 0 0 0px 1000px #25253a inset !important;
 }
 
-/* ==========================
-   Movie Form
-========================== */
+
 #add-movie-form .form-group {
   margin-bottom: 15px;
 }
@@ -133,9 +123,6 @@
   box-shadow: var(--focus-box-shadow);
 }
 
-/* ==========================
-   Modal (Edit User)
-========================== */
 .modal-overlay {
   display: none;
   position: fixed;
@@ -154,9 +141,6 @@
   display: flex;
 }
 
-/* ==========================
-   Enforce Dark Modal Theme
-========================== */
 .modal-content,
 .modal-header,
 .modal-footer,
@@ -170,7 +154,6 @@
   background-color: rgba(0, 0, 0, 0.85);
 }
 
-/* Ensure Form Fields Follow Dark Theme */
 .modal-content .form-control {
   background-color: var(--modal-content-bg);
   color: #ffffff;
