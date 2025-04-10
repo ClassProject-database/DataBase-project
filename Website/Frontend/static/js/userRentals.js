@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async function () {
     console.log("User Rentals Page Loaded. Initializing Features...");
 
-    // 1) Initialize Rentals, Reviews, and any dropdown search.
+
     if (document.getElementById("rentalsTableBody")) {
         await refreshRentals();
         setupDeleteRentalListener();
@@ -14,16 +14,12 @@ document.addEventListener("DOMContentLoaded", async function () {
     if (document.getElementById("movieSearch")) {
         await fetchMoviesForDropdown();
     }
-
-    // If you have a separate user table (admin side), we set it up here:
     if (document.getElementById("user-table-body")) {
         setupUserTableListeners();
     }
 });
 
-// =======================
-//  ADD TO CART (Global)
-// =======================
+
 if (!window.addToCart) {
     window.addToCart = function (movie_id, name, price) {
         console.log("Adding to Cart:", { movie_id, name, price });
@@ -41,14 +37,12 @@ if (!window.addToCart) {
 
         cart.push({ movie_id, name, price: parseFloat(price) });
         localStorage.setItem("cart", JSON.stringify(cart));
-        updateCartBadge();    // If you have a navbar/cart icon counter
+        updateCartBadge(); 
         showToast(`${name} added to cart!`);
     };
 }
 
-// =======================
-//  RENTALS
-// =======================
+
 // Fetch rentals via `/api/rentals`
 async function refreshRentals() {
     try {
@@ -67,7 +61,6 @@ function updateRentalsTable(rentals) {
     const tableBody = document.getElementById("rentalsTableBody");
     if (!tableBody) return;
 
-    // If no rentals, show a single row with 'No rentals found.'
     if (!rentals.length) {
         tableBody.innerHTML = `
             <tr><td colspan="5" class="text-center">No rentals found.</td></tr>
@@ -126,11 +119,7 @@ function setupDeleteRentalListener() {
     });
 }
 
-// =======================
 //  REVIEW
-//  This depends on your /api/post_review route
-//  If your server expects 'comment' vs 'review_comment', we pass that accordingly.
-// =======================
 function setupReviewForm() {
     const reviewForm = document.getElementById("review-form");
     if (!reviewForm) return;
@@ -139,7 +128,7 @@ function setupReviewForm() {
         e.preventDefault();
 
 
-        // Validate required fields (movie_id, rating, review_comment)
+        // Validate required fields
         const movieId = document.getElementById("selectedMovieId").value;
         const rating = document.getElementById("reviewRating").value;
         const reviewText = document.getElementById("reviewComment").value.trim();
@@ -159,7 +148,7 @@ function setupReviewForm() {
                 body: JSON.stringify({
                     movie_id: movieId,
                     rating: rating,
-                    review_comment: reviewText  // ✅ Required by backend
+                    review_comment: reviewText 
                 })
             });
         
@@ -168,13 +157,12 @@ function setupReviewForm() {
             if (data.success) {
                 showToast("Review submitted successfully!", "success");
 
-                // Clear form fields
+            
                 document.getElementById("reviewRating").value = "";
                 document.getElementById("reviewComment").value = "";
                 document.getElementById("movieSearch").value = "";
                 document.getElementById("selectedMovieId").value = "";
 
-                // If reviews are updated dynamically, prepend the new review to the list
                 if (reviewList) {
                     const newReview = document.createElement("li");
                     newReview.classList.add("list-group-item", "bg-dark", "text-white");
@@ -195,9 +183,9 @@ function setupReviewForm() {
     });
 }
 
-// =======================
+
 //  MOVIE SEARCH FOR REVIEWS
-// =======================
+
 async function fetchMoviesForDropdown() {
     console.log("Fetching movies for review search...");
     try {
@@ -210,8 +198,6 @@ async function fetchMoviesForDropdown() {
         console.error("Error fetching movies:", error);
     }
 }
-
-// Filter displayed movies in dropdown as user types
 document.getElementById("movieSearch")?.addEventListener("input", function () {
     const query = this.value.trim().toLowerCase();
     const dropdown = document.getElementById("movieDropdown");
@@ -249,9 +235,8 @@ document.getElementById("movieSearch")?.addEventListener("input", function () {
     dropdown.style.display = "block";
 });
 
-// =======================
+
 //  ADMIN USER TABLE
-// =======================
 function setupUserTableListeners() {
     const userTableBody = document.getElementById("user-table-body");
     if (!userTableBody) return;

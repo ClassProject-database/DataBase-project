@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ movie.title }} - Details{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <!-- Movie Info Card -->
+  <div class="card bg-dark text-white shadow-lg mb-4">
+    <div class="row g-0">
+      <div class="col-md-4">
+        <img src="{{ url_for('static', filename='images/' ~ movie.image_path) }}"
+             alt="{{ movie.title }}"
+             class="img-fluid rounded-start"
+             onerror="this.onerror=null;this.src='/static/images/keyboard.jpg';">
+      </div>
+      <div class="col-md-8">
+        <div class="card-body">
+          <h2 class="card-title">{{ movie.title }}</h2>
+          <p class="mb-1"><strong>Release Year:</strong> {{ movie.release_year }}</p>
+          <p class="mb-1"><strong>Rating:</strong> {{ movie.rating or "Not Rated" }}</p>
+          <p class="mb-1"><strong>Price:</strong> ${{ "%.2f"|format(movie.price) }}</p>
+
+          {% if genres %}
+            <p class="mt-3"><strong>Genres:</strong></p>
+            {% for genre in genres %}
+              <span class="badge bg-primary me-1">{{ genre }}</span>
+            {% endfor %}
+          {% endif %}
+
+          {% if current_user.is_authenticated and current_user.role == 'customer' %}
+            <div class="mt-4">
+              <form method="post" action="{{ url_for('auth.add_to_cart') }}">
+                <input type="hidden" name="movie_id" value="{{ movie.movie_id }}">
+                <button type="submit" class="btn btn-success">
+                  <i class="fa fa-shopping-cart me-1"></i> Add to Cart
+                </button>
+              </form>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Section -->
+  <div class="card bg-dark text-white shadow-lg">
+    <div class="card-header border-bottom border-secondary">
+      <h4 class="mb-0">User Reviews</h4>
+    </div>
+    <div class="card-body">
+      {% if reviews %}
+        <div class="list-group">
+          {% for r in reviews %}
+            <div class="list-group-item list-group-item-dark mb-3 rounded">
+              <p class="mb-1"><strong>{{ r.username }}</strong> rated it ⭐ {{ r.rating }}</p>
+              <p class="mb-1">{{ r.review_comment or "No comment." }}</p>
+              <small class="text-muted">{{ r.review_date.strftime('%Y-%m-%d %H:%M') }}</small>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted">No reviews for this movie yet.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -5,13 +5,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const fetchMovies = async (genreId = null) => {
         let url = "/api/movies";
         
-        // Append ?genre_id=X if a valid genreId was given
         if (genreId !== null && !isNaN(genreId)) {
             url += `?genre_id=${genreId}`;
         }
 
         try {
-            console.log(`📡 Fetching movies (Genre ID: ${genreId ?? "All"})...`);
+            console.log(`Fetching movies (Genre ID: ${genreId ?? "All"})...`);
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
@@ -35,8 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const col = document.createElement("div");
             col.classList.add("col", "movie-card");
             
-            // If your API returns one genre_id per movie, store it in data-attribute
-            // for potential filtering. Remove if you have multiple genres.
             if (movie.genre_id) {
                 col.dataset.genre = movie.genre_id;
             }
@@ -45,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
             card.classList.add("card", "h-100", "bg-dark", "text-white");
 
             // Use movie.image_path with a fallback (keyboard.jpg)
-            // Use movie.image_path with a fallback (keyboard.jpg)
         const img = document.createElement("img");
         img.classList.add("card-img-top", "movie-img");
         img.src = movie.image_path 
@@ -53,7 +49,6 @@ document.addEventListener("DOMContentLoaded", () => {
             : "/static/images/keyboard.jpg";
         img.alt = movie.title || "Movie poster";
 
-        // Catch broken image URLs
         img.onerror = () => {
             img.onerror = null;
             img.src = "/static/images/keyboard.jpg";
@@ -68,19 +63,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 <p>Rating: ${movie.rating}</p>
                 <p>Price: $${movie.price}</p>
             `;
-
             const cardFooter = document.createElement("div");
             cardFooter.classList.add("card-footer", "text-center");
 
             const button = document.createElement("button");
-            button.classList.add("btn", "btn-outline-light");  // or 'btn-outline-dark' if you prefer
+            button.classList.add("btn", "btn-outline-dark");  
             button.textContent = "Add to Cart";
             button.onclick = () => {
-                console.log(`🛒 Adding: ${movie.title}`);
+                console.log(` Adding: ${movie.title}`);
                 if (typeof addToCart === "function") {
                     addToCart(movie.movie_id, movie.title, movie.price);
                 } else {
-                    console.warn("⚠️ addToCart function is not defined.");
+                    console.warn("addToCart function is not defined.");
                 }
             };
 
@@ -95,9 +89,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".filter-btn").forEach((button) => {
         button.addEventListener("click", () => {
             let genreId = button.dataset.genreId;
-            // "null" means show all
+
             genreId = genreId === "null" ? null : parseInt(genreId); 
-            console.log(`🔍 Filtering movies by Genre ID: ${genreId ?? "All"}`);
+            console.log(`Filtering movies by Genre ID: ${genreId ?? "All"}`);
             fetchMovies(genreId);
         });
     });

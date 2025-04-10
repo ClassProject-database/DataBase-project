@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("📽️ Movie listing page ready!");
+  console.log(" Movie listing page ready!");
 
   const moviesRow = document.querySelector(".row");
   if (!moviesRow) {
-    console.error("❌ .row container not found for displaying movies.");
+    console.error(" .row container not found for displaying movies.");
     return;
   }
 
@@ -14,15 +14,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const movies = await res.json();
       displayMovies(movies);
     } catch (err) {
-      console.error("❌ Failed to fetch movies:", err);
+      console.error(" Failed to fetch movies:", err);
       typeof customAlert === "function"
-        ? customAlert("⚠️ Failed to load movies. Try again later.")
-        : alert("⚠️ Failed to load movies. Try again later.");
+        ? customAlert(" Failed to load movies. Try again later.")
+        : alert(" Failed to load movies. Try again later.");
     }
   };
 
   const displayMovies = (movies) => {
-    moviesRow.innerHTML = ""; // Clear previous content
+    moviesRow.innerHTML = ""; 
 
     movies.forEach((movie) => {
       const col = document.createElement("div");

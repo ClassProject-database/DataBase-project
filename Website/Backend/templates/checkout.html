@@ -179,17 +179,17 @@
 
           const data = await res.json();
           if (data.success) {
-            messageDiv.textContent = "✅ Purchase complete! Redirecting...";
+            messageDiv.textContent = " Purchase complete! Redirecting...";
             messageDiv.classList.add("success");
             localStorage.clear();
             setTimeout(() => window.location.href = "/user_rentals", 1500);
           } else {
-            messageDiv.textContent = "❌ " + (data.error || "Checkout failed.");
+            messageDiv.textContent = " " + (data.error || "Checkout failed.");
             messageDiv.classList.add("error");
             submitButton.disabled = false;
           }
         } catch (err) {
-          console.error("❌ Checkout error:", err);
+          console.error(" Checkout error:", err);
           messageDiv.textContent = "An error occurred. Please try again.";
           messageDiv.classList.add("error");
           submitButton.disabled = false;

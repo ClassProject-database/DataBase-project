@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("✅ Checkout page loaded!");
+    console.log(" Checkout page loaded!");
 
     const checkoutForm = document.getElementById("checkout-form");
     const messageDiv = document.getElementById("checkout-message");
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let isSubmitting = false;
 
     if (!checkoutForm || !submitButton) {
-        console.error("🚫 Missing checkout form or submit button.");
+        console.error(" Missing checkout form or submit button.");
         return;
     }
 
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const pricing = JSON.parse(localStorage.getItem("pricing_summary") || "{}");
 
         if (!cart.length) {
-            showErrorGlobal("🛒 Your cart is empty.");
+            showErrorGlobal(" Your cart is empty.");
             resetState();
             return;
         }
@@ -71,27 +71,27 @@ document.addEventListener("DOMContentLoaded", function () {
         let valid = true;
 
         if (!cardHolder) {
-            showError(cardHolderEl, "❌ Enter the name on your card.");
+            showError(cardHolderEl, " Enter the name on your card.");
             valid = false;
         }
 
         if (!/^\d{13,19}$/.test(cardNumber)) {
-            showError(cardNumberEl, "❌ Enter a valid 13-19 digit card number.");
+            showError(cardNumberEl, " Enter a valid 13-19 digit card number.");
             valid = false;
         }
 
         if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiryDate)) {
-            showError(expiryDateEl, "❌ Enter a valid expiration date (MM/YY).");
+            showError(expiryDateEl, " Enter a valid expiration date (MM/YY).");
             valid = false;
         }
 
         if (!/^\d{3,4}$/.test(cvv)) {
-            showError(cvvEl, "❌ Enter a valid 3-4 digit CVV.");
+            showError(cvvEl, " Enter a valid 3-4 digit CVV.");
             valid = false;
         }
 
         if (!valid) {
-            showErrorGlobal("⚠️ Please fix the highlighted fields.");
+            showErrorGlobal(" Please fix the highlighted fields.");
             resetState();
             return;
         }
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
             expiration: expiryDate
         };
 
-        console.log("📤 Sending checkout payload:", payload);
+        console.log(" Sending checkout payload:", payload);
 
         try {
             const res = await fetch("/api/checkout", {
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             const data = await res.json();
-            console.log("✅ Server Response:", data);
+            console.log(" Server Response:", data);
 
             if (data.success) {
                 // Show receipt
@@ -139,12 +139,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     window.location.href = "/user_rentals";
                 };
             } else {
-                showErrorGlobal("❌ " + (data.error || "Checkout failed."));
+                showErrorGlobal(" " + (data.error || "Checkout failed."));
                 resetState();
             }
         } catch (err) {
-            console.error("❌ Checkout Error:", err);
-            showErrorGlobal("❌ Something went wrong. Please try again.");
+            console.error(" Checkout Error:", err);
+            showErrorGlobal(" Something went wrong. Please try again.");
             resetState();
         }
     });

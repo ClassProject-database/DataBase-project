@@ -1,47 +1,84 @@
 {% extends "base.html" %}
-
-{% block title %}View User{% endblock %}
+{% block title %}View User - Movie Store{% endblock %}
 
 {% block content %}
-<div class="container my-4">
-  <h2>User Information</h2>
-  <div class="card mb-4">
+<div class="container py-5">
+
+  <!-- Back Button -->
+  <a href="{{ url_for('views.admin_dashboard') }}" class="btn btn-outline-light mb-4">
+    <i class="fa fa-arrow-left"></i> Back to Dashboard
+  </a>
+
+  <!-- User Info Section -->
+  <div class="card bg-dark text-white border-secondary shadow-lg mb-4">
+    <div class="card-header border-bottom border-secondary">
+      <h4 class="mb-0">User Information</h4>
+    </div>
     <div class="card-body">
-      <p><strong>Account ID:</strong> {{ user.account_id }}</p>
-      <p><strong>Username:</strong> {{ user.username }}</p>
-      <p><strong>First Name:</strong> {{ user.first_name }}</p>
-      <p><strong>Last Name:</strong> {{ user.last_name }}</p>
-      <p><strong>Phone:</strong> {{ user.phone }}</p>
-      <p><strong>Role:</strong> {{ user.role }}</p>
+      <div class="row row-cols-1 row-cols-md-2">
+        <div class="mb-3"><strong>Account ID:</strong> {{ user.account_id }}</div>
+        <div class="mb-3"><strong>Username:</strong> {{ user.username }}</div>
+        <div class="mb-3"><strong>First Name:</strong> {{ user.first_name }}</div>
+        <div class="mb-3"><strong>Last Name:</strong> {{ user.last_name }}</div>
+        <div class="mb-3"><strong>Email:</strong> {{ user.email }}</div>
+        <div class="mb-3"><strong>Phone:</strong> {{ user.phone }}</div>
+        <div class="mb-3"><strong>Role:</strong> {{ user.role.title() }}</div>
+      </div>
     </div>
   </div>
 
-  <h3>Rental History</h3>
-  {% if rentals and rentals|length > 0 %}
-  <table class="table table-dark table-striped">
-    <thead>
-      <tr>
-        <th>Rental ID</th>
-        <th>Movie Title</th>
-        <th>Rental Date</th>
-        <th>Return Date</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for rental in rentals %}
-      <tr>
-        <td>{{ rental.rental_id }}</td>
-        <td>{{ rental.title }}</td>
-        <td>{{ rental.rental_date }}</td>
-        <td>{{ rental.return_date if rental.return_date else "N/A" }}</td>
-        <td>{{ rental.status }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-    <p>No rentals found for this user.</p>
-  {% endif %}
+  <!-- Rental History Section -->
+  <div class="card bg-dark text-white border-secondary shadow-lg">
+    <div class="card-header d-flex justify-content-between align-items-center border-bottom border-secondary">
+      <h4 class="mb-0">Rental History</h4>
+      {% if rentals %}
+        <span class="badge bg-info text-dark px-3 py-2">Total Rentals: {{ rentals | length }}</span>
+      {% endif %}
+    </div>
+    <div class="card-body p-0">
+      {% if rentals and rentals|length > 0 %}
+      <div class="table-responsive">
+        <table class="table table-dark table-striped mb-0">
+          <thead>
+            <tr>
+              <th>Rental ID</th>
+              <th>Movie Title</th>
+              <th>Rental Date</th>
+              <th>Return Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rental in rentals %}
+            <tr>
+              <td>{{ rental.rental_id }}</td>
+              <td>
+                {% if rental.movie_id %}
+                  <a href="{{ url_for('views.movie_details', movie_id=rental.movie_id) }}" class="text-decoration-none text-info">
+                    {{ rental.title }}
+                  </a>
+                {% else %}
+                  {{ rental.title }}
+                {% endif %}
+              </td>
+              <td>{{ rental.rental_date }}</td>
+              <td>{{ rental.return_date or "N/A" }}</td>
+              <td>
+                {% if rental.return_date %}
+                  <span class="badge bg-success">Returned</span>
+                {% else %}
+                  <span class="badge bg-warning text-dark">Ongoing</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <p class="p-3 text-muted mb-0">No rentals found for this user.</p>
+      {% endif %}
+    </div>
+  </div>
 </div>
 {% endblock %}

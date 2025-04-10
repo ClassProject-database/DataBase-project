@@ -1,19 +1,18 @@
-console.log("✅ cart.js loaded!");
+console.log(" cart.js loaded!");
 
-// ===============================
 // Add item to cart
-// ===============================
+
 window.addToCart = function (movie_id, name, price) {
-    console.log("🛒 Adding to cart:", movie_id, name, price);
+    console.log(" Adding to cart:", movie_id, name, price);
     try {
         if (!movie_id || !name || isNaN(price)) {
-            console.error("❌ Invalid item data", { movie_id, name, price });
+            console.error(" Invalid item data", { movie_id, name, price });
             return;
         }
 
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
         if (cart.some(item => item.movie_id === movie_id)) {
-            console.warn(`⚠️ Movie ID ${movie_id} is already in the cart.`);
+            console.warn(` Movie ID ${movie_id} is already in the cart.`);
             return;
         }
 
@@ -23,26 +22,23 @@ window.addToCart = function (movie_id, name, price) {
         updateCartList();
         showModal(`${name} has been added to your cart!`);
     } catch (err) {
-        console.error("❌ Error adding to cart:", err);
+        console.error(" Error adding to cart:", err);
     }
 };
 
-// ===============================
-// Update cart badge in nav
-// ===============================
+
 function updateCartBadge() {
     try {
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
         const badge = document.querySelector(".cart-badge");
         if (badge) badge.innerText = cart.length;
     } catch (err) {
-        console.error("❌ Error updating cart badge:", err);
+        console.error(" Error updating cart badge:", err);
     }
 }
 
-// ===============================
 // Calculate discount rate
-// ===============================
+
 function getDiscountRate(code) {
     switch ((code || "").toUpperCase().trim()) {
         case "VIP": return 0.20;
@@ -51,9 +47,6 @@ function getDiscountRate(code) {
     }
 }
 
-// ===============================
-// Re-render cart list and save pricing summary to localStorage
-// ===============================
 function updateCartList() {
     try {
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -88,7 +81,7 @@ function updateCartList() {
         const totalAfterDiscount = subtotal - discountAmount;
         const taxedTotal = totalAfterDiscount * (1 + taxRate);
 
-        // Save summary to localStorage for the checkout page
+        // Save summary to localStorage
         localStorage.setItem("pricing_summary", JSON.stringify({
             subtotal: subtotal.toFixed(2),
             discount_code: discountCode,
@@ -100,13 +93,13 @@ function updateCartList() {
         if (totalItemsEl) totalItemsEl.innerText = cart.length;
         if (totalPriceEl) totalPriceEl.innerText = taxedTotal.toFixed(2);
     } catch (err) {
-        console.error("❌ Error updating cart list:", err);
+        console.error(" Error updating cart list:", err);
     }
 }
 
-// ===============================
+
 // Remove item from cart
-// ===============================
+
 document.addEventListener("click", function (e) {
     if (!e.target.classList.contains("remove-btn")) return;
 
@@ -122,9 +115,8 @@ document.addEventListener("click", function (e) {
     }
 });
 
-// ===============================
 // Init on DOM load
-// ===============================
+
 document.addEventListener("DOMContentLoaded", function () {
     updateCartBadge();
     updateCartList();
@@ -145,7 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.removeItem("cart");
             updateCartList();
             updateCartBadge();
-            showModal("🧹 Cart cleared.");
+            showModal(" Cart cleared.");
         });
     }
 
@@ -154,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function () {
         checkoutBtn.addEventListener("click", function () {
             const cart = JSON.parse(localStorage.getItem("cart")) || [];
             if (!cart.length) {
-                showModal("🛒 Your cart is empty. Add something first!");
+                showModal(" Your cart is empty. Add something first!");
                 return;
             }
             window.location.href = "/checkout";
@@ -162,9 +154,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// ===============================
 // Custom Modal Handler
-// ===============================
+
 function showModal(message) {
     const overlay = document.getElementById("customModalOverlay");
     const messageDiv = document.getElementById("customModalMessage");

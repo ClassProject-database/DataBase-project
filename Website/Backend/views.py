@@ -561,3 +561,42 @@ def get_all_movies():
     return jsonify(movies)
 
 
+
+
+@views.route('/movie/<int:movie_id>')
+def movie_details(movie_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Get movie details
+    cursor.execute("SELECT * FROM movies WHERE movie_id = %s", (movie_id,))
+    movie = cursor.fetchone()
+
+    if not movie:
+        cursor.close()
+        conn.close()
+        abort(404, description="Movie not found.")
+
+    # Get genre list
+    cursor.execute("""
+        SELECT g.genre_name
+        FROM genres g
+        JOIN moviegenres mg ON g.genre_id = mg.genre_id
+        WHERE mg.movie_id = %s
+    """, (movie_id,))
+    genres = [row['genre_name'] for row in cursor.fetchall()]
+
+    # Get reviews
+    cursor.execute("""
+        SELECT r.rating, r.review_comment, u.username, r.review_date
+        FROM reviews r
+        JOIN users u ON r.account_id = u.account_id
+        WHERE r.movie_id = %s
+        ORDER BY r.review_date DESC
+    """, (movie_id,))
+    reviews = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template("movieDetails.html", movie=movie, genres=genres, reviews=reviews)

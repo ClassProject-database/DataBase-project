@@ -74,7 +74,6 @@
             placeholder="Search Movie..."
             autocomplete="off"
           >
-          <!-- Hidden input for movie_id (value should be set via JavaScript from movie search selection) -->
           <input type="hidden" id="selectedMovieId" name="movie_id" required>
           <div id="movieDropdown" class="dropdown-menu"></div>
         </div>
@@ -96,7 +95,6 @@
           </div>
           <div class="mb-3">
             <label for="reviewComment" class="form-label">Your Review</label>
-            <!-- Change name attribute to match backend expectation -->
             <textarea
               id="reviewComment"
               name="review_comment"

@@ -1,231 +1,165 @@
-/* 
-   CSS Variables
- */
 :root {
-    /* Colors */
-    --bg-gradient-start: #1a1d21;
-    --bg-gradient-end: #121416;
-    --overlay-bg: rgba(44, 47, 51, 0.95);
-    --container-bg: rgba(44, 47, 51, 0.95);
-    --container-shadow: rgba(0, 0, 0, 0.6);
-    --table-bg: rgba(34, 36, 40, 0.9);
-    --table-row-even: rgba(44, 47, 51, 0.8);
-    --table-row-hover: rgba(0, 123, 255, 0.2);
-    --white: #ffffff;
-    --light-text: #f0f0f0;
-    --dark-text: #12121b;
-    
-    /* Accent Colors */
-    --primary: #007bff;
-    --primary-hover: #0056b3;
-    --danger: #dc3545;
-    --danger-hover: #b02a37;
-    
-    /* Font sizes */
-    --base-font: 1rem;
-    --small-font: 0.9rem;
-    
-    /* Spacing */
-    --padding-base: 10px;
-    --padding-lg: 12px;
-    --margin-base: 10px;
-    
-    /* Transitions */
-    --transition-speed: 0.3s;
-  }
-  
-  /* 
-     Global & Layout
-   */
-  html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end));
-    color: var(--light-text);
-  }
-  
-  /* Rentals Container */
+  --bg-gradient-start: #1a1d21;
+  --bg-gradient-end: #121416;
+  --container-bg: rgba(44, 47, 51, 0.95);
+  --table-bg: rgba(34, 36, 40, 0.9);
+  --table-row-even: rgba(44, 47, 51, 0.8);
+  --table-row-hover: rgba(0, 123, 255, 0.2);
+  --white: #ffffff;
+  --light-text: #f0f0f0;
+  --primary: #007bff;
+  --primary-hover: #0056b3;
+  --danger: #dc3545;
+  --danger-hover: #b02a37;
+  --transition-speed: 0.3s;
+}
+
+/* Base Layout */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end));
+  color: var(--light-text);
+}
+
+/* Container Styling */
+.rentals-container {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 20px;
+  background: var(--container-bg);
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
   .rentals-container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    background: var(--container-bg);
-    border-radius: 10px;
-    box-shadow: 0 6px 15px var(--container-shadow);
-    backdrop-filter: blur(12px);
-    text-align: center;
-    transition: all var(--transition-speed) ease-in-out;
-  }
-  
-  @media (max-width: 768px) {
-    .rentals-container {
-      width: 90%;
-      padding: 15px;
-    }
-  }
-  
-  /* 
-     Table Styles
-   */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: var(--table-bg);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-  
-  th, td {
-    padding: 12px;
-    border-bottom: 1px solid #444;
-    text-align: center;
-  }
-  
-  th {
-    background-color: #222;
-    font-weight: bold;
-    text-transform: uppercase;
-  }
-  
-  tr:nth-child(even) {
-    background-color: var(--table-row-even);
-  }
-  
-  tr:hover {
-    background-color: var(--table-row-hover);
-    transition: background var(--transition-speed) ease-in-out;
-  }
-  
-  /* 
-     Status Text Colors
-   */
-  .text-warning {
-    color: #ffc107;
-    font-weight: bold;
-  }
-  
-  .text-success {
-    color: #28a745;
-    font-weight: bold;
-  }
-  
-  /* 
-     Buttons
-   */
-  button {
-    background-color: var(--primary);
-    border: none;
-    padding: 12px;
-    font-size: var(--base-font);
-    color: var(--white);
-    font-weight: bold;
-    border-radius: 6px;
-    transition: all var(--transition-speed) ease;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: var(--primary-hover);
-    transform: scale(1.08);
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
-  }
-  
-  /* Delete Button */
-  .btn-danger {
-    background-color: var(--danger);
-  }
-  
-  .btn-danger:hover {
-    background-color: var(--danger-hover);
-  }
-  
-  /* 
-     Review Form
-   */
-  #review-form {
-    margin-top: 20px;
+    width: 90%;
     padding: 15px;
-    background: rgba(50, 54, 60, 0.9);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   }
-  
-  input, textarea, select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 8px;
-    border: none;
-    border-radius: 5px;
-    background: rgba(223, 9, 9, 0.9);
-    color: var(--white);
-  }
-  
-  input:focus, textarea:focus {
-    outline: 2px solid var(--primary);
-  }
-  
-  /* 
-     Search & Dropdown
-   */
-  .search-container {
-    position: relative;
-    margin-bottom: var(--margin-base);
-  }
-  
-  #movieDropdown {
-    position: absolute;
-    background: rgba(34, 36, 40, 0.95);
-    border: 1px solid #444;
-    width: 100%;
-    max-height: 200px;
-    overflow-y: auto;
-    display: none;
-    z-index: 1000;
-    left: 0;
-    top: 40px;
-    padding: 5px;
-    border-radius: 5px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  }
-  
-  #movieDropdown .dropdown-item {
-    padding: 10px;
-    cursor: pointer;
-    color: var(--white);
-    border-bottom: 1px solid #444;
-    transition: background var(--transition-speed) ease-in-out;
-  }
-  
-  #movieDropdown .dropdown-item:hover {
-    background: var(--primary);
-  }
-  
-  /* 
-     Alert Messages
-   */
-  .alert {
-    padding: 10px;
-    margin: var(--margin-base) 0;
-    border-radius: 5px;
-    text-align: center;
-    font-weight: bold;
-  }
-  
-  .alert-success {
-    background-color: #28a745;
-    color: var(--white);
-  }
-  
-  .alert-warning {
-    background-color: #ffc107;
-    color: black;
-  }
-  
-  .alert-danger {
-    background-color: #dc3545;
-    color: var(--white);
-  }
-  
+}
+
+/* Table */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  background: var(--table-bg);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #444;
+  text-align: center;
+}
+
+th {
+  background-color: #222;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+tr:nth-child(even) {
+  background-color: var(--table-row-even);
+}
+
+tr:hover {
+  background-color: var(--table-row-hover);
+}
+
+/* Text Highlight */
+.text-warning { color: #ffc107; font-weight: bold; }
+.text-success { color: #28a745; font-weight: bold; }
+
+/* Buttons */
+button,
+.btn {
+  background-color: var(--primary);
+  border: none;
+  padding: 12px;
+  color: var(--white);
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+button:hover,
+.btn:hover {
+  background-color: var(--primary-hover);
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.btn-danger {
+  background-color: var(--danger);
+}
+.btn-danger:hover {
+  background-color: var(--danger-hover);
+}
+
+/* Form Inputs */
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border: none;
+  border-radius: 5px;
+  background: #2e2e3e;
+  color: var(--white);
+}
+input:focus, textarea:focus, select:focus {
+  outline: 2px solid var(--primary);
+}
+
+/* Review Form */
+#review-form {
+  margin-top: 20px;
+  padding: 15px;
+  background: #2a2f38;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Dropdown */
+#movieDropdown {
+  position: absolute;
+  background: #2a2c34;
+  border: 1px solid #444;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#movieDropdown .dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  color: var(--white);
+  border-bottom: 1px solid #444;
+}
+
+#movieDropdown .dropdown-item:hover {
+  background: var(--primary);
+}
+
+/* Alerts */
+.alert {
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+}
+.alert-success { background: #28a745; color: var(--white); }
+.alert-warning { background: #ffc107; color: black; }
+.alert-danger  { background: #dc3545; color: var(--white); }

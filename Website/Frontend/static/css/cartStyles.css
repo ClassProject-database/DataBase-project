@@ -9,7 +9,6 @@
     --transition-speed: 0.2s;
   }
   
-  /* List Group Item */
   .list-group-item {
     background-color: var(--list-bg);
     border: 1px solid var(--list-border);
@@ -24,13 +23,11 @@
     transform: translateY(-1px);
   }
   
-  /* Bold Text Inside List Item */
   .list-group-item strong {
     font-size: var(--font-size-bold);
     font-weight: bold;
   }
   
-  /* Remove Button Styling */
   .remove-btn {
     font-size: 14px;
     padding: 6px 12px;
