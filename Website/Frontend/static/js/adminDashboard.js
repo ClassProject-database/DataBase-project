@@ -1,295 +1,152 @@
 document.addEventListener("DOMContentLoaded", () => {
-  console.log("Admin dashboard loaded!");
-
-  //  Toast Notification Helper 
   const showToast = (message, type = "success") => {
     const toast = document.createElement("div");
-    toast.classList.add("toast", type);
-    toast.textContent = message;
+    toast.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3`;
+    toast.innerText = message;
     document.body.appendChild(toast);
-    setTimeout(() => toast.classList.add("show"), 100);
-    setTimeout(() => {
-      toast.classList.remove("show");
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    setTimeout(() => toast.remove(), 3000);
   };
 
-  //  Safe Fetch JSON Helper 
-  const safeFetchJson = async (response) => {
-    try {
-      const text = await response.text();
-      return JSON.parse(text);
-    } catch (error) {
-      console.error("Invalid JSON response:", error);
-      return { success: false, error: "Invalid server response" };
+  const safeJson = async (res) => JSON.parse(await res.text());
+
+  const fetchUsers = async (query = "") => {
+    const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
+    const data = await safeJson(res);
+    const table = document.getElementById("user-table-body");
+    table.innerHTML = "";
+
+    if (!data.length) {
+      table.innerHTML = `<tr><td colspan="6" class="text-center">No users found.</td></tr>`;
+      return;
+    }
+
+    for (const u of data) {
+      table.innerHTML += `
+        <tr data-account-id="${u.account_id}">
+          <td>${u.account_id}</td>
+          <td>${u.username}</td>
+          <td>${u.first_name}</td>
+          <td>${u.last_name}</td>
+          <td>${u.phone}</td>
+          <td>
+            <button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>
+            <button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>
+          </td>
+        </tr>`;
     }
   };
 
-  //  Serialize Form Helper 
-  const serializeForm = (form) => {
-    const obj = {};
-    new FormData(form).forEach((value, key) => {
-      obj[key] = value;
-    });
-    return obj;
-  };
-
-  //  Fetch & Display Users 
-  const fetchUsers = async (searchQuery = "") => {
-    try {
-      const response = await fetch(`/api/search_users?query=${encodeURIComponent(searchQuery)}`);
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-      const users = await safeFetchJson(response);
-      console.log("Received Users Data:", users);
-
-      const usersTable = document.getElementById("user-table-body");
-      if (!usersTable) {
-        console.error("Error: 'user-table-body' not found.");
-        return;
-      }
-
-      usersTable.innerHTML = "";
-      if (!users.length) {
-        usersTable.innerHTML = `<tr><td colspan="6" class="text-center">No users found</td></tr>`;
-      } else {
-        users.forEach((user) => {
-          const row = document.createElement("tr");
-          row.setAttribute("data-account-id", user.account_id);
-          row.innerHTML = `
-            <td>${user.account_id}</td>
-            <td>${user.username}</td>
-            <td>${user.first_name}</td>
-            <td>${user.last_name}</td>
-            <td>${user.phone}</td>
-            <td>
-              <button class="btn btn-sm btn-primary edit-user-btn" data-account-id="${user.account_id}">Edit</button>
-              <a href="/admin/user/${user.account_id}" class="btn btn-sm btn-info">View</a>
-              <button class="btn btn-sm btn-danger delete-user-btn" data-account-id="${user.account_id}">Delete</button>
-            </td>
-          `;
-          usersTable.appendChild(row);
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching users:", error);
-      showToast(`Error fetching users: ${error.message}`, "error");
-    }
-  };
-
-  //  Add User 
   const addUserForm = document.getElementById("add-user-form");
   if (addUserForm) {
     addUserForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const username = document.getElementById("username").value.trim();
-      const firstName = document.getElementById("first_name").value.trim();
-      const lastName = document.getElementById("last_name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const role = document.getElementById("role").value.trim() || "user";
+      const data = {
+        username: addUserForm.username.value.trim(),
+        first_name: addUserForm.first_name.value.trim(),
+        last_name: addUserForm.last_name.value.trim(),
+        phone: addUserForm.phone.value.trim(),
+        role: addUserForm.role.value.trim(),
+      };
 
-      if (!username || !firstName || !lastName || !phone || !role) {
-        showToast("Please fill in all fields.", "error");
-        return;
-      }
+      await fetch("/api/add_user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
-      const userData = { username, first_name: firstName, last_name: lastName, phone, role };
-
-      try {
-        const response = await fetch("/api/add_user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
-        });
-        const data = await safeFetchJson(response);
-        if (data.success) {
-          showToast("User added successfully!");
-          fetchUsers();
-        } else {
-          showToast(`Error: ${data.error}`, "error");
-        }
-      } catch (error) {
-        console.error("Fetch Error:", error);
-        showToast("Error adding user.", "error");
-      }
+      showToast("User added");
+      addUserForm.reset();
+      fetchUsers();
     });
   }
 
-  //  Bootstrap Modal
-  const editUserModalElem = document.getElementById("editUserModal");
+  const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
+  const editForm = document.getElementById("edit-user-form");
 
-  const editModalInstance = new bootstrap.Modal(editUserModalElem);
+  document.getElementById("user-table-body").addEventListener("click", async (e) => {
+    const id = e.target.dataset.id;
 
-  //  Edit User  
-  const editUser = async (accountId) => {
-    console.log(`Editing User ID: ${accountId}`);
-    try {
-      const response = await fetch(`/api/get_user?account_id=${encodeURIComponent(accountId)}`);
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-      const user = await safeFetchJson(response);
-      console.log("Received User Data:", user);
+    if (e.target.classList.contains("edit-user-btn")) {
+      const res = await fetch(`/api/get_user?account_id=${id}`);
+      const user = await safeJson(res);
 
-      // Populate  fields
-      document.getElementById("editCustomerId").value = user.account_id;
-      document.getElementById("editUsername").value = user.username;
-      document.getElementById("editFirstName").value = user.first_name;
-      document.getElementById("editLastName").value = user.last_name;
-      document.getElementById("editPhone").value = user.phone;
-      const roleCell = (user.role || "").trim().toLowerCase();
-      document.getElementById("editRole").value = ["user", "admin"].includes(roleCell) ? roleCell : "user";
+      editForm.editUserId.value = user.account_id;
+      editForm.editUsername.value = user.username;
+      editForm.editFirstName.value = user.first_name;
+      editForm.editLastName.value = user.last_name;
+      editForm.editEmail.value = user.email;
+      editForm.editPhone.value = user.phone;
+      editForm.editRole.value = user.role;
 
-    
-      editModalInstance.show();
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      showToast("Error loading user data.", "error");
-    }
-  };
-
-  //  Save Changes 
-const editUserForm = document.getElementById("edit-user-form");
-
-if (editUserForm) {
-  editUserForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    
-
-    console.log("Raw FormData:", [...new FormData(editUserForm)]);
-    
-    const userData = serializeForm(editUserForm);
-    console.log("Serialized form data:", userData);
-
-    if (!userData.customer_id || !userData.username || !userData.first_name || !userData.last_name || !userData.phone || !userData.role) {
-      showToast("Please fill in all required fields.", "error");
-      return;
+      editUserModal.show();
     }
 
-    try {
-      const response = await fetch("/api/update_user", {
+    if (e.target.classList.contains("delete-user-btn")) {
+      await fetch("/api/delete_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          account_id: userData.customer_id,
-          username: userData.username,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          phone: userData.phone,
-          role: userData.role,
-        }),
+        body: JSON.stringify({ account_id: id }),
       });
-
-      const data = await safeFetchJson(response);
-      if (data.success) {
-        showToast("User updated successfully!");
-        editModalInstance.hide();
-        fetchUsers();
-      } else {
-        showToast(`Error updating user: ${data.error}`, "error");
-      }
-    } catch (err) {
-      console.error("Error updating user:", err);
-      showToast("Error updating user.", "error");
+      fetchUsers();
+      showToast("User deleted");
     }
   });
-}
 
+  editForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  //  Delete User 
-  const deleteUser = async (accountId) => {
-    if (!accountId) {
-      console.error("Error: Missing account_id before sending request");
-      return;
-    }
-    console.log("Sending account_id:", accountId);
+    const data = {
+      account_id: editForm.editUserId.value,
+      username: editForm.editUsername.value.trim(),
+      first_name: editForm.editFirstName.value.trim(),
+      last_name: editForm.editLastName.value.trim(),
+      email: editForm.editEmail.value.trim(),
+      phone: editForm.editPhone.value.trim(),
+      role: editForm.editRole.value,
+    };
 
-    if (!confirm("Are you sure you want to delete this user?")) return;
-
-    try {
-      const response = await fetch("/api/delete_user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ account_id: accountId }),
-      });
-      if (!response.ok) {
-        throw new Error(`Server responded with ${response.status}`);
-      }
-      const data = await safeFetchJson(response);
-      console.log("Received Response:", data);
-      if (data.success) {
-        showToast("User deleted successfully!");
-        fetchUsers();
-      } else {
-        throw new Error(data.error || "Unknown error occurred");
-      }
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      showToast(`Error: ${error.message}`, "error");
-    }
-  };
-
-  const userTableBody = document.getElementById("user-table-body");
-  if (userTableBody) {
-    userTableBody.addEventListener("click", (event) => {
-      const target = event.target;
-      const accountId = target.dataset.accountId;
-      if (target.classList.contains("edit-user-btn")) {
-        editUser(accountId);
-      } else if (target.classList.contains("delete-user-btn")) {
-        deleteUser(accountId);
-      }
+    await fetch("/api/update_user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
     });
-  }
 
-  //  Initial Fetch of Users 
-  fetchUsers();
+    editUserModal.hide();
+    fetchUsers();
+    showToast("User updated");
+  });
 
-  //  Add Movie Functionality 
   const addMovieForm = document.getElementById("add-movie-form");
   if (addMovieForm) {
     addMovieForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const formData = new FormData(addMovieForm);
-      const movieData = {};
-      formData.forEach((value, key) => {
-        if (key.endsWith("[]")) {
-          const actualKey = key.slice(0, -2);
-          if (!movieData[actualKey]) {
-            movieData[actualKey] = [];
-          }
-          movieData[actualKey].push(value);
+      const movie = {};
+
+      for (const [key, value] of formData.entries()) {
+        if (key.includes("genre_ids")) {
+          movie.genre_ids = movie.genre_ids || [];
+          movie.genre_ids.push(value);
         } else {
-          movieData[key] = value;
+          movie[key] = value;
         }
+      }
+
+      await fetch("/api/add_movie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(movie),
       });
 
-      if (!movieData.title || !movieData.year || !movieData.rating || !movieData.price || !movieData.genre_ids) {
-        showToast("Please fill in all required fields.", "error");
-        return;
-      }
-
-      console.log("Sending Movie Data:", movieData);
-
-      try {
-        const response = await fetch("/api/add_movie", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(movieData),
-        });
-        const data = await safeFetchJson(response);
-        console.log("Response Data:", data);
-        if (data.success) {
-          showToast("Movie added successfully!");
-          addMovieForm.reset();
-        } else {
-          showToast(`Error adding movie: ${data.error || "Unknown error"}`, "error");
-        }
-      } catch (error) {
-        console.error("Fetch Error:", error);
-        showToast("Error adding movie.", "error");
-      }
+      addMovieForm.reset();
+      showToast("Movie added");
     });
   }
+
+  document.getElementById("searchBtn")?.addEventListener("click", () => {
+    const query = document.getElementById("searchUsers")?.value || "";
+    fetchUsers(query);
+  });
+
+  fetchUsers();
 });

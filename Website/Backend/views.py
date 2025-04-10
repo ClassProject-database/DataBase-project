@@ -74,6 +74,7 @@ def admin_dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # Fetch users 
     if search_query:
         cursor.execute("""
             SELECT * FROM users 
@@ -83,10 +84,15 @@ def admin_dashboard():
         cursor.execute("SELECT * FROM users")
     users = cursor.fetchall()
 
+    # Fetch genres from the genres table
+    cursor.execute("SELECT genre_id, genre_name FROM genres")
+    genres = cursor.fetchall()
+
     cursor.close()
     conn.close()
 
-    return render_template("adminDashboard.html", users=users, search_query=search_query)
+    return render_template("adminDashboard.html", users=users, genres=genres, search_query=search_query)
+
 
 
 # 5) User Rentals Page
@@ -335,7 +341,6 @@ def get_rentals():
     return jsonify(rentals)
 
 
-# 15) API: Checkout
 @views.route('/api/checkout', methods=['POST'])
 @login_required
 def checkout():
@@ -363,6 +368,11 @@ def checkout():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    cursor.execute("SELECT * FROM customers WHERE account_id = %s", (current_user.id,))
+    if cursor.fetchone() is None:
+        cursor.execute("INSERT INTO customers (account_id, address) VALUES (%s, %s)", (current_user.id, "Unknown"))
+
+    # Insert into payment
     cursor.execute("""
         INSERT INTO payment (
             account_id, card_holder_name, card_number,
@@ -382,6 +392,7 @@ def checkout():
     conn.commit()
     payment_id = cursor.lastrowid
 
+    # Insert into rentals
     cursor.execute("""
         INSERT INTO rentals (
             account_id, payment_id, rental_date, return_date, total_price
@@ -391,6 +402,7 @@ def checkout():
     conn.commit()
     rental_id = cursor.lastrowid
 
+    # Link each rented movie
     for item in cart_items:
         movie_id = item.get("movie_id")
         original_price = float(item.get("price", 0.00))
@@ -417,11 +429,17 @@ def add_movie():
 
     data = request.get_json()
     title = data.get("title")
-    release_year = data.get("release_year")
     rating = data.get("rating")
-    price = data.get("price")
     image_path = data.get("image_path", "keyboard.jpg")
     genre_ids = data.get("genre_ids", [])
+
+    release_year = int(data.get("release_year", 0))
+    if release_year > 9999:
+        return jsonify({"success": False, "error": "Invalid release year"}), 400
+
+    price = float(data.get("price", 0))
+    if price > 999.99:
+        price = 999.99
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -447,6 +465,8 @@ def add_movie():
         "message": "Movie added successfully",
         "movie_id": movie_id
     }), 201
+
+
 
 
 # 15) API: Get User

@@ -1,102 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{% block title %}Movie Store{% endblock %}</title>
 
-  <!-- Meta Tags -->
-  <meta name="description" content="Find and rent the best movies online">
-  <meta name="keywords" content="movies, rentals, shop, online movies">
-  <meta name="author" content="Movie Store">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <meta name="description" content="Find and rent the best movies online" />
+  <meta name="keywords" content="movies, rentals, shop, online movies" />
+  <meta name="author" content="Movie Store" />
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
 
-  <!-- Bootstrap CSS -->
-  <link 
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-  >
-
-  <!-- FontAwesome Icons -->
-  <link 
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-  >
+  <!-- Bootstrap & FontAwesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
   <!-- Custom CSS -->
-  <link 
-    rel="stylesheet"
-    href="{{ url_for('static', filename='css/styles.css') }}"
-  >
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
 
   {% block extra_css %}{% endblock %}
 </head>
 <body class="dark-mode">
 
-  <!-- ================================
-       NAVBAR
-  ==================================== -->
+  <!-- ================================ -->
+  <!-- NAVBAR -->
+  <!-- ================================ -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg py-3">
     <div class="container-fluid px-4">
       <a class="navbar-brand fw-bold fs-3" href="{{ url_for('views.HomePage') }}">
         🎬 Movie Store
       </a>
-      <button 
-        class="navbar-toggler" 
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#navbarNav"
-        aria-controls="navbarNav"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
-   
 
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto">
+
           {% if not current_user.is_authenticated %}
+            <!-- Guest Links -->
             <li class="nav-item">
               <a class="nav-link fs-5" href="{{ url_for('auth.signUp') }}">Sign Up</a>
             </li>
             <li class="nav-item">
               <a class="nav-link fs-5" href="{{ url_for('auth.login') }}">Login</a>
             </li>
+
           {% else %}
+            <!-- Authenticated User Links -->
+            {% if current_user.role == 'employee' %}
+              <li class="nav-item">
+                <a class="nav-link fs-5" href="{{ url_for('views.admin_dashboard') }}">Admin Dashboard</a>
+              </li>
+            {% elif current_user.role == 'customer' %}
+              <li class="nav-item">
+                <a class="nav-link fs-5" href="{{ url_for('views.user_rentals') }}">My Rentals</a>
+              </li>
+            {% endif %}
+
             <li class="nav-item">
               <a class="nav-link fs-5" href="{{ url_for('auth.logout') }}">Logout</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link fs-5" href="{{ url_for('views.user_rentals') }}">My Rentals</a>
-            </li>
           {% endif %}
-          
+
+          <!-- Always visible links -->
           <li class="nav-item">
             <a class="nav-link fs-5" href="{{ url_for('views.inventory2') }}">Inventory</a>
           </li>
           <li class="nav-item">
             <a class="nav-link fs-5" href="{{ url_for('views.reviews_page') }}">Reviews</a>
           </li>
-
-          {% if current_user.is_authenticated and current_user.role == 'admin' %}
-            <li class="nav-item">
-              <a class="nav-link fs-5" href="{{ url_for('views.admin_dashboard') }}">
-                Admin Dashboard
-              </a>
-            </li>
-          {% endif %}
         </ul>
 
         <div class="d-flex align-items-center">
-          <!-- Cart Button -->
-          <a class="btn btn-outline-light me-3 fs-5" href="{{ url_for('auth.UserCart') }}">
-            <i class="fa fa-shopping-cart"></i> Cart
-            <span class="badge bg-light text-dark ms-1 rounded-pill cart-badge">0</span>
-          </a>
-        
+          {% if current_user.is_authenticated and current_user.role == 'customer' %}
+            <!-- Cart (Customer Only) -->
+            <a class="btn btn-outline-light me-3 fs-5" href="{{ url_for('auth.UserCart') }}">
+              <i class="fa fa-shopping-cart"></i> Cart
+              <span class="badge bg-light text-dark ms-1 rounded-pill cart-badge">0</span>
+            </a>
+          {% endif %}
+
           <!-- Dark Mode Toggle -->
           <button id="darkModeToggle" class="btn btn-outline-dark fs-5">
             <i class="fa fa-moon"></i>
@@ -106,52 +89,37 @@
     </div>
   </nav>
 
-  <!-- ================================
-       MAIN CONTENT
-  ==================================== -->
+  <!-- ================================ -->
+  <!-- MAIN CONTENT -->
+  <!-- ================================ -->
   <main class="container-fluid py-5 main-content">
     <div class="mx-auto px-4" style="max-width: 1300px;">
       {% block content %}{% endblock %}
     </div>
   </main>
 
-  <!-- ================================
-       FOOTER
-  ==================================== -->
+  <!-- ================================ -->
+  <!-- FOOTER -->
+  <!-- ================================ -->
   <footer class="py-4 bg-dark text-white text-center">
     <div class="container-fluid">
       <p class="mb-0 fs-5">
-        &copy; 2024 Movie Store 
-        <i class="fa fa-film"></i> 
-        All Rights Reserved
+        &copy; 2024 Movie Store <i class="fa fa-film"></i> All Rights Reserved
       </p>
     </div>
   </footer>
 
-  <!-- ================================
-       SCRIPTS
-  ==================================== -->
-  <script 
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    defer
-  ></script>
-  <script 
-    src="{{ url_for('static', filename='js/cart.js') }}"
-    defer
-  ></script>
-  <script 
-    src="{{ url_for('static', filename='js/reviews.js') }}"
-    defer
-  ></script>
-  <script 
-    src="{{ url_for('static', filename='js/home.js') }}"
-    defer
-  ></script>
+  <!-- ================================ -->
+  <!-- SCRIPTS -->
+  <!-- ================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+  <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/reviews.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/home.js') }}" defer></script>
   {% block extra_js %}{% endblock %}
 
   {% block modals %}
   <!-- Shared modals can go here -->
-{% endblock %}
-
+  {% endblock %}
 </body>
 </html>
