@@ -10,12 +10,13 @@ from datetime import datetime
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 db_config = {
-    "host": "127.0.0.1",
-    "user": "root",
-    "password": "root",
-    "database": "movie_rental",
-    "port": 3306
+    "host": os.environ.get("DB_HOST", "movierental.c9wwqmsm68mt.us-east-2.rds.amazonaws.com"),
+    "user": os.environ.get("DB_USER", "root"),
+    "password": os.environ.get("DB_PASSWORD", "root"),
+    "database": os.environ.get("DB_NAME", "movie_rental"),
+    "port": int(os.environ.get("DB_PORT", 3306))
 }
+
 
 connection_pool = pooling.MySQLConnectionPool(
     pool_name="mypool",
