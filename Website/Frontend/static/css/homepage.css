@@ -139,10 +139,12 @@
   
   .movie-card img {
     width: 100%;
-    height: 80%;
+    height: 240px;
     object-fit: cover;
     border-radius: 12px 12px 0 0;
+    background-color: #111; /* fallback background */
   }
+  
   
   /* ================================
      RESPONSIVE
