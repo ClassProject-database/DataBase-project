@@ -127,7 +127,7 @@ def signUp():
         flash("Sign-up successful!", "success")
         return redirect(url_for('views.user_rentals'))
 
-    return render_template("signUp.html")
+    return render_template("signup.html")
 
 
 # User Cart Route
