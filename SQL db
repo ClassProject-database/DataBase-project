@@ -399,3 +399,4 @@ INSERT INTO users (username, password_, role, first_name, last_name, email, phon
 VALUES ('TestUser', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrwW', 'customer', 'tom', 'west', 'West@example.com', '222-222-2222');
 
 -- remove duplicate fiction
+-- remove 
