@@ -345,14 +345,13 @@ def get_rentals():
 @login_required
 def checkout():
     data = request.get_json()
-
     cart_items = data["cart"]
     total_price = float(data["amount"])
     discount_code = data.get("discount_code", "").upper().strip()
-    card_number = data.get("card_number", "").strip()
+    card_number = data.get("card_number","").strip()
     card_name = data.get("card_holder_name", "").strip()
     expiration = data.get("expiration", "").strip()
-
+    hashed_cardNumber = bcrypt.generate_password_hash(card_number).decode('utf-8')
     expiration_month, expiration_year = map(int, expiration.split("/"))
     if expiration_year < 100:
         expiration_year += 2000
@@ -383,7 +382,7 @@ def checkout():
     """, (
         current_user.id,
         card_name,
-        card_number,
+        hashed_cardNumber,
         expiration_month,
         expiration_year,
         discount_code,
