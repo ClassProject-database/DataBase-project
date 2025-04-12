@@ -61,11 +61,27 @@ section {
 
 /* Movie Cards */
 .movie-card {
-  background: #29293d;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #25253a;
+  border-radius: 12px;
+  border: 1px solid #3a3a52;
+  padding: 0;
+  height: 100%;
 }
+
 .movie-card:hover {
   background: #32324a;
 }
+.movie-card img {
+  width: 100%;
+  height: 300px;           /* ← consistent height for all posters */
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+  background-color: #111;  /* fallback bg if image fails to load */
+}
+
 
 /* Sidebar */
 .latest-reviews-sidebar {
