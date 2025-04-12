@@ -11,8 +11,8 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 db_config = {
     "host": os.environ.get("DB_HOST", "movierental.c9wwqmsm68mt.us-east-2.rds.amazonaws.com"),
-    "user": os.environ.get("DB_USER", "root"),
-    "password": os.environ.get("DB_PASSWORD", "root"),
+    "user": os.environ.get("DB_USER", "Matthew1225"),
+    "password": os.environ.get("DB_PASSWORD", "Gallifrey1225"),
     "database": os.environ.get("DB_NAME", "movie_rental"),
     "port": int(os.environ.get("DB_PORT", 3306))
 }
