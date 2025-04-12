@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Logging Out</title>
+  <script>
+    localStorage.removeItem("cart");
+    window.location.href = "{{ url_for('auth.login') }}";
+  </script>
+</head>
+<body>
+  <p>Logging out...</p>
+</body>
+</html>
