@@ -355,7 +355,7 @@ def checkout():
     expiration_month, expiration_year = map(int, expiration.split("/"))
     if expiration_year < 100:
         expiration_year += 2000
-
+   
     if discount_code == "VIP":
         final_price = round(total_price * 0.80, 2)
     elif discount_code == "ADMIN":
