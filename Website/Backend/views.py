@@ -644,7 +644,7 @@ def movie_details(movie_id):
 
     return render_template("movieDetails.html", movie=movie, genres=genres, reviews=reviews)
 
-@views.route('/api/return_movie/<int:rental_id>', methods=['POST'])
+@views.route('/api/return_movie/<int:rentalId>', methods=['POST'])
 @login_required
 def return_movie(rentalId):
     conn = get_db_connection()
