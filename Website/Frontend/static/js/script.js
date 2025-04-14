@@ -22,48 +22,46 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const displayMovies = (movies) => {
-    moviesRow.innerHTML = ""; 
-
+    moviesRow.innerHTML = "";
+  
     movies.forEach((movie) => {
       const col = document.createElement("div");
       col.className = "col";
-
+  
       const card = document.createElement("div");
       card.className = "card h-100";
-
-    
+  
       const img = document.createElement("img");
       img.className = "card-img-top movie-img";
       img.src = movie.image ? `/static/images/${movie.image}` : "/static/images/keyboard.jpg";
       img.alt = movie.title || "Untitled";
-
+  
+      // Wrap the image in an anchor
       const imgLink = document.createElement("a");
       imgLink.href = `/movie/${movie.movie_id}`;
       imgLink.appendChild(img);
-      
-      card.append(imgLink, cardBody, cardFooter);
-
+  
       const cardBody = document.createElement("div");
       cardBody.className = "card-body text-center";
-
+  
       const title = document.createElement("h5");
       title.className = "fw-bolder card-title";
       title.textContent = movie.title || "Untitled";
-
+  
       const year = document.createElement("p");
       year.textContent = `Year: ${movie.year ?? "N/A"}`;
-
+  
       const rating = document.createElement("p");
       rating.textContent = `Rating: ${movie.rating ?? "Unrated"}`;
-
+  
       const price = document.createElement("p");
       price.textContent = `Price: $${parseFloat(movie.price).toFixed(2)}`;
-
+  
       cardBody.append(title, year, rating, price);
-
+  
       const cardFooter = document.createElement("div");
       cardFooter.className = "card-footer text-center";
-
+  
       const addButton = document.createElement("button");
       addButton.className = "btn btn-outline-dark";
       addButton.textContent = "Add to Cart";
@@ -74,13 +72,16 @@ document.addEventListener("DOMContentLoaded", () => {
           console.warn("addToCart function is not available.");
         }
       };
-
+  
       cardFooter.appendChild(addButton);
-      card.append(img, cardBody, cardFooter);
+  
+      // Append imgLink, not img, so the link is in the DOM
+      card.append(imgLink, cardBody, cardFooter);
       col.appendChild(card);
       moviesRow.appendChild(col);
     });
   };
+  
 
   fetchMovies();
 });
