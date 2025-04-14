@@ -31,10 +31,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const card = document.createElement("div");
       card.className = "card h-100";
 
+    
       const img = document.createElement("img");
       img.className = "card-img-top movie-img";
       img.src = movie.image ? `/static/images/${movie.image}` : "/static/images/keyboard.jpg";
       img.alt = movie.title || "Untitled";
+
+      const imgLink = document.createElement("a");
+      imgLink.href = `/movie/${movie.movie_id}`;
+      imgLink.appendChild(img);
+      
+      card.append(imgLink, cardBody, cardFooter);
 
       const cardBody = document.createElement("div");
       cardBody.className = "card-body text-center";
