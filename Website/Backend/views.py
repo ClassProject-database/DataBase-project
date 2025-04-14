@@ -21,8 +21,8 @@ def HomePage():
 
 
 # 2) Inventory Page
-@views.route('/inventory2')
-def inventory2():
+@views.route('/inventory')
+def inventory():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
@@ -35,7 +35,7 @@ def inventory2():
     cursor.close()
     conn.close()
 
-    return render_template("inventory2.html", movies=movies, genres=genres)
+    return render_template("inventory.html", movies=movies, genres=genres)
 
 
 # 3) API to Fetch Movies
