@@ -63,6 +63,40 @@ def get_movies():
     return jsonify(movies)
 
 
+
+@views.route("/admin/user/<int:account_id>")
+@login_required
+def admin_user_view(account_id):
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # 1) Fetch the user
+    cursor.execute("""
+        SELECT account_id, username, first_name, last_name, email, phone, role
+        FROM users
+        WHERE account_id = %s
+    """, (account_id,))
+    user = cursor.fetchone()
+
+    # 2) Fetch rental history 
+    cursor.execute("""
+        SELECT r.rental_id, r.rental_date, r.return_date, m.title, m.movie_id
+        FROM rentals r
+        LEFT JOIN movies m ON r.movie_id = m.movie_id
+        WHERE r.account_id = %s
+        ORDER BY r.rental_date DESC
+    """, (account_id,))
+    rentals = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    # 3) Render template and pass 'user' and 'rentals'
+    return render_template(
+        "adminViewUser.html",
+        user=user,
+        rentals=rentals
+    )
 # 4) Admin Dashboard
 @views.route('/admin', methods=['GET'])
 @login_required
@@ -463,9 +497,6 @@ def add_movie():
         "message": "Movie added successfully",
         "movie_id": movie_id
     }), 201
-
-
-
 
 # 15) API: Get User
 @views.route('/api/get_user', methods=['GET'])

@@ -398,5 +398,8 @@ VALUES ('Admin', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrwW',
 INSERT INTO users (username, password_, role, first_name, last_name, email, phone)
 VALUES ('TestUser', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrwW', 'customer', 'tom', 'west', 'West@example.com', '222-222-2222');
 
--- remove duplicate fiction
--- remove 
+
+-- TOO DOO!!
+-- Remove duplicate Films
+-- Resize all images to fit in the inventory boxes
+-- Add 
