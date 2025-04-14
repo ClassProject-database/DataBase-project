@@ -34,25 +34,41 @@
                             </tr>
                         </thead>
                         <tbody id="rentalsTableBody">
-                            {% for rental in rentals %}
-                            <tr>
-                                <td>{{ rental.title }}</td>
-                                <td>{{ rental.rental_date }}</td>
-                                <td>{{ rental.return_date or 'Not Returned' }}</td>
-                                <td>${{ rental.rental_price }}</td>
-                                <td>
-                                    <button class="btn btn-sm btn-danger delete-rental-btn" 
-                                            data-rental-id="{{ rental.rentalID }}">
-                                        <i class="fa fa-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center">No rentals found.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
+                          {% for rental in rentals %}
+                          <tr>
+                              <td>{{ rental.title }}</td>
+                              <td>{{ rental.rental_date }}</td>
+                              <td>
+                                  {% if rental.return_date %}
+                                      {{ rental.return_date }}
+                                  {% else %}
+                                      Not Returned
+                                  {% endif %}
+                              </td>
+                              <td>${{ rental.rental_price }}</td>
+                              <td>
+                                  {% if not rental.return_date %}
+                                  <button 
+                                      class="btn btn-sm btn-warning return-rental-btn" 
+                                      data-rental-id="{{ rental.rentalID }}">
+                                      Return
+                                  </button>
+                                  {% endif %}
+                                  
+                                  <button 
+                                      class="btn btn-sm btn-danger delete-rental-btn" 
+                                      data-rental-id="{{ rental.rentalID }}">
+                                      <i class="fa fa-trash"></i>
+                                  </button>
+                              </td>
+                          </tr>
+                          {% else %}
+                          <tr>
+                              <td colspan="5" class="text-center">No rentals found.</td>
+                          </tr>
+                          {% endfor %}
+                      </tbody>
+                      
                     </table>
                 </div>
             </div>

@@ -43,12 +43,14 @@ if (!window.addToCart) {
 }
 
 
-// Fetch rentals via `/api/rentals`
+// Fetch rentals `/api/rentals`
 async function refreshRentals() {
     try {
         console.log("Fetching Rentals...");
         const response = await fetch("/api/rentals");
-        if (!response.ok) throw new Error(`Failed to fetch rentals. Status: ${response.status}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch rentals. Status: ${response.status}`);
+        }
 
         const rentals = await response.json();
         updateRentalsTable(rentals);
@@ -61,6 +63,7 @@ function updateRentalsTable(rentals) {
     const tableBody = document.getElementById("rentalsTableBody");
     if (!tableBody) return;
 
+    // If no rentals, show a "No rentals" row
     if (!rentals.length) {
         tableBody.innerHTML = `
             <tr><td colspan="5" class="text-center">No rentals found.</td></tr>
@@ -69,22 +72,40 @@ function updateRentalsTable(rentals) {
     }
 
     // Build table rows for each rental
-    tableBody.innerHTML = rentals.map(rental => `
-        <tr data-rental-id="${rental.rentalID}">
-            <td>${rental.title}</td>
-            <td>${rental.rental_date}</td>
-            <td>${rental.return_date || "Not returned"}</td>
-            <td>$${rental.rental_price}</td>
-            <td>
-                <button 
-                    class="btn btn-sm btn-danger delete-rental-btn" 
-                    data-rental-id="${rental.rentalID}"
-                >
-                    <i class="fa fa-trash"></i>
-                </button>
-            </td>
-        </tr>
-    `).join("");
+    tableBody.innerHTML = rentals.map(rental => {
+        const isReturned = Boolean(rental.return_date);
+        const returnDateText = rental.return_date || "Not returned";
+
+        // Conditionally render a "Return" button only if not returned
+        const returnBtnHTML = !isReturned 
+            ? `
+              <button
+                class="btn btn-sm btn-warning return-rental-btn"
+                data-rental-id="${rental.rentalID}"
+              >
+                Return
+              </button>
+            `
+            : "";
+
+        return `
+            <tr data-rental-id="${rental.rentalID}">
+                <td>${rental.title}</td>
+                <td>${rental.rental_date}</td>
+                <td>${returnDateText}</td>
+                <td>$${rental.rental_price}</td>
+                <td>
+                    ${returnBtnHTML}
+                    <button 
+                        class="btn btn-sm btn-danger delete-rental-btn" 
+                        data-rental-id="${rental.rentalID}"
+                    >
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join("");
 }
 
 // Listen for delete clicks on rentals
@@ -93,31 +114,55 @@ function setupDeleteRentalListener() {
     if (!rentalsTable) return;
 
     rentalsTable.addEventListener("click", function (e) {
+        // Handle DELETE
         const deleteBtn = e.target.closest(".delete-rental-btn");
-        if (!deleteBtn) return;
+        if (deleteBtn) {
+            const rentalId = deleteBtn.dataset.rentalId;
+            if (rentalId && confirm("Are you sure you want to delete this rental?")) {
+                fetch("/api/delete_rental", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ rental_id: rentalId }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the row from the table
+                        document.querySelector(`tr[data-rental-id="${rentalId}"]`)?.remove();
+                        showToast("Rental deleted successfully!");
+                    } else {
+                        showToast("Error: " + data.error, "error");
+                    }
+                })
+                .catch(error => console.error("Error deleting rental:", error));
+            }
+        }
+        const returnBtn = e.target.closest(".return-rental-btn");
+        if (returnBtn) {
+            const rentalId = returnBtn.dataset.rentalId;
+            if (!rentalId) return;
 
-        const rentalId = deleteBtn.getAttribute("data-rental-id");
-        if (!rentalId) return;
-
-        if (confirm("Are you sure you want to delete this rental?")) {
-            fetch("/api/delete_rental", {
+            fetch(`/api/return_movie/${rentalId}`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ rental_id: rentalId }), // or { rentalID: rentalId } if your backend expects that
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.querySelector(`tr[data-rental-id="${rentalId}"]`)?.remove();
-                    showToast("Rental deleted successfully!");
+                    showToast("Movie returned successfully!", "success");
+                    // Refresh rentals or update row
+                    refreshRentals(); 
                 } else {
-                    showToast("Error: " + data.error, "error");
+                    showToast("Error: " + data.message, "error");
                 }
             })
-            .catch(error => console.error("Error deleting rental:", error));
+            .catch(error => {
+                console.error("Error returning movie:", error);
+                showToast("Error returning movie.", "error");
+            });
         }
     });
 }
+
 
 //  REVIEW
 function setupReviewForm() {

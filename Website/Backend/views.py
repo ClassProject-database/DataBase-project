@@ -433,19 +433,19 @@ def checkout():
     payment_id = cursor.lastrowid
 
     # Insert into rentals
-   # Insert into rentals, setting return_date to 2 weeks from current date
     cursor.execute("""
-        INSERT INTO rentals (
-            account_id, payment_id, rental_date, return_date, total_price
-        )
-        VALUES (
-            %s, 
-            %s, 
-            CURDATE(), 
-            DATE_ADD(CURDATE(), INTERVAL 2 WEEK), 
-            %s
-        )
-    """, (current_user.id, payment_id, final_price))
+    INSERT INTO rentals (
+        account_id, payment_id, rental_date, return_date, total_price
+    )
+    VALUES (
+        %s, 
+        %s, 
+        CURDATE(), 
+        NULL, 
+        %s
+    )
+""", (current_user.id, payment_id, final_price))
+
     conn.commit()
     rental_id = cursor.lastrowid
 
@@ -606,8 +606,6 @@ def get_all_movies():
     return jsonify(movies)
 
 
-
-
 @views.route('/movie/<int:movie_id>')
 def movie_details(movie_id):
     conn = get_db_connection()
@@ -645,3 +643,22 @@ def movie_details(movie_id):
     conn.close()
 
     return render_template("movieDetails.html", movie=movie, genres=genres, reviews=reviews)
+
+@views.route('/api/return_movie/<int:rental_id>', methods=['POST'])
+@login_required
+def return_movie(rental_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Update return_date if it's not eturned
+    cursor.execute("""
+        UPDATE rentals
+        SET return_date = NOW()
+        WHERE rental_id = %s AND return_date IS NULL AND account_id = %s
+    """, (rental_id, current_user.id))
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True, "message": "Movie returned!"})
