@@ -646,7 +646,7 @@ def movie_details(movie_id):
 
 @views.route('/api/return_movie/<int:rental_id>', methods=['POST'])
 @login_required
-def return_movie(rental_id):
+def return_movie(rentalId):
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -654,8 +654,8 @@ def return_movie(rental_id):
     cursor.execute("""
         UPDATE rentals
         SET return_date = NOW()
-        WHERE rental_id = %s AND return_date IS NULL AND account_id = %s
-    """, (rental_id, current_user.id))
+        WHERE rentalID = %s AND return_date IS NULL AND account_id = %s
+    """, (rentalId, current_user.id))
     
     conn.commit()
     cursor.close()
