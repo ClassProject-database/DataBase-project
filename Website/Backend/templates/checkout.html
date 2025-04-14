@@ -132,35 +132,44 @@
         };
 
         let valid = true;
-        for (const field in fields) fields[field].classList.remove("is-invalid");
-
+        for (const field in fields) {
+          fields[field].classList.remove("is-invalid");
+        }
+        
         if (!fields.cardHolder.value.trim()) {
           fields.cardHolder.classList.add("is-invalid");
           valid = false;
         }
-
+        
         if (!/^\d{13,19}$/.test(fields.cardNumber.value.trim())) {
           fields.cardNumber.classList.add("is-invalid");
           valid = false;
         }
-
-        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(fields.expiration.value.trim())) {
+        
+        const expiration = fields.expiration.value.trim();
+        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiration)) {
           fields.expiration.classList.add("is-invalid");
           valid = false;
+        } else {
+          const year = parseInt(expiration.split("/")[1], 10);
+          if (year <= 24) {
+            fields.expiration.classList.add("is-invalid");
+            valid = false;
+          }
         }
-
+        
         if (!/^\d{3,4}$/.test(fields.cvv.value.trim())) {
           fields.cvv.classList.add("is-invalid");
           valid = false;
         }
-
+        
         if (!valid) {
           messageDiv.textContent = "❌ Please correct the highlighted fields.";
           messageDiv.classList.add("error");
           submitButton.disabled = false;
           return;
         }
-
+        
         const payload = {
           cart,
           amount: pricing.final_total,
