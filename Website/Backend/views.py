@@ -276,8 +276,7 @@ def search_users():
     search_query = request.args.get('query', '').strip()
 
     cursor.execute("""
-        SELECT account_id, first_name, last_name, phone, username, email
-        FROM users
+        SELECT * FROM users
         WHERE username LIKE %s OR account_id LIKE %s
     """, (f"%{search_query}%", f"%{search_query}%"))
     users = cursor.fetchall()
