@@ -79,13 +79,20 @@ def admin_user_view(account_id):
 
     # 2) Fetch rental history 
     cursor.execute("""
-        SELECT r.rentalID, r.rental_date, r.return_date, m.title, m.movie_id
+        SELECT r.rentalID, 
+            r.rental_date, 
+            r.return_date,
+            rm.movie_id,
+            m.title
         FROM rentals r
-        LEFT JOIN movies m ON r.movie_id = m.movie_id
+        LEFT JOIN rental_movies rm ON r.rentalID = rm.rental_id
+        LEFT JOIN movies m ON rm.movie_id = m.movie_id
         WHERE r.account_id = %s
         ORDER BY r.rental_date DESC
     """, (account_id,))
+
     rentals = cursor.fetchall()
+
 
     cursor.close()
     conn.close()
