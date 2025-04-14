@@ -76,7 +76,6 @@ function updateRentalsTable(rentals) {
         const isReturned = Boolean(rental.return_date);
         const returnDateText = rental.return_date || "Not returned";
 
-        // Conditionally render a "Return" button only if not returned
         const returnBtnHTML = !isReturned 
             ? `
               <button
@@ -106,61 +105,6 @@ function updateRentalsTable(rentals) {
             </tr>
         `;
     }).join("");
-}
-
-// Listen for delete clicks on rentals
-function setupDeleteRentalListener() {
-    const rentalsTable = document.getElementById("rentalsTableBody");
-    if (!rentalsTable) return;
-
-    rentalsTable.addEventListener("click", function (e) {
-        // Handle DELETE
-        const deleteBtn = e.target.closest(".delete-rental-btn");
-        if (deleteBtn) {
-            const rentalId = deleteBtn.dataset.rentalId;
-            if (rentalId && confirm("Are you sure you want to delete this rental?")) {
-                fetch("/api/delete_rental", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ rentalID: rentalId }),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Remove the row from the table
-                        document.querySelector(`tr[data-rental-id="${rentalId}"]`)?.remove();
-                        showToast("Rental deleted successfully!");
-                    } else {
-                        showToast("Error: " + data.error, "error");
-                    }
-                })
-                .catch(error => console.error("Error deleting rental:", error));
-            }
-        }
-        const returnBtn = e.target.closest(".return-rental-btn");
-        if (returnBtn) {
-            const rentalId = returnBtn.dataset.rentalId;
-            if (!rentalId) return;
-
-            fetch(`/api/return_movie/${rentalId}`, {
-                method: "POST",
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast("Movie returned successfully!", "success");
-                    // Refresh rentals or update row
-                    refreshRentals(); 
-                } else {
-                    showToast("Error: " + data.message, "error");
-                }
-            })
-            .catch(error => {
-                console.error("Error returning movie:", error);
-                showToast("Error returning movie.", "error");
-            });
-        }
-    });
 }
 
 
