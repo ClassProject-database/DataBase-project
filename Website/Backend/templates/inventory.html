@@ -34,11 +34,13 @@
             <div class="col movie-card">
                 <div class="card h-100 bg-dark text-white shadow">
                     <!-- 'keyboard.jpg' -->
-                    <img 
-                        class="card-img-top movie-img"
-                        src="{{ url_for('static', filename='images/' ~ (movie.image_path if movie.image_path else 'keyboard.jpg')) }}"
-                        alt="{{ movie.title }}"
-                    >
+                    <a href="/movie/{{ movie.movie_id }}">
+                        <img 
+                            class="card-img-top movie-img"
+                            src="{{ url_for('static', filename='images/' ~ (movie.image_path if movie.image_path else 'keyboard.jpg')) }}"
+                            alt="{{ movie.title }}"
+                        >
+                    </a>
                     <div class="card-body text-center">
                         <h5 class="fw-bolder">{{ movie.title }}</h5>
                         <p>Year: {{ movie.release_year }}</p>
