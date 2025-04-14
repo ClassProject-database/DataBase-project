@@ -402,4 +402,5 @@ VALUES ('TestUser', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrw
 -- TOO DOO!!
 -- Remove duplicate Films
 -- Resize all images to fit in the inventory boxes
--- Add 
+-- Add "Manger" role and manager dashboard where they can add employee, set salary and job title 
+-- make normal eployee admin only add customers not employees
