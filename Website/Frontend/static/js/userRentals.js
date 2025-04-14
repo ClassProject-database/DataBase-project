@@ -122,7 +122,7 @@ function setupDeleteRentalListener() {
                 fetch("/api/delete_rental", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ rental_id: rentalId }),
+                    body: JSON.stringify({ rentalID: rentalId }),
                 })
                 .then(response => response.json())
                 .then(data => {
