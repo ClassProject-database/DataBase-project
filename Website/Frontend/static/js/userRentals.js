@@ -95,12 +95,6 @@ function updateRentalsTable(rentals) {
                 <td>$${rental.rental_price}</td>
                 <td>
                     ${returnBtnHTML}
-                    <button 
-                        class="btn btn-sm btn-danger delete-rental-btn" 
-                        data-rental-id="${rental.rentalID}"
-                    >
-                        <i class="fa fa-trash"></i>
-                    </button>
                 </td>
             </tr>
         `;
