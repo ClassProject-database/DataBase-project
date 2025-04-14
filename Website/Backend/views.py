@@ -4,7 +4,6 @@ from . import get_db_connection, bcrypt
 
 views = Blueprint('views', __name__)
 
-
 # 1) Home Page
 @views.route('/')
 def HomePage():
@@ -72,7 +71,7 @@ def admin_user_view(account_id):
 
     # 1) Fetch the user
     cursor.execute("""
-        SELECT account_id, username, first_name, last_name, email, phone, role
+        SELECT *
         FROM users
         WHERE account_id = %s
     """, (account_id,))
