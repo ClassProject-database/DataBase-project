@@ -113,3 +113,9 @@ footer {
 ::-webkit-scrollbar-track {
   background: #1e1e2f;
 }
+.movie-img {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
