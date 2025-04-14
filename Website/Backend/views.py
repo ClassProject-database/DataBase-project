@@ -433,14 +433,22 @@ def checkout():
     payment_id = cursor.lastrowid
 
     # Insert into rentals
+   # Insert into rentals, setting return_date to 2 weeks from current date
     cursor.execute("""
         INSERT INTO rentals (
             account_id, payment_id, rental_date, return_date, total_price
         )
-        VALUES (%s, %s, CURDATE(), NULL, %s)
+        VALUES (
+            %s, 
+            %s, 
+            CURDATE(), 
+            DATE_ADD(CURDATE(), INTERVAL 2 WEEK), 
+            %s
+        )
     """, (current_user.id, payment_id, final_price))
     conn.commit()
     rental_id = cursor.lastrowid
+
 
     # Link each rented movie
     for item in cart_items:
