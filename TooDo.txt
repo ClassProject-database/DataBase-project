@@ -18,5 +18,13 @@ Priorties :
 
 -2- add search bar for the main inventory page
 
+-1- fix return movie for user
+
+-2- update reviews on hompge to dynamically fetch real reviews that 
+
+
+
+
+
 
 

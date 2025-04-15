@@ -51,7 +51,7 @@
           <tbody>
             {% for rental in rentals %}
             <tr>
-              <td>{{ rental.rental_id }}</td>
+              <td>{{ rental.rental_id or "N/A"}}</td>
               <td>
                 {% if rental.movie_id %}
                   <a href="{{ url_for('views.movie_details', movie_id=rental.movie_id) }}" class="text-decoration-none text-info">
