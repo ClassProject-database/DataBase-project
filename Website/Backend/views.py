@@ -659,3 +659,29 @@ def return_movie(rentalId):
     conn.close()
 
     return jsonify({"success": True, "message": "Movie returned!"})
+
+@views.route('/api/search_rented_movies')
+@login_required
+def search_rented_movies():
+    if current_user.role != 'customer':
+        return jsonify([])
+
+    query = request.args.get('query', '').lower()
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT DISTINCT m.movie_id, m.title
+        FROM rentals r
+        JOIN rental_movies rm ON r.rentalID = rm.rental_id
+        JOIN movies m ON rm.movie_id = m.movie_id
+        WHERE r.account_id = %s AND LOWER(m.title) LIKE %s
+    """, (current_user.id, f"%{query}%"))
+
+    results = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(results)
