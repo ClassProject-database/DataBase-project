@@ -2,6 +2,7 @@ Priorties :
 1-Urgent
 2-Normal
 3-optional
+4-put on report as "didnt get to" 
 
 (please put your name next to item finished)
 
@@ -10,7 +11,7 @@ Priorties :
 -2- Resize all images to fit in the inventory frames, 
 
 -3- (duplicate all images and resize for the featured movies section on the home page 
-                or find another way to resize them for them the samller frame size)
+     or find another way to resize them for them the samller frame size)
 
 -1- write a descripton and add YouTube urls for each movie to be inserted into movies table
 
@@ -22,6 +23,10 @@ Priorties :
 
 -2- update reviews on hompge to dynamically fetch real reviews that 
 
+-4- add Movie link to the my rentals page so users hace acess to theire movies on once rented
+
+-4- mention the fact that people can  ddos/hack site by hijacking api calls 
+    and making a custom request such as posting reviews or adding movies, data base is secured from being deleted , 
 
 
 
