@@ -46,14 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (addUserForm) {
     const roleInput = addUserForm.role;
-    const jobFields = document.getElementById("employee-fields");
 
-    if (roleInput && jobFields) {
+    if (roleInput) {
       roleInput.addEventListener("change", () => {
-        if (roleInput.value === "employee" && isManager) {
-          jobFields.style.display = "block";
-        } else {
-          jobFields.style.display = "none";
+        const jobFields = document.getElementById("employee-fields");
+        if (jobFields) {
+          jobFields.style.display = (roleInput.value === "employee" && isManager) ? "block" : "none";
         }
       });
     }

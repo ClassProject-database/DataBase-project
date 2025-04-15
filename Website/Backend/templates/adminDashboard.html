@@ -1,182 +1,187 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const toast = (msg, type = "success") => {
-    const el = document.createElement("div");
-    el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3`;
-    el.innerText = msg;
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 3000);
-  };
+{% extends "base.html" %}
+{% block title %}Admin Dashboard - Movie Store{% endblock %}
 
-  const safeJson = async res => JSON.parse(await res.text());
-  const userTable = document.getElementById("user-table-body");
-  const addUserForm = document.getElementById("add-user-form");
-  const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
-  const editForm = document.getElementById("edit-user-form");
-  const searchBtn = document.getElementById("searchBtn");
-  const searchInput = document.getElementById("searchUsers");
+{% block content %}
+<div class="container-fluid py-5">
+  <h1 class="text-white mb-4">Admin Dashboard</h1>
 
-  const isManager = document.body.dataset.title?.toLowerCase() === "manager";
+  <div class="row g-4">
+    <!-- Add New User -->
+    <div class="col-md-4">
+      <div class="card bg-dark text-white shadow h-100">
+        <div class="card-header text-center border-bottom border-secondary">
+          <h5 class="mb-0">Add New User</h5>
+        </div>
+        <div class="card-body">
+          <form id="add-user-form">
+            <div class="mb-3">
+              <label class="form-label">Username</label>
+              <input type="text" id="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input type="password" id="password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" id="first_name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" id="last_name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" id="email" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Phone</label>
+              <input type="tel" id="phone" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Role</label>
+              <select id="role" class="form-select" required>
+                <option value="customer">Customer</option>
+                <option value="employee">Employee</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100 mt-2">Add User</button>
+          </form>
+        </div>
+      </div>
+    </div>
 
-  const fetchUsers = async (query = "") => {
-    const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
-    const users = await safeJson(res);
-    userTable.innerHTML = "";
+    <!-- User Management -->
+    <div class="col-md-8">
+      <div class="card bg-dark text-white shadow h-100">
+        <div class="card-header d-flex justify-content-between align-items-center border-bottom border-secondary">
+          <h5 class="mb-0">User Management</h5>
+          <div class="input-group" style="max-width: 300px;">
+            <input type="text" id="searchUsers" class="form-control" placeholder="Search by username or ID...">
+            <button id="searchBtn" class="btn btn-primary">Search</button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-dark table-striped table-hover mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="user-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    if (!users.length) {
-      userTable.innerHTML = `<tr><td colspan="6" class="text-center">No users found.</td></tr>`;
-      return;
-    }
+  <!-- Movie Management -->
+  <div class="row g-4 mt-4">
+    <div class="col-12">
+      <div class="card bg-dark text-white shadow">
+        <div class="card-header text-center border-bottom border-secondary">
+          <h5 class="mb-0">Movie Management</h5>
+        </div>
+        <div class="card-body">
+          <form id="add-movie-form" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Title</label>
+              <input type="text" id="movieTitle" name="title" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Release Year</label>
+              <input type="number" id="movieYear" name="release_year" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Rating</label>
+              <input type="text" id="movieRating" name="rating" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Price ($)</label>
+              <input type="number" step="0.01" id="moviePrice" name="price" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Image Filename</label>
+              <input type="text" id="movieImage" name="image_path" class="form-control">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Genres</label>
+              <select id="genreIds" name="genre_ids[]" class="form-select" multiple required>
+                {% for genre in genres %}
+                  <option value="{{ genre.genre_id }}">{{ genre.genre_name }}</option>
+                {% endfor %}
+              </select>
+              
+            </div>
+            <div class="col-12">
+              <button type="submit" class="btn btn-success w-100 mt-2">Add Movie</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    for (const u of users) {
-      userTable.innerHTML += `
-        <tr data-account-id="${u.account_id}">
-          <td>${u.account_id}</td>
-          <td>${u.username}</td>
-          <td>${u.first_name} ${u.last_name}</td>
-          <td>${u.email}</td>
-          <td>${u.role}</td>
-          <td>
-            <a href="/admin/user/${u.account_id}" class="btn btn-sm btn-info">View</a>
-            <button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>
-            <button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>
-          </td>
-        </tr>`;
-    }
-  };
 
-  if (addUserForm) {
-    const roleInput = addUserForm.role;
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-user-form">
+          <!-- updated ID and name -->
+          <input type="hidden" id="editUserId" name="account_id">
 
-    if (roleInput) {
-      roleInput.addEventListener("change", () => {
-        const jobFields = document.getElementById("employee-fields");
-        if (jobFields) {
-          jobFields.style.display = (roleInput.value === "employee" && isManager) ? "block" : "none";
-        }
-      });
-    }
+          <div class="mb-3">
+            <label class="form-label">Username</label>
+            <input type="text" id="editUsername" name="username" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">First Name</label>
+            <input type="text" id="editFirstName" name="first_name" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Last Name</label>
+            <input type="text" id="editLastName" name="last_name" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" id="editEmail" name="email" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <input type="tel" id="editPhone" name="phone" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select id="editRole" name="role" class="form-select">
+              <option value="customer">Customer</option>
+              <option value="employee">Employee</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" type="submit" form="edit-user-form">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 
-    addUserForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+{% endblock %}
 
-      const data = {
-        username: addUserForm.username.value.trim(),
-        password: addUserForm.password?.value?.trim(),
-        first_name: addUserForm.first_name.value.trim(),
-        last_name: addUserForm.last_name.value.trim(),
-        email: addUserForm.email.value.trim(),
-        phone: addUserForm.phone.value.trim(),
-        role: addUserForm.role.value.trim(),
-      };
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/adminDashboard.js') }}" defer></script>
+{% endblock %}
 
-      if (data.role === "employee" && isManager) {
-        data.job_title = addUserForm.job_title.value.trim();
-        data.salary = parseFloat(addUserForm.salary.value);
-      }
-
-      const res = await fetch("/api/add_user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      const result = await safeJson(res);
-      if (result.success) {
-        toast("User added");
-        addUserForm.reset();
-        fetchUsers();
-      } else {
-        toast(result.error || "Error adding user", "error");
-      }
-    });
-  }
-
-  userTable.addEventListener("click", async (e) => {
-    const id = e.target.dataset.id;
-    if (!id) return;
-
-    if (e.target.classList.contains("edit-user-btn")) {
-      const res = await fetch(`/api/get_user?account_id=${id}`);
-      const user = await safeJson(res);
-
-      editForm.editUserId.value = user.account_id;
-      editForm.editUsername.value = user.username;
-      editForm.editFirstName.value = user.first_name;
-      editForm.editLastName.value = user.last_name;
-      editForm.editEmail.value = user.email;
-      editForm.editPhone.value = user.phone;
-      editForm.editRole.value = user.role;
-
-      editUserModal.show();
-    }
-
-    if (e.target.classList.contains("delete-user-btn")) {
-      await fetch("/api/delete_user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ account_id: id })
-      });
-      fetchUsers();
-      toast("User deleted");
-    }
-  });
-
-  if (editForm) {
-    editForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      const data = {
-        account_id: editForm.editUserId.value,
-        username: editForm.editUsername.value.trim(),
-        first_name: editForm.editFirstName.value.trim(),
-        last_name: editForm.editLastName.value.trim(),
-        email: editForm.editEmail.value.trim(),
-        phone: editForm.editPhone.value.trim(),
-        role: editForm.editRole.value
-      };
-
-      await fetch("/api/update_user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      editUserModal.hide();
-      fetchUsers();
-      toast("User updated");
-    });
-  }
-
-  const addMovieForm = document.getElementById("add-movie-form");
-  if (addMovieForm) {
-    addMovieForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(addMovieForm);
-      const movie = {};
-
-      for (const [key, value] of formData.entries()) {
-        if (key.includes("genre_ids")) {
-          movie.genre_ids = movie.genre_ids || [];
-          movie.genre_ids.push(value);
-        } else {
-          movie[key] = value;
-        }
-      }
-
-      await fetch("/api/add_movie", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(movie)
-      });
-
-      addMovieForm.reset();
-      toast("Movie added");
-    });
-  }
-
-  searchBtn?.addEventListener("click", () => {
-    fetchUsers(searchInput?.value || "");
-  });
-
-  fetchUsers();
-});
