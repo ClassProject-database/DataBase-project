@@ -109,8 +109,9 @@ def admin_user_view(account_id):
 @views.route('/admin', methods=['GET'])
 @login_required
 def admin_dashboard():
-    if current_user.role != 'employee'or 'manager':
-        abort(403, description="Only employees can access the admin dashboard.")
+    if current_user.role not in ['employee', 'manager']:
+        abort(403, description="Only employees and managers can access the admin dashboard.")
+
 
     search_query = request.args.get('search', '')
     conn = get_db_connection()
