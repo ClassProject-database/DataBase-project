@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchUsers");
 
-  const isManager = document.body.dataset.title?.toLowerCase() === "manager";
+  const currentRole = document.querySelector("[data-role]")?.dataset.role || "";
+  const isManager = currentRole.toLowerCase() === "manager";
 
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
@@ -46,13 +47,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (addUserForm) {
     const roleInput = addUserForm.role;
+    const jobFields = document.getElementById("employee-fields");
 
-    if (roleInput) {
+    if (roleInput && jobFields) {
       roleInput.addEventListener("change", () => {
-        const jobFields = document.getElementById("employee-fields");
-        if (jobFields) {
-          jobFields.style.display = (roleInput.value === "employee" && isManager) ? "block" : "none";
-        }
+        jobFields.style.display = (roleInput.value === "employee" || roleInput.value === "manager") && isManager ? "block" : "none";
       });
     }
 
@@ -69,9 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
         role: addUserForm.role.value.trim(),
       };
 
-      if (data.role === "employee" && isManager) {
-        data.job_title = addUserForm.job_title.value.trim();
-        data.salary = parseFloat(addUserForm.salary.value);
+      if ((data.role === "employee" || data.role === "manager") && isManager) {
+        data.job_title = addUserForm.job_title?.value.trim();
+        data.salary = parseFloat(addUserForm.salary?.value) || 0.0;
       }
 
       const res = await fetch("/api/add_user", {
@@ -85,6 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toast("User added");
         addUserForm.reset();
         fetchUsers();
+        if (jobFields) jobFields.style.display = "none";
       } else {
         toast(result.error || "Error adding user", "error");
       }
