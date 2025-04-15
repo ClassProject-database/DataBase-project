@@ -7,7 +7,7 @@ window.addToCart = function (movie_id, name, price) {
             console.error("Invalid item data", { movie_id, name, price });
             return;
         }
-        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
         if (cart.some(item => item.movie_id === movie_id)) {
             console.warn(`Movie ID ${movie_id} is already in the cart.`);
             return;
@@ -22,10 +22,9 @@ window.addToCart = function (movie_id, name, price) {
     }
 };
 
-
 function updateCartBadge() {
     try {
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
         const badge = document.querySelector(".cart-badge");
         if (badge) badge.innerText = cart.length;
     } catch (err) {
@@ -33,8 +32,6 @@ function updateCartBadge() {
     }
 }
 
-
- 
 function getDiscountRate(code) {
     switch ((code || "").toUpperCase().trim()) {
         case "VIP": return 0.20;
@@ -45,7 +42,7 @@ function getDiscountRate(code) {
 
 function updateCartList() {
     try {
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
         const cartList = document.getElementById("cart-items");
         const totalPriceEl = document.getElementById("total-price");
         const totalItemsEl = document.getElementById("total-items");
@@ -97,7 +94,7 @@ function updateCartList() {
 document.addEventListener("click", function (e) {
     if (!e.target.classList.contains("remove-btn")) return;
     const i = parseInt(e.target.getAttribute("data-index"));
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
     if (i >= 0 && i < cart.length) {
         cart.splice(i, 1);
         localStorage.setItem("cart", JSON.stringify(cart));
@@ -116,7 +113,6 @@ function showModal(message) {
     overlay.classList.add("show");
     okBtn.onclick = () => overlay.classList.remove("show");
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
     updateCartBadge();
@@ -145,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const checkoutBtn = document.getElementById("checkout-btn");
     if (checkoutBtn) {
         checkoutBtn.addEventListener("click", function () {
-            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
             if (!cart.length) {
                 showModal(" Your cart is empty. Add something first!");
                 return;
@@ -154,10 +150,11 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
 document.addEventListener("click", (event) => {
-    // Check if the click
+    // Check if the click 
     const btn = event.target.closest(".add-to-cart-btn");
-    if (!btn) return; // Not a cart button, ignore.
+    if (!btn) return; 
 
     const movieId = JSON.parse(btn.dataset.movieId);
     const title = JSON.parse(btn.dataset.movieTitle);
@@ -170,4 +167,3 @@ document.addEventListener("click", (event) => {
         console.warn("addToCart function is not defined.");
     }
 });
-
