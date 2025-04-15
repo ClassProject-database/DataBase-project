@@ -109,7 +109,7 @@ def admin_user_view(account_id):
 @views.route('/admin', methods=['GET'])
 @login_required
 def admin_dashboard():
-    if current_user.role != 'employee':
+    if current_user.role != 'employee'or 'manager':
         abort(403, description="Only employees can access the admin dashboard.")
 
     search_query = request.args.get('search', '')
@@ -223,7 +223,6 @@ def delete_user():
     conn.close()
 
     return jsonify({'success': True, 'message': 'User deleted successfully'})
-
 
 
 # 8) API: Post Review
@@ -570,7 +569,7 @@ def get_all_movies():
 
     return jsonify(movies)
 
-
+# 19) API: movie details page
 @views.route('/movie/<int:movie_id>')
 def movie_details(movie_id):
     conn = get_db_connection()
@@ -608,7 +607,7 @@ def movie_details(movie_id):
     conn.close()
 
     return render_template("movieDetails.html", movie=movie, genres=genres, reviews=reviews)
-
+#20) API : return movie 
 @views.route('/api/return_movie/<int:rentalId>', methods=['POST'])
 @login_required
 def return_movie(rentalId):
