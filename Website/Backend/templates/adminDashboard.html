@@ -43,9 +43,12 @@
               <label class="form-label">Role</label>
               <select id="role" class="form-select" required>
                 <option value="customer">Customer</option>
-                <option value="employee">Employee</option>
-                <option value="manager">Manager</option>
+                {% if current_user.job_title.lower() == 'manager' %}
+                  <option value="employee">Employee</option>
+                  <option value="manager">Manager</option>
+                {% endif %}
               </select>
+              
             </div>
             <div id="employee-fields" class="d-none">
               <div class="mb-3">
@@ -175,8 +178,10 @@
             <label class="form-label">Role</label>
             <select id="editRole" name="role" class="form-select">
               <option value="customer">Customer</option>
-              <option value="employee">Employee</option>
-              <option value="manager">Manager</option>
+              {% if current_user.job_title and current_user.job_title.lower() == 'manager' %}
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+              {% endif %}
             </select>
           </div>
         </form>
@@ -188,6 +193,7 @@
     </div>
   </div>
 </div>
+
 {% endblock %}
 
 {% block extra_js %}
