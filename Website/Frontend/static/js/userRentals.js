@@ -1,189 +1,140 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const toast = (msg, type = "success") => {
-      const el = document.createElement("div");
-      el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3 shadow`;
-      el.style.zIndex = 9999;
-      el.innerText = msg;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 3000);
-    };
+// USER RENTALS DASHBOARD JS
+
+const toast = (msg, type = "success") => {
+    const el = document.createElement("div");
+    el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3 shadow`;
+    el.style.zIndex = 9999;
+    el.innerText = msg;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 3000);
+  };
   
-    const safeJson = async res => JSON.parse(await res.text());
-    const userTable = document.getElementById("user-table-body");
-    const addUserForm = document.getElementById("add-user-form");
-    const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
-    const editForm = document.getElementById("edit-user-form");
-    const searchBtn = document.getElementById("searchBtn");
-    const searchInput = document.getElementById("searchUsers");
+  const safeJson = async res => JSON.parse(await res.text());
   
-    let searchDebounceTimer;
-    const fetchUsers = async (query = "") => {
-      const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
-      const users = await safeJson(res);
-      userTable.innerHTML = "";
+  // RENTAL RETURN LOGIC
+  const rentalsTable = document.getElementById("rentalsTableBody");
+  if (rentalsTable) {
+    rentalsTable.addEventListener("click", async (e) => {
+      if (e.target.classList.contains("return-rental-btn")) {
+        const rentalId = e.target.dataset.rentalId;
+        if (!rentalId) return;
   
-      if (!users.length) {
-        userTable.innerHTML = `<tr><td colspan="6" class="text-center">No users found.</td></tr>`;
+        try {
+          const res = await fetch(`/api/return_movie/${rentalId}`, { method: "POST" });
+          const data = await safeJson(res);
+          if (data.success) {
+            toast("Movie returned successfully!");
+            const row = e.target.closest("tr");
+            row.querySelector("td:nth-child(3)").textContent = new Date().toISOString().split("T")[0];
+            e.target.remove();
+          } else {
+            toast("Error: " + (data.error || "Could not return movie."), "error");
+          }
+        } catch (err) {
+          toast("Failed to return movie.", "error");
+          console.error(err);
+        }
+      }
+    });
+  }
+  
+  // POST REVIEW LOGIC
+  const reviewForm = document.getElementById("review-form");
+  if (reviewForm) {
+    reviewForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+  
+      const movieId = document.getElementById("selectedMovieId").value;
+      const rating = document.getElementById("reviewRating").value;
+      const reviewText = document.getElementById("reviewComment").value.trim();
+      const reviewList = document.getElementById("review-list");
+  
+      if (!movieId || !rating || !reviewText) {
+        toast("All fields are required!", "error");
         return;
       }
   
-      for (const u of users) {
-        userTable.innerHTML += `
-          <tr data-account-id="${u.account_id}">
-            <td>${u.account_id}</td>
-            <td>${u.username}</td>
-            <td>${u.first_name} ${u.last_name}</td>
-            <td>${u.email}</td>
-            <td>${u.role}</td>
-            <td>
-              <a href="/admin/user/${u.account_id}" class="btn btn-sm btn-info">View</a>
-              <button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>
-              <button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>
-            </td>
-          </tr>`;
-      }
-    };
-  
-    searchInput?.addEventListener("input", () => {
-      clearTimeout(searchDebounceTimer);
-      searchDebounceTimer = setTimeout(() => {
-        fetchUsers(searchInput?.value || "");
-      }, 300);
-    });
-  
-    if (addUserForm) {
-      const roleInput = addUserForm.role;
-      const jobFields = document.getElementById("employee-fields");
-  
-      if (roleInput && jobFields) {
-        roleInput.addEventListener("change", () => {
-          jobFields.style.display = (roleInput.value === "employee" || roleInput.value === "manager") ? "block" : "none";
-        });
-      }
-  
-      addUserForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-  
-        const data = {
-          username: addUserForm.username.value.trim(),
-          password: addUserForm.password?.value?.trim(),
-          first_name: addUserForm.first_name.value.trim(),
-          last_name: addUserForm.last_name.value.trim(),
-          email: addUserForm.email.value.trim(),
-          phone: addUserForm.phone.value.trim(),
-          role: addUserForm.role.value.trim(),
-        };
-  
-        if ((data.role === "employee" || data.role === "manager")) {
-          data.job_title = addUserForm.job_title?.value.trim();
-          data.salary = parseFloat(addUserForm.salary?.value) || 0.0;
-        }
-  
-        const res = await fetch("/api/add_user", {
+      try {
+        const response = await fetch("/api/post_review", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
+          body: JSON.stringify({ movie_id: movieId, rating, review_comment: reviewText })
         });
   
-        const result = await safeJson(res);
-        if (result.success) {
-          toast("User added");
-          addUserForm.reset();
-          fetchUsers();
-          if (jobFields) jobFields.style.display = "none";
-        } else {
-          toast(result.error || "Error adding user", "error");
-        }
-      });
-    }
+        const data = await safeJson(response);
+        if (data.success) {
+          toast("Review submitted successfully!");
+          document.getElementById("reviewRating").value = "";
+          document.getElementById("reviewComment").value = "";
+          document.getElementById("movieSearch").value = "";
+          document.getElementById("selectedMovieId").value = "";
   
-    userTable.addEventListener("click", async (e) => {
-      const id = e.target.dataset.id;
-      if (!id) return;
-  
-      if (e.target.classList.contains("edit-user-btn")) {
-        const res = await fetch(`/api/get_user?account_id=${id}`);
-        const user = await safeJson(res);
-  
-        editForm.editUserId.value = user.account_id;
-        editForm.editUsername.value = user.username;
-        editForm.editFirstName.value = user.first_name;
-        editForm.editLastName.value = user.last_name;
-        editForm.editEmail.value = user.email;
-        editForm.editPhone.value = user.phone;
-        editForm.editRole.value = user.role;
-  
-        editUserModal.show();
-      }
-  
-      if (e.target.classList.contains("delete-user-btn")) {
-        await fetch("/api/delete_user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ account_id: id })
-        });
-        fetchUsers();
-        toast("User deleted");
-      }
-    });
-  
-    if (editForm) {
-      editForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-  
-        const data = {
-          account_id: editForm.editUserId.value,
-          username: editForm.editUsername.value.trim(),
-          first_name: editForm.editFirstName.value.trim(),
-          last_name: editForm.editLastName.value.trim(),
-          email: editForm.editEmail.value.trim(),
-          phone: editForm.editPhone.value.trim(),
-          role: editForm.editRole.value
-        };
-  
-        await fetch("/api/update_user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-  
-        editUserModal.hide();
-        fetchUsers();
-        toast("User updated");
-      });
-    }
-  
-    const addMovieForm = document.getElementById("add-movie-form");
-    if (addMovieForm) {
-      addMovieForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(addMovieForm);
-        const movie = {};
-  
-        for (const [key, value] of formData.entries()) {
-          if (key.includes("genre_ids")) {
-            movie.genre_ids = movie.genre_ids || [];
-            movie.genre_ids.push(value);
-          } else {
-            movie[key] = value;
+          if (reviewList) {
+            const newReview = document.createElement("li");
+            newReview.classList.add("list-group-item", "bg-dark", "text-white");
+            newReview.innerHTML = `
+              <strong>${data.movie_title || "Unknown Movie"}</strong> (⭐${rating}/5)
+              <br>${reviewText}
+              <br><small>Just now</small>
+            `;
+            reviewList.prepend(newReview);
           }
+        } else {
+          toast("Error: " + data.error, "error");
         }
+      } catch (error) {
+        toast("Error submitting review.", "error");
+      }
+    });
+  }
   
-        await fetch("/api/add_movie", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(movie)
-        });
+  // MOVIE SEARCH AUTOCOMPLETE WITH DEBOUNCE
+  const movieSearchInput = document.getElementById("movieSearch");
+  if (movieSearchInput) {
+    let debounceTimer;
+    movieSearchInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(handleMovieSearch, 300);
+    });
+  }
   
-        addMovieForm.reset();
-        toast("Movie added");
-      });
+  async function handleMovieSearch() {
+    const input = document.getElementById("movieSearch");
+    const query = input?.value.trim().toLowerCase();
+    const dropdown = document.getElementById("movieDropdown");
+    const movieIdField = document.getElementById("selectedMovieId");
+  
+    dropdown.innerHTML = "";
+    dropdown.style.display = "none";
+  
+    if (!query) {
+      movieIdField.value = "";
+      return;
     }
   
-    searchBtn?.addEventListener("click", () => {
-      fetchUsers(searchInput?.value || "");
-    });
+    try {
+      const res = await fetch(`/api/search_rented_movies?query=${encodeURIComponent(query)}`);
+      if (!res.ok) throw new Error("Failed to fetch");
   
-    fetchUsers();
-  });
+      const movies = await res.json();
+      if (!movies.length) return;
+  
+      movies.forEach(movie => {
+        const option = document.createElement("div");
+        option.classList.add("dropdown-item");
+        option.textContent = movie.title;
+        option.dataset.id = movie.movie_id;
+        option.addEventListener("click", () => {
+          input.value = movie.title;
+          movieIdField.value = movie.movie_id;
+          dropdown.style.display = "none";
+        });
+        dropdown.appendChild(option);
+      });
+  
+      dropdown.style.display = "block";
+    } catch (err) {
+      console.error("Movie search failed:", err);
+    }
+  }
   
