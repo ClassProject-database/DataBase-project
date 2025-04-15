@@ -46,6 +46,11 @@
               </a>
               <p class="mt-2 text-white-50">Click image to watch trailer</p>
             </div>
+            {% else %}
+            <div class="bg-secondary bg-opacity-25 text-muted rounded p-3 mt-3">
+              No trailer available.
+            </div>
+
           {% endif %}
 
           {% if current_user.is_authenticated and current_user.role == 'customer' %}
