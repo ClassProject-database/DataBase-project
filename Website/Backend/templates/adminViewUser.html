@@ -41,7 +41,7 @@
         <table class="table table-dark table-striped mb-0">
           <thead>
             <tr>
-              <th>Rental ID</th>
+              <th>Watch</th>
               <th>Movie Title</th>
               <th>Rental Date</th>
               <th>Return Date</th>
@@ -62,7 +62,7 @@
                 {% endif %}
               </td>
               <td>{{ rental.rental_date }}</td>
-              <td>{{ rental.return_date or "N/A" }}</td>
+              <td>{{ "Movie link N/A" }}</td>
               <td>
                 {% if rental.return_date %}
                   <span class="badge bg-success">Returned</span>
