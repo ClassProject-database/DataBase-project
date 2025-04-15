@@ -154,3 +154,20 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+document.addEventListener("click", (event) => {
+    // Check if the click
+    const btn = event.target.closest(".add-to-cart-btn");
+    if (!btn) return; // Not a cart button, ignore.
+
+    const movieId = JSON.parse(btn.dataset.movieId);
+    const title = JSON.parse(btn.dataset.movieTitle);
+    const price = JSON.parse(btn.dataset.moviePrice);
+    console.log("Delegated add-to-cart click:", movieId, title, price);
+
+    if (typeof addToCart === "function") {
+        addToCart(movieId, title, price);
+    } else {
+        console.warn("addToCart function is not defined.");
+    }
+});
+
