@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
   {% block extra_css %}{% endblock %}
 </head>
-<body class="dark-mode">
+<body class="dark-mode" data-role="{{ current_user.role }}" data-title="{{ current_user.job_title }}">
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg py-3">

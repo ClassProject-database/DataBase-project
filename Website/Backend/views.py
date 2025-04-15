@@ -62,7 +62,6 @@ def get_movies():
     return jsonify(movies)
 
 
-
 @views.route("/admin/user/<int:account_id>")
 @login_required
 def admin_user_view(account_id):
@@ -136,8 +135,6 @@ def admin_dashboard():
 
     return render_template("adminDashboard.html", users=users, genres=genres, search_query=search_query)
 
-
-
 # 5) User Rentals Page
 @views.route('/api/add_user', methods=['POST'])
 @login_required
@@ -191,9 +188,6 @@ def add_user():
 
     return jsonify({'success': True, 'message': 'User added successfully!'})
 
-
-
-
 # 7) API: Delete User
 @views.route('/api/delete_user', methods=['POST'])
 @login_required
@@ -225,6 +219,51 @@ def delete_user():
 
     return jsonify({'success': True, 'message': 'User deleted successfully'})
 
+# 14) API: Add Movie
+@views.route('/api/add_movie', methods=['POST'])
+@login_required
+def add_movie():
+    if current_user.role != 'employee':
+        return '', 403
+
+    data = request.get_json()
+    title = data.get("title")
+    rating = data.get("rating")
+    image_path = data.get("image_path", "keyboard.jpg")
+    genre_ids = data.get("genre_ids", [])
+
+    release_year = int(data.get("release_year", 0))
+    if release_year > 9999:
+        return jsonify({"success": False, "error": "Invalid release year"}), 400
+
+    price = float(data.get("price", 0))
+    if price > 999.99:
+        price = 999.99
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        INSERT INTO movies (title, release_year, rating, price, image_path)
+        VALUES (%s, %s, %s, %s, %s)
+    """, (title, release_year, rating, price, image_path))
+    movie_id = cursor.lastrowid
+
+    for g_id in genre_ids:
+        cursor.execute("""
+            INSERT INTO moviegenres (movie_id, genre_id)
+            VALUES (%s, %s)
+        """, (movie_id, g_id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "message": "Movie added successfully",
+        "movie_id": movie_id
+    }), 201
 
 # 8) API: Post Review
 @views.route('/api/post_review', methods=['POST'])
@@ -272,28 +311,6 @@ def reviews_page():
     conn.close()
 
     return render_template("reviews.html", reviews=reviews)
-
-
-# 10) API: Search Users
-@views.route('/api/search_users')
-@login_required
-def search_users():
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    search_query = request.args.get('query', '').strip()
-
-    cursor.execute("""
-        SELECT * FROM users
-        WHERE username LIKE %s OR account_id LIKE %s
-    """, (f"%{search_query}%", f"%{search_query}%"))
-    users = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return jsonify(users)
-
 
 # 11) Checkout Page
 @views.route('/checkout', methods=['GET'])
@@ -433,51 +450,7 @@ def checkout():
 
     return jsonify({"success": True, "message": "Checkout complete!"})
 
-# 14) API: Add Movie
-@views.route('/api/add_movie', methods=['POST'])
-@login_required
-def add_movie():
-    if current_user.role != 'employee':
-        return '', 403
 
-    data = request.get_json()
-    title = data.get("title")
-    rating = data.get("rating")
-    image_path = data.get("image_path", "keyboard.jpg")
-    genre_ids = data.get("genre_ids", [])
-
-    release_year = int(data.get("release_year", 0))
-    if release_year > 9999:
-        return jsonify({"success": False, "error": "Invalid release year"}), 400
-
-    price = float(data.get("price", 0))
-    if price > 999.99:
-        price = 999.99
-
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("""
-        INSERT INTO movies (title, release_year, rating, price, image_path)
-        VALUES (%s, %s, %s, %s, %s)
-    """, (title, release_year, rating, price, image_path))
-    movie_id = cursor.lastrowid
-
-    for g_id in genre_ids:
-        cursor.execute("""
-            INSERT INTO moviegenres (movie_id, genre_id)
-            VALUES (%s, %s)
-        """, (movie_id, g_id))
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-    return jsonify({
-        "success": True,
-        "message": "Movie added successfully",
-        "movie_id": movie_id
-    }), 201
 
 # 15) API: Get User
 @views.route('/api/get_user', methods=['GET'])
