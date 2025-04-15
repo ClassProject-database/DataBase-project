@@ -6,7 +6,7 @@
   <title>{% block title %}Movie Store{% endblock %}</title>
 
   <meta name="description" content="Find and rent the best movies online" />
-  <meta name="keywords" content="TBD" />
+  <meta name="keywords" content="movie rental, blockbuster, online movies" />
   <meta name="author" content="Movie Store" />
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
 
@@ -16,61 +16,49 @@
 
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
-
   {% block extra_css %}{% endblock %}
 </head>
 <body class="dark-mode">
-
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-lg py-3">
   <div class="container-fluid px-4">
     <a class="navbar-brand fw-bold fs-3 d-flex align-items-center" href="{{ url_for('views.HomePage') }}">
-      <img src="{{ url_for('static', filename='favicon.ico') }}" 
-     alt="Home Icon" 
-     width="90" 
-     height="90" 
-     style="width: 90px; height: 90px;" 
-     class="me-2">
-
+      <img src="{{ url_for('static', filename='favicon.ico') }}" alt="Home Icon" width="90" height="90" class="me-2">
       Home
     </a>
-    
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto">
-
         {% if not current_user.is_authenticated %}
-          <!-- Guest Links -->
           <li class="nav-item">
             <a class="nav-link fs-5" href="{{ url_for('auth.signUp') }}">Sign Up</a>
           </li>
           <li class="nav-item">
             <a class="nav-link fs-5" href="{{ url_for('auth.login') }}">Login</a>
           </li>
-
         {% else %}
-          <!-- Authenticated User Links -->
-          {% if current_user.role == 'employee' %}
+          {% if current_user.role in ['employee', 'manager'] %}
             <li class="nav-item">
-              <a class="nav-link fs-5" href="{{ url_for('views.admin_dashboard') }}">Admin Dashboard</a>
+              <a class="nav-link fs-5" href="{{ url_for('views.admin_dashboard') }}">
+                {{ 'Manager Dashboard' if current_user.role == 'manager' else 'Employee Dashboard' }}
+              </a>
             </li>
-            {% endif %}
-          {% if current_user.is_authenticated and current_user.role =='customer'%}
+          {% endif %}
+          {% if current_user.role == 'customer' %}
             <li class="nav-item">
               <a class="nav-link fs-5" href="{{ url_for('views.user_rentals') }}">My Rentals</a>
             </li>
           {% endif %}
-
           <li class="nav-item">
             <a class="nav-link fs-5" href="{{ url_for('auth.logout') }}">Logout</a>
           </li>
         {% endif %}
 
-        <!-- Always visible links -->
         <li class="nav-item">
           <a class="nav-link fs-5" href="{{ url_for('views.inventory') }}">Inventory</a>
         </li>
@@ -80,8 +68,7 @@
       </ul>
 
       <div class="d-flex align-items-center">
-        {%  if current_user.is_authenticated and current_user.role =='customer'%}
-
+        {% if current_user.is_authenticated and current_user.role == 'customer' %}
           <a class="btn btn-outline-light me-3 fs-5" href="{{ url_for('auth.UserCart') }}">
             <i class="fa fa-shopping-cart"></i> Cart
             <span class="badge bg-light text-dark ms-1 rounded-pill cart-badge">0</span>
@@ -92,34 +79,28 @@
   </div>
 </nav>
 
-  
-  <!-- MAIN CONTENT -->
-  <main class="container-fluid py-5 main-content">
-    <div class="mx-auto px-4" style="max-width: 1300px;">
-      {% block content %}{% endblock %}
-    </div>
-  </main>
+<!-- MAIN CONTENT -->
+<main class="container-fluid py-5 main-content">
+  <div class="mx-auto px-4" style="max-width: 1300px;">
+    {% block content %}{% endblock %}
+  </div>
+</main>
 
+<!-- FOOTER -->
+<footer class="py-4 bg-dark text-white text-center">
+  <div class="container-fluid">
+    <p class="mb-0 fs-5">
+      &copy; 2024 Movie Store <i class="fa fa-film"></i> All Rights Reserved
+    </p>
+  </div>
+</footer>
 
-  <!-- FOOTER -->
-  <footer class="py-4 bg-dark text-white text-center">
-    <div class="container-fluid">
-      <p class="mb-0 fs-5">
-        &copy; 2024 Movie Store <i class="fa fa-film"></i> All Rights Reserved
-      </p>
-    </div>
-  </footer>
-
- 
-  <!-- SCRIPTS -->
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
-  <script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='js/reviews.js') }}" defer></script>
-  <script src="{{ url_for('static', filename='js/home.js') }}" defer></script>
-  {% block extra_js %}{% endblock %}
-
-  {% block modals %}
-  {% endblock %}
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/reviews.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/home.js') }}" defer></script>
+{% block extra_js %}{% endblock %}
+{% block modals %}{% endblock %}
 </body>
 </html>
