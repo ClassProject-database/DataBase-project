@@ -71,7 +71,7 @@
       {% if reviews %}
         <div class="list-group">
           {% for r in reviews %}
-            <div class="list-group-item list-group-item-dark mb-3 rounded border-start border-primary border-4">
+            <div class="list-group-item list-group-item-dark mb-3 rounded border-start border-primary">
               <p class="mb-1"><strong>{{ r.username }}</strong> rated it ⭐ {{ r.rating }}</p>
               <p class="mb-1">{{ r.review_comment or "No comment." }}</p>
               <small class="text-muted">{{ r.review_date.strftime('%Y-%m-%d %H:%M') }}</small>
