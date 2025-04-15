@@ -81,7 +81,7 @@
 
       <div class="d-flex align-items-center">
         {%  if current_user.is_authenticated and current_user.role =='customer'%}
-          <!-- Cart (Customer Only) -->
+
           <a class="btn btn-outline-light me-3 fs-5" href="{{ url_for('auth.UserCart') }}">
             <i class="fa fa-shopping-cart"></i> Cart
             <span class="badge bg-light text-dark ms-1 rounded-pill cart-badge">0</span>

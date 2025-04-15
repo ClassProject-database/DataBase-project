@@ -1,6 +1,4 @@
 please put your name next to item 
 -- Remove duplicate Films
 -- Resize all images to fit in the inventory boxes
--- Add "Manger" role and manager dashboard where they can add employee and set all detials from employee table
--- make normal eployee admin only add customers not employees
 -- write a descripton and add YouTube urls for each movie to be on the movie details page

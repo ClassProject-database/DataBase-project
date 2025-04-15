@@ -15,6 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchUsers");
 
+  const isManager = document.body.dataset.title?.toLowerCase() === "manager";
+
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
     const users = await safeJson(res);
@@ -43,6 +45,19 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   if (addUserForm) {
+    const roleInput = addUserForm.role;
+    const jobFields = document.getElementById("employee-fields");
+
+    if (roleInput && jobFields) {
+      roleInput.addEventListener("change", () => {
+        if (roleInput.value === "employee" && isManager) {
+          jobFields.style.display = "block";
+        } else {
+          jobFields.style.display = "none";
+        }
+      });
+    }
+
     addUserForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -53,18 +68,28 @@ document.addEventListener("DOMContentLoaded", () => {
         last_name: addUserForm.last_name.value.trim(),
         email: addUserForm.email.value.trim(),
         phone: addUserForm.phone.value.trim(),
-        role: addUserForm.role.value.trim()
+        role: addUserForm.role.value.trim(),
       };
 
-      await fetch("/api/add_user", {
+      if (data.role === "employee" && isManager) {
+        data.job_title = addUserForm.job_title.value.trim();
+        data.salary = parseFloat(addUserForm.salary.value);
+      }
+
+      const res = await fetch("/api/add_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
 
-      toast("User added");
-      addUserForm.reset();
-      fetchUsers();
+      const result = await safeJson(res);
+      if (result.success) {
+        toast("User added");
+        addUserForm.reset();
+        fetchUsers();
+      } else {
+        toast(result.error || "Error adding user", "error");
+      }
     });
   }
 

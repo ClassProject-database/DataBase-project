@@ -184,7 +184,6 @@ def user_rentals():
     return render_template("userRentals.html", user=user_info, rentals=rentals, reviews=reviews)
 
 
-# 6) API: Add User
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
@@ -201,6 +200,10 @@ def add_user():
     address = data.get('address', 'N/A')  
     job_title = data.get('job_title', 'Staff')
     salary = data.get('salary', 0.00)
+
+    # Only allow managers to add employees
+    if role == 'employee' and current_user.job_title.lower() != 'manager':
+        return jsonify({'success': False, 'error': 'Only managers can add employees.'}), 403
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
@@ -219,23 +222,17 @@ def add_user():
     new_account_id = cursor.lastrowid
 
     if role == 'customer':
-        cursor.execute("""
-            INSERT INTO customers (account_id, address)
-            VALUES (%s, %s)
-        """, (new_account_id, address))
-        conn.commit()
+        cursor.execute("INSERT INTO customers (account_id, address) VALUES (%s, %s)", (new_account_id, address))
 
     if role == 'employee':
-        cursor.execute("""
-            INSERT INTO employees (account_id, job_title, salary)
-            VALUES (%s, %s, %s)
-        """, (new_account_id, job_title, salary))
-        conn.commit()
+        cursor.execute("INSERT INTO employees (account_id, job_title, salary) VALUES (%s, %s, %s)", (new_account_id, job_title, salary))
 
+    conn.commit()
     cursor.close()
     conn.close()
 
     return jsonify({'success': True, 'message': 'User added successfully!'})
+
 
 
 # 7) API: Delete User
