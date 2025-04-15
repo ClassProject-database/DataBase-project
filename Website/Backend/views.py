@@ -18,7 +18,6 @@ def HomePage():
 
     return render_template('home.html', featured_movies=featured_movies)
 
-
 # 2) Inventory Page
 @views.route('/inventory')
 def inventory():
@@ -35,7 +34,6 @@ def inventory():
     conn.close()
 
     return render_template("inventory.html", movies=movies, genres=genres)
-
 
 # 3) API to Fetch Movies
 @views.route('/api/movies')
@@ -60,7 +58,6 @@ def get_movies():
     conn.close()
 
     return jsonify(movies)
-
 
 @views.route("/admin/user/<int:account_id>")
 @login_required
@@ -102,7 +99,6 @@ def admin_user_view(account_id):
         user=user,
         rentals=rentals
     )
-
 
 # 4) Admin Dashboard
 @views.route('/admin', methods=['GET'])
@@ -312,6 +308,30 @@ def reviews_page():
 
     return render_template("reviews.html", reviews=reviews)
 
+#10) Admin search
+@views.route('/api/search_users')
+@login_required
+def search_users():
+    if current_user.role not in ['employee', 'manager']:
+        return jsonify([])
+
+    search_query = request.args.get('query', '').strip()
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    cursor.execute("""
+        SELECT * FROM users
+        WHERE username LIKE %s OR account_id LIKE %s
+    """, (f"%{search_query}%", f"%{search_query}%"))
+    users = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(users)
+
+
 # 11) Checkout Page
 @views.route('/checkout', methods=['GET'])
 @login_required
@@ -450,8 +470,6 @@ def checkout():
 
     return jsonify({"success": True, "message": "Checkout complete!"})
 
-
-
 # 15) API: Get User
 @views.route('/api/get_user', methods=['GET'])
 @login_required
@@ -575,12 +593,14 @@ def movie_details(movie_id):
         WHERE r.movie_id = %s
         ORDER BY r.review_date DESC
     """, (movie_id,))
+
     reviews = cursor.fetchall()
 
     cursor.close()
     conn.close()
 
     return render_template("movieDetails.html", movie=movie, genres=genres, reviews=reviews)
+
 #20) API : return movie 
 @views.route('/api/return_movie/<int:rentalId>', methods=['POST'])
 @login_required
@@ -600,6 +620,7 @@ def return_movie(rentalId):
     conn.close()
 
     return jsonify({"success": True, "message": "Movie returned!"})
+
 #21) API : user review search 
 @views.route('/api/search_rented_movies')
 @login_required
