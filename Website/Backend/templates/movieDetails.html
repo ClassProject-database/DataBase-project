@@ -50,15 +50,14 @@
 
           <!-- Movie Description -->
           <div class="card-body">
+            <div class="bg-secondary text-dark p-3 rounded text-center shadow-sm"></div>
             {% if movie.description %}
               <p>{{ movie.description }}</p>
             {% else %}
-              <div class="bg-secondary text-dark p-3 rounded text-center shadow-sm">
                 No description available.
-              </div>
+            </div>
             {% endif %}
           </div>
-          
 
             </section>
           </div>
