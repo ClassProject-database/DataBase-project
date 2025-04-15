@@ -1,4 +1,22 @@
-please put your name next to item 
--- Remove duplicate Films
--- Resize all images to fit in the inventory boxes
--- write a descripton and add YouTube urls for each movie to be on the movie details page
+Priorties :
+1-Urgent
+2-Normal
+3-optional
+
+(please put your name next to item finished)
+
+-2- Remove duplicate Films, just need to rewrite sql satement to insert movies, add new movies if not at 100.
+
+-2- Resize all images to fit in the inventory frames, 
+
+-3- (duplicate all images and resize for the featured movies section on the home page 
+                or find another way to resize them for them the samller frame size)
+
+-1- write a descripton and add YouTube urls for each movie to be inserted into movies table
+
+-2- fix the search movie bar in userDahboard/Myrentals
+
+-2- add search bar for the main inventory page
+
+
+
