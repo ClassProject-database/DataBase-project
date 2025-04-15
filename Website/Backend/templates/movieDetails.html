@@ -39,7 +39,7 @@
           {% if movie.trailer_url %}
             <div class="mt-4 trailer-box">
               <div class="ratio ratio-16x9">
-                <iframe src="https://www.youtube.com/embed/{{ movie.trailer_url.split('v=')[-1] }}"
+                <iframe src="https://www.youtube.com/embed/{{ movie.trailer_url.split('v=')[-1].split('&')[0] }}"
                         title="YouTube trailer"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen class="rounded border border-secondary"></iframe>
@@ -87,7 +87,7 @@
   </div>
 </div>
 
-<!--Modal for Add to Cart Confirmation -->
+<!-- Modal for Add to Cart Confirmation -->
 <div id="cartModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-white">
@@ -103,11 +103,9 @@
 {% block extra_css %}
 <style>
   .movie-poster {
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
-    transition: transform 0.3s ease;
-  }
-  .movie-poster:hover {
-    transform: scale(1.02);
+    max-height: 100%;
+    width: 100%;
+    object-fit: cover;
   }
   .description-box {
     font-size: 1.05rem;
@@ -119,7 +117,8 @@
     box-shadow: 0 0 10px limegreen;
   }
   .trailer-box {
-    max-width: 480px;
+    max-width: 100%;
+    margin-top: 1rem;
   }
 </style>
 {% endblock %}
