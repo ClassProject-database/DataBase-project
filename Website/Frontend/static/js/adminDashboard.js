@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const roleAttr = roleEl?.dataset.role?.toLowerCase() || "";
   const titleAttr = roleEl?.dataset.title?.toLowerCase() || "";
   const isManager = titleAttr === "manager";
+  const isEmployee = roleAttr === "employee";
 
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
@@ -31,7 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     for (const u of users) {
-      const canEditDelete = isManager || u.role === "customer";
+      const isCustomer = u.role === "customer";
+      const canEditDelete = isManager || (isEmployee && isCustomer);
       userTable.innerHTML += `
         <tr data-account-id="${u.account_id}">
           <td>${u.account_id}</td>

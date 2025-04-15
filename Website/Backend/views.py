@@ -627,7 +627,7 @@ def return_movie(rentalId):
     conn.close()
 
     return jsonify({"success": True, "message": "Movie returned!"})
-
+#21) API : user review search 
 @views.route('/api/search_rented_movies')
 @login_required
 def search_rented_movies():
