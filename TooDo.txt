@@ -1,12 +1,13 @@
 Priorties :
+0-finished
 1-Urgent
 2-Normal
 3-optional
-4-put on report as "didnt get to" 
+4-put on report as "didnt get to" / "additional features" 
 
-(please put your name next to item finished)
+(please put your name next to item and then set to finished)
 
--2- Remove duplicate Films, just need to rewrite sql satement to insert movies, add new movies if not at 100.
+-2- Remove duplicate Films, just need to rewrite sql satement to insert movies, include new movies if not at 100.
 
 -2- Resize all images to fit in the inventory frames, 
 
@@ -15,18 +16,18 @@ Priorties :
 
 -1- write a descripton and add YouTube urls for each movie to be inserted into movies table
 
--2- fix the search movie bar in userDahboard/Myrentals
+(Matt) -0- fix the search movie bar in userDahboard/Myrentals
 
 -2- add search bar for the main inventory page
 
--1- fix return movie for user
+(Matt)-0- fix return movie for user
 
--2- update reviews on hompge to dynamically fetch real reviews that 
+-2- update reviews on hompge to dynamically fetch real reviews
 
 -4- add Movie link to the my rentals page so users hace acess to theire movies on once rented
 
 -4- mention the fact that people can  ddos/hack site by hijacking api calls 
-    and making a custom request such as posting reviews or adding movies, data base is secured from being deleted , 
+    and making a custom request such as posting reviews or adding movies, data base is secured from being deleted tho or major sql injections
 
 
 

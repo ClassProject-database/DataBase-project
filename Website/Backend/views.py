@@ -138,52 +138,6 @@ def admin_dashboard():
 
 
 # 5) User Rentals Page
-@views.route('/user_rentals', methods=['GET'])
-@login_required
-def user_rentals():
-    if current_user.role != 'customer':
-        flash("Only customers can view personal rentals.", "error")
-        return redirect(url_for('views.HomePage'))
-
-    account_id = current_user.id
-    conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("SELECT * FROM users WHERE account_id = %s", (account_id,))
-    user_info = cursor.fetchone()
-
-    cursor.execute("""
-        SELECT r.rentalID,
-               r.rental_date,
-               r.return_date,
-               r.total_price,
-               m.title,
-               rm.price AS rental_price
-        FROM rentals r
-        JOIN rental_movies rm ON r.rentalID = rm.rental_id
-        JOIN movies m ON rm.movie_id = m.movie_id
-        WHERE r.account_id = %s
-    """, (account_id,))
-    rentals = cursor.fetchall()
-
-    cursor.execute("""
-        SELECT rev.review_id,
-               rev.review_date,
-               rev.rating,
-               rev.review_comment,
-               m.title
-        FROM reviews rev
-        JOIN movies m ON rev.movie_id = m.movie_id
-        WHERE rev.account_id = %s
-    """, (account_id,))
-    reviews = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return render_template("userRentals.html", user=user_info, rentals=rentals, reviews=reviews)
-
-
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
@@ -201,14 +155,15 @@ def add_user():
     job_title = data.get('job_title', 'Staff')
     salary = data.get('salary', 0.00)
 
-    # Only allow managers to add employees
-    if role == 'employee' and current_user.job_title.lower() != 'manager':
-        return jsonify({'success': False, 'error': 'Only managers can add employees.'}), 403
+    # Only managers can add employees or other managers
+    if role in ['employee', 'manager'] and (current_user.job_title or '').lower() != 'manager':
+        return jsonify({'success': False, 'error': 'Only managers can add employees or managers.'}), 403
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    # Check if username already exists
+    cursor.execute("SELECT 1 FROM users WHERE username = %s", (username,))
     if cursor.fetchone():
         return jsonify({'success': False, 'error': 'Username already exists.'}), 400
 
@@ -223,15 +178,18 @@ def add_user():
 
     if role == 'customer':
         cursor.execute("INSERT INTO customers (account_id, address) VALUES (%s, %s)", (new_account_id, address))
-
-    if role == 'employee':
-        cursor.execute("INSERT INTO employees (account_id, job_title, salary) VALUES (%s, %s, %s)", (new_account_id, job_title, salary))
+    elif role in ['employee', 'manager']:
+        cursor.execute("""
+            INSERT INTO employees (account_id, job_title, salary)
+            VALUES (%s, %s, %s)
+        """, (new_account_id, job_title, salary))
 
     conn.commit()
     cursor.close()
     conn.close()
 
     return jsonify({'success': True, 'message': 'User added successfully!'})
+
 
 
 
@@ -243,10 +201,20 @@ def delete_user():
         return '', 403
 
     data = request.get_json()
-    account_id = data['account_id']
+    account_id = data.get('account_id')
 
     conn = get_db_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch the target user's role
+    cursor.execute("SELECT role FROM users WHERE account_id = %s", (account_id,))
+    target = cursor.fetchone()
+    if not target:
+        return jsonify({'success': False, 'error': 'User not found'}), 404
+
+    # Only allow deleting customers unless you're a manager
+    if target['role'] in ['employee', 'manager'] and (current_user.job_title or '').lower() != 'manager':
+        return jsonify({'success': False, 'error': 'Only managers can delete employees or managers.'}), 403
 
     cursor.execute("DELETE FROM users WHERE account_id = %s", (account_id,))
     conn.commit()
@@ -255,6 +223,7 @@ def delete_user():
     conn.close()
 
     return jsonify({'success': True, 'message': 'User deleted successfully'})
+
 
 
 # 8) API: Post Review
@@ -463,7 +432,6 @@ def checkout():
     conn.close()
 
     return jsonify({"success": True, "message": "Checkout complete!"})
-
 
 # 14) API: Add Movie
 @views.route('/api/add_movie', methods=['POST'])

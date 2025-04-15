@@ -15,8 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchUsers");
 
-  const currentRole = document.querySelector("[data-role]")?.dataset.role || "";
-  const isManager = currentRole.toLowerCase() === "manager";
+  const roleEl = document.querySelector("[data-role]");
+  const roleAttr = roleEl?.dataset.role?.toLowerCase() || "";
+  const titleAttr = roleEl?.dataset.title?.toLowerCase() || "";
+  const isManager = titleAttr === "manager";
 
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
@@ -29,6 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     for (const u of users) {
+      const canEditDelete = isManager || u.role === "customer";
       userTable.innerHTML += `
         <tr data-account-id="${u.account_id}">
           <td>${u.account_id}</td>
@@ -38,8 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
           <td>${u.role}</td>
           <td>
             <a href="/admin/user/${u.account_id}" class="btn btn-sm btn-info">View</a>
-            <button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>
-            <button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>
+            ${canEditDelete ? `<button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>` : ""}
+            ${canEditDelete ? `<button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>` : ""}
           </td>
         </tr>`;
     }
@@ -51,7 +54,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (roleInput && jobFields) {
       roleInput.addEventListener("change", () => {
-        jobFields.style.display = (roleInput.value === "employee" || roleInput.value === "manager") && isManager ? "block" : "none";
+        const show = ["employee", "manager"].includes(roleInput.value) && isManager;
+        jobFields.classList.toggle("d-none", !show);
       });
     }
 
@@ -68,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         role: addUserForm.role.value.trim(),
       };
 
-      if ((data.role === "employee" || data.role === "manager") && isManager) {
+      if (["employee", "manager"].includes(data.role) && isManager) {
         data.job_title = addUserForm.job_title?.value.trim();
         data.salary = parseFloat(addUserForm.salary?.value) || 0.0;
       }
@@ -84,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toast("User added");
         addUserForm.reset();
         fetchUsers();
-        if (jobFields) jobFields.style.display = "none";
+        jobFields?.classList.add("d-none");
       } else {
         toast(result.error || "Error adding user", "error");
       }
