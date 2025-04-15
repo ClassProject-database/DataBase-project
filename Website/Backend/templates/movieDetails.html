@@ -49,13 +49,16 @@
           {% endif %}
 
           <!-- Movie Description -->
-            <div class="card-body">
-              {% if movie.description %}
+          <div class="card-body">
+            {% if movie.description %}
               <p>{{ movie.description }}</p>
-              {% else %}
-                <p class="text-muted">No description available.</p>
-              {% endif %}
-            </div>
+            {% else %}
+              <div class="bg-secondary text-dark p-3 rounded text-center shadow-sm">
+                No description available.
+              </div>
+            {% endif %}
+          </div>
+          
 
             </section>
           </div>
