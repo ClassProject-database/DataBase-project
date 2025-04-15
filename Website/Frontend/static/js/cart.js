@@ -1,19 +1,24 @@
 console.log("cart.js loaded!");
 
+// Add to Cart Function
 window.addToCart = function (movie_id, name, price) {
     console.log("Adding to cart:", movie_id, name, price);
+
+    if (!movie_id || !name || isNaN(price)) {
+        console.error(" Invalid item data:", { movie_id, name, price });
+        return;
+    }
+
     try {
-        if (!movie_id || !name || isNaN(price)) {
-            console.error("Invalid item data", { movie_id, name, price });
-            return;
-        }
-        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
         if (cart.some(item => item.movie_id === movie_id)) {
-            console.warn(`Movie ID ${movie_id} is already in the cart.`);
+            console.warn(` Movie ID ${movie_id} is already in the cart.`);
             return;
         }
+
         cart.push({ movie_id, name, price: parseFloat(price) });
         localStorage.setItem("cart", JSON.stringify(cart));
+
         updateCartBadge();
         updateCartList();
         showModal(`${name} has been added to your cart!`);
@@ -22,6 +27,7 @@ window.addToCart = function (movie_id, name, price) {
     }
 };
 
+// Update Cart Badge in Navbar
 function updateCartBadge() {
     try {
         const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -40,6 +46,7 @@ function getDiscountRate(code) {
     }
 }
 
+// Update Cart
 function updateCartList() {
     try {
         const cart = JSON.parse(localStorage.getItem("cart") || "[]");
@@ -74,7 +81,6 @@ function updateCartList() {
         const totalAfterDiscount = subtotal - discountAmount;
         const taxedTotal = totalAfterDiscount * (1 + taxRate);
 
-        // Save pricing summary
         localStorage.setItem("pricing_summary", JSON.stringify({
             subtotal: subtotal.toFixed(2),
             discount_code: discountCode,
@@ -90,17 +96,20 @@ function updateCartList() {
     }
 }
 
-// Remove item from cart 
+// Remove from Cart Handler
 document.addEventListener("click", function (e) {
-    if (!e.target.classList.contains("remove-btn")) return;
-    const i = parseInt(e.target.getAttribute("data-index"));
-    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    if (i >= 0 && i < cart.length) {
-        cart.splice(i, 1);
+    const btn = e.target.closest(".remove-btn");
+    if (!btn) return;
+
+    const index = parseInt(btn.dataset.index);
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    if (index >= 0 && index < cart.length) {
+        cart.splice(index, 1);
         localStorage.setItem("cart", JSON.stringify(cart));
         updateCartList();
         updateCartBadge();
-        showModal("🗑️ Item removed from your cart.");
+        showModal("Item removed from your cart.");
     }
 });
 
@@ -108,62 +117,68 @@ function showModal(message) {
     const overlay = document.getElementById("customModalOverlay");
     const messageDiv = document.getElementById("customModalMessage");
     const okBtn = document.getElementById("customModalOkBtn");
+
     if (!overlay || !messageDiv || !okBtn) return;
+
     messageDiv.textContent = message;
     overlay.classList.add("show");
     okBtn.onclick = () => overlay.classList.remove("show");
 }
 
-document.addEventListener("DOMContentLoaded", function () {
+// Page Initialization
+document.addEventListener("DOMContentLoaded", () => {
     updateCartBadge();
     updateCartList();
 
     const discountInput = document.getElementById("discount-code");
     if (discountInput) {
-        const saved = localStorage.getItem("discount_code") || "";
-        discountInput.value = saved;
+        discountInput.value = localStorage.getItem("discount_code") || "";
         discountInput.addEventListener("input", function () {
             localStorage.setItem("discount_code", this.value.trim().toUpperCase());
             updateCartList();
         });
     }
 
-    const clearCartBtn = document.getElementById("clear-cart-btn");
-    if (clearCartBtn) {
-        clearCartBtn.addEventListener("click", function () {
+    const clearBtn = document.getElementById("clear-cart-btn");
+    if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
             localStorage.removeItem("cart");
             updateCartList();
             updateCartBadge();
-            showModal(" Cart cleared.");
+            showModal("🧹 Cart cleared.");
         });
     }
 
     const checkoutBtn = document.getElementById("checkout-btn");
     if (checkoutBtn) {
-        checkoutBtn.addEventListener("click", function () {
+        checkoutBtn.addEventListener("click", () => {
             const cart = JSON.parse(localStorage.getItem("cart") || "[]");
             if (!cart.length) {
-                showModal(" Your cart is empty. Add something first!");
-                return;
+                showModal(" Your cart is empty!");
+            } else {
+                window.location.href = "/checkout";
             }
-            window.location.href = "/checkout";
         });
     }
 });
 
+//Add-to-Cart Button Listener
 document.addEventListener("click", (event) => {
-    // Check if the click 
     const btn = event.target.closest(".add-to-cart-btn");
-    if (!btn) return; 
+    if (!btn) return;
 
-    const movieId = JSON.parse(btn.dataset.movieId);
-    const title = JSON.parse(btn.dataset.movieTitle);
-    const price = JSON.parse(btn.dataset.moviePrice);
-    console.log("Delegated add-to-cart click:", movieId, title, price);
+    const movieId = btn.dataset.movieId;
+    const title = btn.dataset.title;
+    const price = btn.dataset.price;
+
+    if (!movieId || !title || !price) {
+        console.error("Missing button data attributes.");
+        return;
+    }
 
     if (typeof addToCart === "function") {
         addToCart(movieId, title, price);
     } else {
-        console.warn("addToCart function is not defined.");
+        console.warn("addToCart is not defined.");
     }
 });
