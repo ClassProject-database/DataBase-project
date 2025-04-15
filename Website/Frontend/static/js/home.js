@@ -29,10 +29,9 @@ async function fetchFeaturedMovies() {
                  onerror="this.onerror=null; this.src='/static/images/keyboard.jpg';">
             <h5 class="mt-2">${movie.title}</h5>
         `;
-        card.onclick = () => window.location.href = `/inventory`;
+        card.onclick = () => window.location.href = `/movie/${movie.movie_id}`;
         carouselTrack.appendChild(card);
     });
-
     updateCarouselButtons();
 }
 
