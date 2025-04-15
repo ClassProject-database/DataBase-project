@@ -1,28 +1,24 @@
-console.log(" cart.js loaded!");
-
-// Add item to cart
+console.log("cart.js loaded!");
 
 window.addToCart = function (movie_id, name, price) {
-    console.log(" Adding to cart:", movie_id, name, price);
+    console.log("Adding to cart:", movie_id, name, price);
     try {
         if (!movie_id || !name || isNaN(price)) {
-            console.error(" Invalid item data", { movie_id, name, price });
+            console.error("Invalid item data", { movie_id, name, price });
             return;
         }
-
         let cart = JSON.parse(localStorage.getItem("cart")) || [];
         if (cart.some(item => item.movie_id === movie_id)) {
-            console.warn(` Movie ID ${movie_id} is already in the cart.`);
+            console.warn(`Movie ID ${movie_id} is already in the cart.`);
             return;
         }
-
         cart.push({ movie_id, name, price: parseFloat(price) });
         localStorage.setItem("cart", JSON.stringify(cart));
         updateCartBadge();
         updateCartList();
         showModal(`${name} has been added to your cart!`);
     } catch (err) {
-        console.error(" Error adding to cart:", err);
+        console.error("Error adding to cart:", err);
     }
 };
 
@@ -33,12 +29,12 @@ function updateCartBadge() {
         const badge = document.querySelector(".cart-badge");
         if (badge) badge.innerText = cart.length;
     } catch (err) {
-        console.error(" Error updating cart badge:", err);
+        console.error("Error updating cart badge:", err);
     }
 }
 
-// Calculate discount rate
 
+ 
 function getDiscountRate(code) {
     switch ((code || "").toUpperCase().trim()) {
         case "VIP": return 0.20;
@@ -81,7 +77,7 @@ function updateCartList() {
         const totalAfterDiscount = subtotal - discountAmount;
         const taxedTotal = totalAfterDiscount * (1 + taxRate);
 
-        // Save summary to localStorage
+        // Save pricing summary
         localStorage.setItem("pricing_summary", JSON.stringify({
             subtotal: subtotal.toFixed(2),
             discount_code: discountCode,
@@ -93,19 +89,15 @@ function updateCartList() {
         if (totalItemsEl) totalItemsEl.innerText = cart.length;
         if (totalPriceEl) totalPriceEl.innerText = taxedTotal.toFixed(2);
     } catch (err) {
-        console.error(" Error updating cart list:", err);
+        console.error("Error updating cart list:", err);
     }
 }
 
-
-// Remove item from cart
-
+// Remove item from cart 
 document.addEventListener("click", function (e) {
     if (!e.target.classList.contains("remove-btn")) return;
-
     const i = parseInt(e.target.getAttribute("data-index"));
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     if (i >= 0 && i < cart.length) {
         cart.splice(i, 1);
         localStorage.setItem("cart", JSON.stringify(cart));
@@ -115,7 +107,16 @@ document.addEventListener("click", function (e) {
     }
 });
 
-// Init on DOM load
+function showModal(message) {
+    const overlay = document.getElementById("customModalOverlay");
+    const messageDiv = document.getElementById("customModalMessage");
+    const okBtn = document.getElementById("customModalOkBtn");
+    if (!overlay || !messageDiv || !okBtn) return;
+    messageDiv.textContent = message;
+    overlay.classList.add("show");
+    okBtn.onclick = () => overlay.classList.remove("show");
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
     updateCartBadge();
@@ -153,17 +154,3 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-// Custom Modal Handler
-
-function showModal(message) {
-    const overlay = document.getElementById("customModalOverlay");
-    const messageDiv = document.getElementById("customModalMessage");
-    const okBtn = document.getElementById("customModalOkBtn");
-
-    if (!overlay || !messageDiv || !okBtn) return;
-
-    messageDiv.textContent = message;
-    overlay.classList.add("show");
-    okBtn.onclick = () => overlay.classList.remove("show");
-}
