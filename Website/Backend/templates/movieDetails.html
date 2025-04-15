@@ -37,20 +37,11 @@
           {% endif %}
 
           {% if movie.trailer_url %}
-            <div class="mt-4">
-              <a href="{{ movie.trailer_url }}" target="_blank" class="d-inline-block">
-                <img src="https://img.youtube.com/vi/{{ movie.trailer_url.split('v=')[-1] }}/0.jpg" 
-                     class="img-fluid rounded shadow border border-secondary" 
-                     style="max-width: 100%; height: auto;"
-                     alt="Watch trailer">
-              </a>
-              <p class="mt-2 text-white-50">Click image to watch trailer</p>
+            <div class="mt-4 ratio ratio-16x9">
+              <iframe src="https://www.youtube.com/embed/{{ movie.trailer_url.split('v=')[-1] }}"
+                      title="YouTube trailer"
+                      allowfullscreen class="rounded border border-secondary"></iframe>
             </div>
-            {% else %}
-            <div class="bg-secondary bg-opacity-25 text-muted rounded p-3 mt-3">
-              No trailer available.
-            </div>
-
           {% endif %}
 
           {% if current_user.is_authenticated and current_user.role == 'customer' %}
@@ -93,7 +84,7 @@
   </div>
 </div>
 
-<!--Add to Cart Confirmation -->
+<!-- ✅ Modal for Add to Cart Confirmation -->
 <div id="cartModal" class="modal fade" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content bg-dark text-white">
