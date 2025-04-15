@@ -2,7 +2,7 @@
 {% block title %}Admin Dashboard - Movie Store{% endblock %}
 
 {% block content %}
-<div class="container-fluid py-5">
+<div class="container-fluid py-5" data-title="{{ current_user.job_title }}">
   <h1 class="text-white mb-4">Admin Dashboard</h1>
 
   <div class="row g-4">
@@ -44,6 +44,16 @@
                 <option value="customer">Customer</option>
                 <option value="employee">Employee</option>
               </select>
+            </div>
+            <div id="employee-fields" style="display:none;">
+              <div class="mb-3">
+                <label class="form-label">Job Title</label>
+                <input type="text" id="job_title" class="form-control">
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Salary ($)</label>
+                <input type="number" step="0.01" id="salary" class="form-control">
+              </div>
             </div>
             <button type="submit" class="btn btn-success w-100 mt-2">Add User</button>
           </form>
@@ -116,7 +126,6 @@
                   <option value="{{ genre.genre_id }}">{{ genre.genre_name }}</option>
                 {% endfor %}
               </select>
-              
             </div>
             <div class="col-12">
               <button type="submit" class="btn btn-success w-100 mt-2">Add Movie</button>
@@ -128,7 +137,6 @@
   </div>
 </div>
 
-
 <!-- Edit User Modal -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -139,7 +147,6 @@
       </div>
       <div class="modal-body">
         <form id="edit-user-form">
-          <!-- updated ID and name -->
           <input type="hidden" id="editUserId" name="account_id">
 
           <div class="mb-3">
@@ -178,10 +185,8 @@
     </div>
   </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/adminDashboard.js') }}" defer></script>
 {% endblock %}
-
