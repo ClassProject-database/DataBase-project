@@ -126,7 +126,7 @@ def signUp():
         new_user = User(account_id, username, chosen_role)
         login_user(new_user)
         flash("Sign-up successful!", "success")
-        return redirect(url_for('views.user_rentals'))
+        return redirect(url_for('/'))
 
     return render_template("signup.html")
 
