@@ -486,19 +486,32 @@ def get_user():
     if current_user.role not in ['employee', 'manager']:
         return '', 403
 
-
     account_id = request.args.get('account_id')
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    # Fetch user base info
     cursor.execute("SELECT * FROM users WHERE account_id = %s", (account_id,))
     user = cursor.fetchone()
+
+    if not user:
+        cursor.close()
+        conn.close()
+        return jsonify({'error': 'User not found'}), 404
+
+    # If employee or manager, also fetch job_title and salary
+    if user['role'] in ['employee', 'manager']:
+        cursor.execute("SELECT job_title, salary FROM employees WHERE account_id = %s", (account_id,))
+        emp_data = cursor.fetchone()
+        if emp_data:
+            user.update(emp_data)
 
     cursor.close()
     conn.close()
 
     return jsonify(user)
+
 
 
 @views.route('/user_Rentals')
