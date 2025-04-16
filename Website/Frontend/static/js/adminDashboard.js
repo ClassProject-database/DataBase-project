@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const editForm = document.getElementById("edit-user-form");
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchUsers");
+  const editEmployeeFields = document.getElementById("edit-employee-fields");
 
   const roleEl = document.querySelector("[data-role]");
   const roleAttr = roleEl?.dataset.role?.toLowerCase() || "";
@@ -117,9 +118,14 @@ document.addEventListener("DOMContentLoaded", () => {
       editForm.editEmail.value = user.email;
       editForm.editPhone.value = user.phone;
       editForm.editRole.value = user.role;
+      editForm.editPassword.value = "";
+
       if (user.role === "employee" || user.role === "manager") {
         editForm.editJobTitle.value = user.job_title || "";
         editForm.editSalary.value = user.salary || 0;
+        editEmployeeFields.classList.remove("d-none");
+      } else {
+        editEmployeeFields.classList.add("d-none");
       }
 
       editUserModal.show();

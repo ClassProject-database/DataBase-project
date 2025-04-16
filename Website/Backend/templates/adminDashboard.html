@@ -160,6 +160,10 @@
             <input type="text" id="editUsername" name="username" class="form-control">
           </div>
           <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" id="editPassword" name="password" class="form-control">
+          </div>
+          <div class="mb-3">
             <label class="form-label">First Name</label>
             <input type="text" id="editFirstName" name="first_name" class="form-control">
           </div>
@@ -179,19 +183,21 @@
             <label class="form-label">Role</label>
             <select id="editRole" name="role" class="form-select">
               <option value="customer">Customer</option>
-              {% if current_user.job_title and current_user.job_title.lower() == 'manager' %}
+              {% if current_user.role.lower() == 'manager' %}
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
               {% endif %}
             </select>
           </div>
-          <div class="mb-3">
-            <label class="form-label">Job Title</label>
-            <input type="text" id="editJobTitle" name="job_title" class="form-control">
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Salary ($)</label>
-            <input type="number" step="1000" id="editSalary" name="salary" class="form-control">
+          <div id="edit-employee-fields" class="d-none">
+            <div class="mb-3">
+              <label class="form-label">Job Title</label>
+              <input type="text" id="editJobTitle" name="job_title" class="form-control">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Salary ($)</label>
+              <input type="number" step="0.01" id="editSalary" name="salary" class="form-control">
+            </div>
           </div>
         </form>
       </div>
