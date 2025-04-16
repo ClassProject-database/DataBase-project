@@ -184,12 +184,13 @@ def add_user():
 
     return jsonify({'success': True, 'message': 'User added successfully!'})
 
-# 7) API: Delete User
+# 7) API: Delete User..
 @views.route('/api/delete_user', methods=['POST'])
 @login_required
 def delete_user():
-    if current_user.role != 'employee':
+    if current_user.role not in ['employee', 'manager']:
         return '', 403
+
 
     data = request.get_json()
     account_id = data.get('account_id')
@@ -474,8 +475,9 @@ def checkout():
 @views.route('/api/get_user', methods=['GET'])
 @login_required
 def get_user():
-    if current_user.role != 'employee':
+    if current_user.role not in ['employee', 'manager']:
         return '', 403
+
 
     account_id = request.args.get('account_id')
 
