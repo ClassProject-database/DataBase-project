@@ -105,11 +105,9 @@
         <form id="add-movie-form" class="row g-3">
           <input type="hidden" name="movie_id">
 
-          <!-- Title Input + Suggestion List -->
           <div class="col-md-6 position-relative">
             <label class="form-label">Title</label>
             <input type="text" id="movieTitle" name="title" class="form-control" autocomplete="off" required>
-            <!-- ✅ Must exist and be outside the input tag, inside a relatively positioned container -->
             <ul id="movie-suggestions" class="list-group position-absolute w-100 z-3 d-none bg-dark"></ul>
           </div>
 
@@ -159,17 +157,6 @@
         </form>
 
         <hr>
-        <table class="table table-dark table-hover mt-4">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Year</th>
-              <th>Rating</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="movie-table-body"></tbody>
         </table>
       </div>
     </div>
