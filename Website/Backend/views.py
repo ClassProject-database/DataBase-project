@@ -131,7 +131,6 @@ def admin_dashboard():
 
     return render_template("adminDashboard.html", users=users, genres=genres, search_query=search_query)
 
-# 5) User Rentals Page
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
