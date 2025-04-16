@@ -228,7 +228,7 @@ def delete_user():
 @views.route('/api/add_movie', methods=['POST'])
 @login_required
 def add_movie():
-    if current_user.role != 'employee':
+    if current_user.role not in ['employee', 'manager']:
         return '', 403
 
     data = request.get_json()
