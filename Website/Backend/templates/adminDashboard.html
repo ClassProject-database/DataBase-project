@@ -119,12 +119,21 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Price ($)</label>
-              <input type="number" step="0.01" id="moviePrice" name="price" class="form-control" required>
+              <input type="number" step="1" id="moviePrice" name="price" class="form-control" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Image Filename</label>
               <input type="text" id="movieImage" name="image_path" class="form-control">
             </div>
+            <div class="col-md-6">
+              <label class="form-label">Description</label>
+              <textarea id="movieDescription" name="description" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Trailer URL</label>
+              <input type="url" id="movieTrailer" name="trailer_url" class="form-control">
+            </div>
+            
             <div class="col-md-6">
               <label class="form-label">Genres</label>
               <select id="genreIds" name="genre_ids[]" class="form-select" multiple required>
@@ -196,7 +205,7 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Salary ($)</label>
-              <input type="number" step="0.01" id="editSalary" name="salary" class="form-control">
+              <input type="number" step="1000" id="editSalary" name="salary" class="form-control">
             </div>
           </div>
         </form>

@@ -235,6 +235,8 @@ def add_movie():
     title = data.get("title")
     rating = data.get("rating")
     image_path = data.get("image_path", "keyboard.jpg")
+    description = data.get("description", "")
+    trailer_url = data.get("trailer_url", "")
     genre_ids = data.get("genre_ids", [])
 
     release_year = int(data.get("release_year", 0))
@@ -249,9 +251,10 @@ def add_movie():
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
-        INSERT INTO movies (title, release_year, rating, price, image_path)
-        VALUES (%s, %s, %s, %s, %s)
-    """, (title, release_year, rating, price, image_path))
+    INSERT INTO movies (title, release_year, rating, price, image_path, description, trailer_url)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
+""", (title, release_year, rating, price, image_path, description, trailer_url))
+
     movie_id = cursor.lastrowid
 
     for g_id in genre_ids:
