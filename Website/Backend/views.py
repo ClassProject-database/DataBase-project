@@ -769,7 +769,7 @@ def view_cart():
 @views.route('/api/update_movie', methods=['POST'])
 @login_required
 def update_movie():
-    if current_user.role != 'employee':
+    if current_user.role not in ['employee', 'manager']:
         return '', 403
 
     data = request.get_json()
@@ -779,14 +779,14 @@ def update_movie():
     rating = data.get("rating")
     price = float(data.get("price", 0))
     image_path = data.get("image_path", "keyboard.jpg")
-    description = data.get("description", "")
-    trailer_url = data.get("trailer_url", "")
+    description = data.get("description") or None
+    trailer_url = data.get("trailer_url") or None
     genre_ids = data.get("genre_ids", [])
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Update base movie
+    # Update movie details
     cursor.execute("""
         UPDATE movies
         SET title = %s, release_year = %s, rating = %s,
@@ -806,11 +806,12 @@ def update_movie():
 
     return jsonify({"success": True, "message": "Movie updated successfully"})
 
+
 # DELETE Movie
 @views.route('/api/delete_movie', methods=['POST'])
 @login_required
 def delete_movie():
-    if current_user.role != 'employee':
+    if current_user.role not in ['employee', 'manager']:
         return '', 403
 
     data = request.get_json()
@@ -819,10 +820,9 @@ def delete_movie():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Delete genre
+    # Remove genre relations
     cursor.execute("DELETE FROM moviegenres WHERE movie_id = %s", (movie_id,))
-
-    # Delete movie record
+    # Remove the movie itself
     cursor.execute("DELETE FROM movies WHERE movie_id = %s", (movie_id,))
 
     conn.commit()
