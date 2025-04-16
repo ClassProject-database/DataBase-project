@@ -149,8 +149,8 @@ def add_user():
     job_title = data.get('job_title', 'Staff').strip()
     salary = float(data.get('salary', 0.00))
 
-    if not password or len(password) < 4:
-        return jsonify({'success': False, 'error': 'Password must be at least 4 characters.'}), 400
+    if not password or len(password) < 2:
+        return jsonify({'success': False, 'error': 'Password must be at least 2 characters.'}), 400
 
     # Only managers can add employees or managers
     if role in ['employee', 'manager'] and (current_user.role or '').lower() != 'manager':
