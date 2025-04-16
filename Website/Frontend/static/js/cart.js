@@ -91,45 +91,67 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   
     userTable.addEventListener("click", async (e) => {
-      const id = e.target.dataset.id;
-      if (!id) return;
-  
-      if (e.target.classList.contains("edit-user-btn")) {
-        const res = await fetch(`/api/get_user?account_id=${id}`);
-        const user = await safeJson(res);
-  
-        Object.assign(editForm, {
-          editUserId: { value: user.account_id },
-          editUsername: { value: user.username },
-          editFirstName: { value: user.first_name },
-          editLastName: { value: user.last_name },
-          editEmail: { value: user.email },
-          editPhone: { value: user.phone },
-          editRole: { value: user.role },
-          editPassword: { value: "" }
-        });
-  
-        if (["employee", "manager"].includes(user.role)) {
-          editForm.editJobTitle.value = user.job_title || "";
-          editForm.editSalary.value = user.salary || 0;
-          editEmployeeFields.classList.remove("d-none");
-        } else {
-          editEmployeeFields.classList.add("d-none");
+        const target = e.target.closest("button");
+        if (!target) return;
+      
+        const id = target.dataset.id;
+        if (!id) return;
+      
+        if (target.classList.contains("edit-user-btn")) {
+          try {
+            const res = await fetch(`/api/get_user?account_id=${id}`);
+            const user = await safeJson(res);
+            if (!user || user.error) {
+              toast(user.error || "User not found", "error");
+              return;
+            }
+      
+            editForm.editUserId.value = user.account_id || "";
+            editForm.editUsername.value = user.username || "";
+            editForm.editFirstName.value = user.first_name || "";
+            editForm.editLastName.value = user.last_name || "";
+            editForm.editEmail.value = user.email || "";
+            editForm.editPhone.value = user.phone || "";
+            editForm.editRole.value = user.role || "";
+            editForm.editPassword.value = "";
+      
+            if (["employee", "manager"].includes(user.role)) {
+              editForm.editJobTitle.value = user.job_title || "";
+              editForm.editSalary.value = user.salary || 0;
+              editEmployeeFields.classList.remove("d-none");
+            } else {
+              editEmployeeFields.classList.add("d-none");
+            }
+      
+            editUserModal.show();
+          } catch (err) {
+            toast("Failed to fetch user data", "error");
+            console.error(err);
+          }
         }
-  
-        editUserModal.show();
-      }
-  
-      if (e.target.classList.contains("delete-user-btn")) {
-        await fetch("/api/delete_user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ account_id: id })
-        });
-        fetchUsers();
-        toast("User deleted");
-      }
-    });
+      
+        if (target.classList.contains("delete-user-btn")) {
+          try {
+            const res = await fetch("/api/delete_user", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ account_id: id })
+            });
+      
+            const result = await safeJson(res);
+            if (result.success) {
+              toast("User deleted");
+              fetchUsers();
+            } else {
+              toast(result.error || "Delete failed", "error");
+            }
+          } catch (err) {
+            toast("Failed to delete user", "error");
+            console.error(err);
+          }
+        }
+      });
+      
   
     editForm?.addEventListener("submit", async (e) => {
       e.preventDefault();
