@@ -491,7 +491,7 @@ def get_user():
     return jsonify(user)
 
 
-@views.route('/userRentals')
+@views.route('/user_Rentals')
 @login_required
 def user_rentals():
     if current_user.role != 'customer':
