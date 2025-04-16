@@ -96,20 +96,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       const res = await fetch(`/api/get_user?account_id=${id}`);
       const user = await safeJson(res);
 
-      Object.assign(editForm, {
-        editUserId: { value: user.account_id },
-        editUsername: { value: user.username },
-        editFirstName: { value: user.first_name },
-        editLastName: { value: user.last_name },
-        editEmail: { value: user.email },
-        editPhone: { value: user.phone },
-        editRole: { value: user.role },
-        editPassword: { value: "" }
-      });
+      editForm.querySelector("#editUserId").value = user.account_id || "";
+      editForm.querySelector("#editUsername").value = user.username || "";
+      editForm.querySelector("#editFirstName").value = user.first_name || "";
+      editForm.querySelector("#editLastName").value = user.last_name || "";
+      editForm.querySelector("#editEmail").value = user.email || "";
+      editForm.querySelector("#editPhone").value = user.phone || "";
+      editForm.querySelector("#editRole").value = user.role || "";
+      editForm.querySelector("#editPassword").value = "";
 
       if (["employee", "manager"].includes(user.role)) {
-        editForm.editJobTitle.value = user.job_title || "";
-        editForm.editSalary.value = user.salary || 0;
+        editForm.querySelector("#editJobTitle").value = user.job_title || "";
+        editForm.querySelector("#editSalary").value = user.salary || 0;
         editEmployeeFields.classList.remove("d-none");
       } else {
         editEmployeeFields.classList.add("d-none");
@@ -157,7 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     allMovies = data || [];
   };
 
-  await fetchMovies(); // 👈 populate allMovies before user types
+  await fetchMovies();
 
   movieTitleInput?.addEventListener("input", () => {
     const val = movieTitleInput.value.trim().toLowerCase();
