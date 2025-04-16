@@ -31,7 +31,7 @@ def login():
             flash("Login successful!", "success")
 
             # Redirect based on role:
-            if user['role'] in ['employee' or 'manager']:
+            if user['role'] in ['employee' , 'manager']:
                 return redirect(url_for('views.admin_dashboard'))
             else:
                 return redirect(url_for('views.user_rentals'))
