@@ -7,7 +7,7 @@ Priorties :
 
 (please put your name next to item and then set to finished when done)
 
--2- Remove duplicate Films, just need to rewrite sql satement to insert movies, include new movies if not at 100.
+(matt)-2- Remove duplicate Films, just need to rewrite sql satement to insert movies, include new movies if not at 100.
 
 -2- Resize all images to fit in the inventory frames, 
 
@@ -29,7 +29,7 @@ Priorties :
 -4- mention the fact that people can  ddos/hack site by hijacking api calls 
     and making a custom request such as posting reviews or adding movies, data base is secured from being deleted tho or major sql injections
 
-
+--1-- move both rental dates from rentals table to rental_movies
 
 
 
