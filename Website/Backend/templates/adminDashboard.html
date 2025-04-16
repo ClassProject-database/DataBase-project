@@ -118,7 +118,7 @@
             </div>
             <div class="col-md-6">
               <label class="form-label">Price ($)</label>
-              <input type="number" step="1" id="moviePrice" name="price" class="form-control" required>
+              <input type="text" pattern="^\d{1,8}(\.\d{1,2})?$" id="moviePrice" name="price" class="form-control" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Image Filename</label>
