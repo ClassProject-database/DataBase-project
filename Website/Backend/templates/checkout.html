@@ -191,7 +191,7 @@
             messageDiv.textContent = " Purchase complete! Redirecting...";
             messageDiv.classList.add("success");
             localStorage.clear();
-            setTimeout(() => window.location.href = "/user_rentals", 1500);
+            setTimeout(() => window.location.href = "/user_Rentals", 1500);
           } else {
             messageDiv.textContent = " " + (data.error || "Checkout failed.");
             messageDiv.classList.add("error");
