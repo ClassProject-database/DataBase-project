@@ -113,7 +113,6 @@ def admin_dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Fetch users 
     if search_query:
         cursor.execute("""
             SELECT * FROM users 
@@ -123,7 +122,6 @@ def admin_dashboard():
         cursor.execute("SELECT * FROM users")
     users = cursor.fetchall()
 
-    # Fetch genres from the genres table
     cursor.execute("SELECT genre_id, genre_name FROM genres")
     genres = cursor.fetchall()
 
@@ -135,34 +133,42 @@ def admin_dashboard():
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
-    if current_user.role != 'employee':
+    # Only employees and managers can access this route
+    if current_user.role not in ['employee', 'manager']:
         return '', 403
 
     data = request.get_json()
-    username = data.get('username')
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
-    phone = data.get('phone')
-    role = data.get('role')  
-    email = data.get('email', '')  
-    address = data.get('address', 'N/A')  
-    role = data.get('role', 'Staff')
-    salary = data.get('salary', 0.00)
+    username = data.get('username', '').strip()
+    password = data.get('password', '').strip()
+    first_name = data.get('first_name', '').strip()
+    last_name = data.get('last_name', '').strip()
+    phone = data.get('phone', '').strip()
+    role = data.get('role', '').strip()
+    email = data.get('email', '').strip()
+    address = data.get('address', 'N/A').strip()
+    job_title = data.get('job_title', 'Staff').strip()
+    salary = float(data.get('salary', 0.00))
 
-    # Only managers can add employees or other managers
+    if not password or len(password) < 4:
+        return jsonify({'success': False, 'error': 'Password must be at least 4 characters.'}), 400
+
+    # Only managers can add employees or managers
     if role in ['employee', 'manager'] and (current_user.role or '').lower() != 'manager':
         return jsonify({'success': False, 'error': 'Only managers can add employees or managers.'}), 403
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Check if username already exists
     cursor.execute("SELECT 1 FROM users WHERE username = %s", (username,))
     if cursor.fetchone():
+        cursor.close()
+        conn.close()
         return jsonify({'success': False, 'error': 'Username already exists.'}), 400
 
-    hashed_password = bcrypt.generate_password_hash("cat").decode('utf-8')
+    # Hash the submitted password
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
+    # Insert into users table
     cursor.execute("""
         INSERT INTO users (username, password_, role, first_name, last_name, email, phone)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
@@ -174,15 +180,17 @@ def add_user():
         cursor.execute("INSERT INTO customers (account_id, address) VALUES (%s, %s)", (new_account_id, address))
     elif role in ['employee', 'manager']:
         cursor.execute("""
-            INSERT INTO employees (account_id, role, salary)
+            INSERT INTO employees (account_id, job_title, salary)
             VALUES (%s, %s, %s)
-        """, (new_account_id, role, salary))
+        """, (new_account_id, job_title, salary))
 
     conn.commit()
     cursor.close()
     conn.close()
 
     return jsonify({'success': True, 'message': 'User added successfully!'})
+
+
 
 # 7) API: Delete User..
 @views.route('/api/delete_user', methods=['POST'])
