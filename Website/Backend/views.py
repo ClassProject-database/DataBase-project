@@ -542,11 +542,10 @@ def user_rentals():
     return render_template('userRentals.html', user=user, rentals=rentals, reviews=reviews)
 
 
-# 16) API: Update User
 @views.route('/api/update_user', methods=['POST'])
 @login_required
 def update_user():
-    if current_user.role != 'employee':
+    if current_user.role not in ['employee', 'manager']:
         return '', 403
 
     data = request.get_json()
@@ -558,26 +557,53 @@ def update_user():
     phone = data.get('phone')
     role = data.get('role')
     email = data.get('email')
+    password = data.get('password', None)
+
+    job_title = data.get('job_title', None)
+    salary = data.get('salary', None)
+
+    # Restrict employee/manager updates to only managers
+    if role in ['employee', 'manager'] and current_user.role.lower() != 'manager':
+        return jsonify({'success': False, 'error': 'Only managers can assign employee or manager roles.'}), 403
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("""
-        UPDATE users 
-        SET username = %s, 
-            first_name = %s, 
-            last_name = %s, 
-            phone = %s, 
-            role = %s,
-            email = %s
-        WHERE account_id = %s
-    """, (username, first_name, last_name, phone, role, email, account_id))
+    if password:
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        cursor.execute("""
+            UPDATE users 
+            SET username = %s, first_name = %s, last_name = %s,
+                phone = %s, role = %s, email = %s, password_ = %s
+            WHERE account_id = %s
+        """, (username, first_name, last_name, phone, role, email, hashed_password, account_id))
+    else:
+        cursor.execute("""
+            UPDATE users 
+            SET username = %s, first_name = %s, last_name = %s,
+                phone = %s, role = %s, email = %s
+            WHERE account_id = %s
+        """, (username, first_name, last_name, phone, role, email, account_id))
+
+    if role in ['employee', 'manager'] and job_title is not None and salary is not None:
+        cursor.execute("""
+            UPDATE employees 
+            SET job_title = %s, salary = %s
+            WHERE account_id = %s
+        """, (job_title, salary, account_id))
+
+        if cursor.rowcount == 0:
+            cursor.execute("""
+                INSERT INTO employees (account_id, job_title, salary)
+                VALUES (%s, %s, %s)
+            """, (account_id, job_title, salary))
 
     conn.commit()
     cursor.close()
     conn.close()
 
     return jsonify({'success': True})
+
 
 
 # 17) API: random movue
