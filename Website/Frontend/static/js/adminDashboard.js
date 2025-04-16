@@ -74,11 +74,16 @@ document.addEventListener("DOMContentLoaded", () => {
         role: addUserForm.role.value.trim(),
       };
 
-      if (["employee", "manager"].includes(data.role) && isManager) {
+      if (["employee", "manager"].includes(data.role)) {
+        if (!isManager) {
+          toast("Only managers can add employees or managers.", "error");
+          return;
+        }
+      
         data.job_title = addUserForm.job_title?.value.trim();
         data.salary = parseFloat(addUserForm.salary?.value) || 0.0;
       }
-
+      
       const res = await fetch("/api/add_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

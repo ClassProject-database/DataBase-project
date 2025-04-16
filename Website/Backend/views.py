@@ -146,11 +146,11 @@ def add_user():
     role = data.get('role')  
     email = data.get('email', '')  
     address = data.get('address', 'N/A')  
-    job_title = data.get('job_title', 'Staff')
+    role = data.get('role', 'Staff')
     salary = data.get('salary', 0.00)
 
     # Only managers can add employees or other managers
-    if role in ['employee', 'manager'] and (current_user.job_title or '').lower() != 'manager':
+    if role in ['employee', 'manager'] and (current_user.role or '').lower() != 'manager':
         return jsonify({'success': False, 'error': 'Only managers can add employees or managers.'}), 403
 
     conn = get_db_connection()
@@ -174,9 +174,9 @@ def add_user():
         cursor.execute("INSERT INTO customers (account_id, address) VALUES (%s, %s)", (new_account_id, address))
     elif role in ['employee', 'manager']:
         cursor.execute("""
-            INSERT INTO employees (account_id, job_title, salary)
+            INSERT INTO employees (account_id, role, salary)
             VALUES (%s, %s, %s)
-        """, (new_account_id, job_title, salary))
+        """, (new_account_id, role, salary))
 
     conn.commit()
     cursor.close()
@@ -204,7 +204,7 @@ def delete_user():
         return jsonify({'success': False, 'error': 'User not found'}), 404
 
     # Only allow deleting customers unless you're a manager
-    if target['role'] in ['employee', 'manager'] and (current_user.job_title or '').lower() != 'manager':
+    if target['role'] in ['employee', 'manager'] and (current_user.role or '').lower() != 'manager':
         return jsonify({'success': False, 'error': 'Only managers can delete employees or managers.'}), 403
 
     cursor.execute("DELETE FROM users WHERE account_id = %s", (account_id,))
