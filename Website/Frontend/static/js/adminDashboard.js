@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const toast = (msg, type = "success") => {
     const el = document.createElement("div");
-    el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3`;
+    el.className = `toast-message bg-${type === "error" ? "danger" : "success"} text-white p-2 px-3 rounded shadow position-fixed bottom-0 end-0 m-3`;
     el.innerText = msg;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 3000);
@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  const roleEl = document.querySelector("[data-role]");
+  const isManager = (roleEl?.dataset.title || "").toLowerCase() === "manager";
+  const isEmployee = (roleEl?.dataset.role || "").toLowerCase() === "employee";
+
   const userTable = document.getElementById("user-table-body");
   const addUserForm = document.getElementById("add-user-form");
   const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
@@ -23,19 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchUsers");
   const editEmployeeFields = document.getElementById("edit-employee-fields");
 
-  const roleEl = document.querySelector("[data-role]");
-  const roleAttr = roleEl?.dataset.role?.toLowerCase() || "";
-  const titleAttr = roleEl?.dataset.title?.toLowerCase() || "";
-  const isManager = titleAttr === "manager";
-  const isEmployee = roleAttr === "employee";
-
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
     const users = await safeJson(res);
     userTable.innerHTML = users.length
       ? users.map(u => {
-          const isCustomer = u.role === "customer";
-          const canEditDelete = isManager || (isEmployee && isCustomer);
+          const canEditDelete = isManager || (isEmployee && u.role === "customer");
           return `
             <tr data-account-id="${u.account_id}">
               <td>${u.account_id}</td>
@@ -91,7 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  userTable.addEventListener("click", async (e) => {
+  userTable?.addEventListener("click", async (e) => {
     const id = e.target.dataset.id;
     if (!id) return;
 
@@ -132,67 +129,36 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  if (editForm) {
-    editForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+  editForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(editForm).entries());
+    data.salary = parseFloat(data.salary) || 0.0;
 
-      const data = Object.fromEntries(new FormData(editForm).entries());
-      data.salary = parseFloat(data.salary) || 0.0;
-
-      await fetch("/api/update_user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-
-      editUserModal.hide();
-      fetchUsers();
-      toast("User updated");
+    await fetch("/api/update_user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
     });
-  }
 
-  const addMovieForm = document.getElementById("add-movie-form");
-  if (addMovieForm) {
-    addMovieForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(addMovieForm);
-      const movie = {};
-
-      for (const [key, value] of formData.entries()) {
-        if (key.includes("genre_ids")) {
-          movie.genre_ids = movie.genre_ids || [];
-          movie.genre_ids.push(value);
-        } else {
-          movie[key] = value;
-        }
-      }
-
-      await fetch("/api/add_movie", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(movie)
-      });
-
-      addMovieForm.reset();
-      toast("Movie added");
-    });
-  }
-
-  searchBtn?.addEventListener("click", () => {
-    fetchUsers(searchInput?.value || "");
+    editUserModal.hide();
+    fetchUsers();
+    toast("User updated");
   });
 
-  fetchUsers();
-
-  // Autocomplete for Movie Title
+  const addMovieForm = document.getElementById("add-movie-form");
   const movieTitleInput = document.getElementById("movieTitle");
+  const movieIdField = document.createElement("input");
+  movieIdField.type = "hidden";
+  movieIdField.name = "movie_id";
+  addMovieForm?.appendChild(movieIdField);
+
   let allMovies = [];
 
-  fetch("/api/movies/all")
-    .then(res => res.json())
-    .then(data => {
-      allMovies = data;
-    });
+  const fetchMovies = async () => {
+    const res = await fetch("/api/movies/all");
+    const data = await safeJson(res);
+    allMovies = data || [];
+  };
 
   movieTitleInput?.addEventListener("input", () => {
     const val = movieTitleInput.value.toLowerCase();
@@ -221,9 +187,51 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("movieRating").value = movie.rating || "";
         document.getElementById("moviePrice").value = movie.price || "";
         document.getElementById("movieImage").value = movie.image_path || "";
+        document.getElementById("movieDescription")?.value = movie.description || "";
+        document.getElementById("movieTrailer")?.value = movie.trailer_url || "";
+        movieIdField.value = movie.movie_id;
       };
       list.appendChild(item);
     });
   }
-});
 
+  addMovieForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(addMovieForm);
+    const movie = {};
+
+    for (const [key, value] of formData.entries()) {
+      if (key.includes("genre_ids")) {
+        movie.genre_ids = movie.genre_ids || [];
+        movie.genre_ids.push(value);
+      } else {
+        movie[key] = value;
+      }
+    }
+
+    const titleLower = movie.title?.trim().toLowerCase();
+    const existingMovie = allMovies.find(m => m.title.toLowerCase() === titleLower);
+    if (existingMovie) movie.movie_id = existingMovie.movie_id;
+
+    const url = movie.movie_id ? "/api/update_movie" : "/api/add_movie";
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(movie)
+    });
+
+    const result = await safeJson(res);
+    if (result.success) {
+      toast(movie.movie_id ? "Movie updated" : "Movie added");
+      addMovieForm.reset();
+      movieIdField.value = "";
+      fetchMovies();
+    } else {
+      toast(result.error || "Movie submission failed", "error");
+    }
+  });
+
+  fetchUsers();
+  fetchMovies();
+  searchBtn?.addEventListener("click", () => fetchUsers(searchInput?.value || ""));
+});
