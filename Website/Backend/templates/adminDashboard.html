@@ -161,6 +161,10 @@
             <input type="text" id="editUsername" name="username" class="form-control">
           </div>
           <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input type="password" id="editPassword" name="password" class="form-control">
+          </div>
+          <div class="mb-3">
             <label class="form-label">First Name</label>
             <input type="text" id="editFirstName" name="first_name" class="form-control">
           </div>
@@ -185,6 +189,14 @@
                 <option value="manager">Manager</option>
               {% endif %}
             </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Job Title</label>
+            <input type="text" id="editJobTitle" name="job_title" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Salary ($)</label>
+            <input type="number" step="0.01" id="editSalary" name="salary" class="form-control">
           </div>
         </form>
       </div>

@@ -79,11 +79,11 @@ document.addEventListener("DOMContentLoaded", () => {
           toast("Only managers can add employees or managers.", "error");
           return;
         }
-      
+
         data.job_title = addUserForm.job_title?.value.trim();
         data.salary = parseFloat(addUserForm.salary?.value) || 0.0;
       }
-      
+
       const res = await fetch("/api/add_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -117,6 +117,10 @@ document.addEventListener("DOMContentLoaded", () => {
       editForm.editEmail.value = user.email;
       editForm.editPhone.value = user.phone;
       editForm.editRole.value = user.role;
+      if (user.role === "employee" || user.role === "manager") {
+        editForm.editJobTitle.value = user.job_title || "";
+        editForm.editSalary.value = user.salary || 0;
+      }
 
       editUserModal.show();
     }
@@ -143,8 +147,14 @@ document.addEventListener("DOMContentLoaded", () => {
         last_name: editForm.editLastName.value.trim(),
         email: editForm.editEmail.value.trim(),
         phone: editForm.editPhone.value.trim(),
-        role: editForm.editRole.value
+        role: editForm.editRole.value,
+        password: editForm.editPassword?.value?.trim()
       };
+
+      if (["employee", "manager"].includes(data.role)) {
+        data.job_title = editForm.editJobTitle?.value?.trim();
+        data.salary = parseFloat(editForm.editSalary?.value) || 0.0;
+      }
 
       await fetch("/api/update_user", {
         method: "POST",
