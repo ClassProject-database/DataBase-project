@@ -138,7 +138,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const data = {
         account_id: editForm.editUserId.value,
-        password: addUserForm.password?.value?.trim(),
         username: editForm.editUsername.value.trim(),
         first_name: editForm.editFirstName.value.trim(),
         last_name: editForm.editLastName.value.trim(),
