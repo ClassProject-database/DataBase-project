@@ -263,7 +263,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     });
-  
     searchBtn?.addEventListener("click", () => fetchUsers(searchInput?.value || ""));
     fetchUsers();
     fetchMovies();
