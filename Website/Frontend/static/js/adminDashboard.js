@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const toast = (msg, type = "success") => {
     const el = document.createElement("div");
     el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3`;
@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toast("User updated");
   });
 
+  // ===== Movie Management =====
   const addMovieForm = document.getElementById("add-movie-form");
   const movieTitleInput = document.getElementById("movieTitle");
   const movieIdField = document.querySelector("input[name='movie_id']");
@@ -156,19 +157,22 @@ document.addEventListener("DOMContentLoaded", () => {
     allMovies = data || [];
   };
 
+  await fetchMovies(); // 👈 populate allMovies before user types
+
   movieTitleInput?.addEventListener("input", () => {
     const val = movieTitleInput.value.trim().toLowerCase();
-    const match = allMovies.find(m => m.title.toLowerCase() === val);
     const suggestions = allMovies.filter(m => m.title.toLowerCase().includes(val));
     buildMovieDropdownSuggestions(suggestions);
-    if (match) {
-      document.getElementById("movieYear").value = match.release_year || "";
-      document.getElementById("movieRating").value = match.rating || "";
-      document.getElementById("moviePrice").value = match.price || "";
-      document.getElementById("movieImage").value = match.image_path || "";
-      document.getElementById("movieDescription")?.value = match.description || "";
-      document.getElementById("movieTrailer")?.value = match.trailer_url || "";
-      movieIdField.value = match.movie_id;
+
+    const exactMatch = allMovies.find(m => m.title.toLowerCase() === val);
+    if (exactMatch) {
+      movieIdField.value = exactMatch.movie_id;
+      document.getElementById("movieYear").value = exactMatch.release_year || "";
+      document.getElementById("movieRating").value = exactMatch.rating || "";
+      document.getElementById("moviePrice").value = exactMatch.price || "";
+      document.getElementById("movieImage").value = exactMatch.image_path || "";
+      document.getElementById("movieDescription").value = exactMatch.description || "";
+      document.getElementById("movieTrailer").value = exactMatch.trailer_url || "";
     } else {
       movieIdField.value = "";
     }
@@ -184,6 +188,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     list.innerHTML = "";
+    if (!matches.length) {
+      list.classList.add("d-none");
+      return;
+    }
+
+    list.classList.remove("d-none");
     matches.slice(0, 5).forEach(movie => {
       const item = document.createElement("li");
       item.className = "list-group-item list-group-item-action text-white bg-secondary";
@@ -191,13 +201,13 @@ document.addEventListener("DOMContentLoaded", () => {
       item.onclick = () => {
         movieTitleInput.value = movie.title;
         list.innerHTML = "";
+        movieIdField.value = movie.movie_id;
         document.getElementById("movieYear").value = movie.release_year || "";
         document.getElementById("movieRating").value = movie.rating || "";
         document.getElementById("moviePrice").value = movie.price || "";
         document.getElementById("movieImage").value = movie.image_path || "";
-        document.getElementById("movieDescription")?.value = movie.description || "";
-        document.getElementById("movieTrailer")?.value = movie.trailer_url || "";
-        movieIdField.value = movie.movie_id;
+        document.getElementById("movieDescription").value = movie.description || "";
+        document.getElementById("movieTrailer").value = movie.trailer_url || "";
       };
       list.appendChild(item);
     });
@@ -217,8 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    const titleLower = movie.title?.toLowerCase();
-    const existing = allMovies.find(m => m.title.toLowerCase() === titleLower);
+    const existing = allMovies.find(m => m.title.toLowerCase() === movie.title?.toLowerCase());
     if (existing) movie.movie_id = existing.movie_id;
 
     const url = movie.movie_id ? "/api/update_movie" : "/api/add_movie";
@@ -233,13 +242,12 @@ document.addEventListener("DOMContentLoaded", () => {
       toast(movie.movie_id ? "Movie updated" : "Movie added");
       addMovieForm.reset();
       movieIdField.value = "";
-      fetchMovies();
+      await fetchMovies();
     } else {
       toast(result.error || "Failed to save movie", "error");
     }
   });
 
-  fetchUsers();
-  fetchMovies();
   searchBtn?.addEventListener("click", () => fetchUsers(searchInput?.value || ""));
+  fetchUsers();
 });

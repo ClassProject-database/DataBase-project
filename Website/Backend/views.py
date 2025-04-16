@@ -621,7 +621,6 @@ def update_user():
     return jsonify({'success': True})
 
 
-
 # 17) API: random movue
 @views.route('/api/movies/random')
 def get_random_movies():
