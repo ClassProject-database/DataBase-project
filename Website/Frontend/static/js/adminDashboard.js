@@ -7,7 +7,14 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => el.remove(), 3000);
   };
 
-  const safeJson = async res => JSON.parse(await res.text());
+  const safeJson = async res => {
+    try {
+      return await res.json();
+    } catch {
+      return {};
+    }
+  };
+
   const userTable = document.getElementById("user-table-body");
   const addUserForm = document.getElementById("add-user-form");
   const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
@@ -25,64 +32,45 @@ document.addEventListener("DOMContentLoaded", () => {
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
     const users = await safeJson(res);
-    userTable.innerHTML = "";
-
-    if (!users.length) {
-      userTable.innerHTML = `<tr><td colspan="6" class="text-center">No users found.</td></tr>`;
-      return;
-    }
-
-    for (const u of users) {
-      const isCustomer = u.role === "customer";
-      const canEditDelete = isManager || (isEmployee && isCustomer);
-      userTable.innerHTML += `
-        <tr data-account-id="${u.account_id}">
-          <td>${u.account_id}</td>
-          <td>${u.username}</td>
-          <td>${u.first_name} ${u.last_name}</td>
-          <td>${u.email}</td>
-          <td>${u.role}</td>
-          <td>
-            <a href="/admin/user/${u.account_id}" class="btn btn-sm btn-info">View</a>
-            ${canEditDelete ? `<button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>` : ""}
-            ${canEditDelete ? `<button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>` : ""}
-          </td>
-        </tr>`;
-    }
+    userTable.innerHTML = users.length
+      ? users.map(u => {
+          const isCustomer = u.role === "customer";
+          const canEditDelete = isManager || (isEmployee && isCustomer);
+          return `
+            <tr data-account-id="${u.account_id}">
+              <td>${u.account_id}</td>
+              <td>${u.username}</td>
+              <td>${u.first_name} ${u.last_name}</td>
+              <td>${u.email}</td>
+              <td>${u.role}</td>
+              <td>
+                <a href="/admin/user/${u.account_id}" class="btn btn-sm btn-info">View</a>
+                ${canEditDelete ? `<button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>` : ""}
+                ${canEditDelete ? `<button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>` : ""}
+              </td>
+            </tr>`;
+        }).join("")
+      : `<tr><td colspan="6" class="text-center">No users found.</td></tr>`;
   };
 
   if (addUserForm) {
     const roleInput = addUserForm.role;
     const jobFields = document.getElementById("employee-fields");
 
-    if (roleInput && jobFields) {
-      roleInput.addEventListener("change", () => {
-        const show = ["employee", "manager"].includes(roleInput.value) && isManager;
-        jobFields.classList.toggle("d-none", !show);
-      });
-    }
+    roleInput?.addEventListener("change", () => {
+      const show = ["employee", "manager"].includes(roleInput.value) && isManager;
+      jobFields?.classList.toggle("d-none", !show);
+    });
 
     addUserForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const data = Object.fromEntries(new FormData(addUserForm).entries());
+      ["username", "password", "first_name", "last_name", "email", "phone", "role", "job_title"].forEach(k => data[k] = data[k]?.trim());
+      data.salary = parseFloat(data.salary) || 0.0;
 
-      const data = {
-        username: addUserForm.username.value.trim(),
-        password: addUserForm.password?.value?.trim(),
-        first_name: addUserForm.first_name.value.trim(),
-        last_name: addUserForm.last_name.value.trim(),
-        email: addUserForm.email.value.trim(),
-        phone: addUserForm.phone.value.trim(),
-        role: addUserForm.role.value.trim(),
-      };
-
-      if (["employee", "manager"].includes(data.role)) {
-        if (!isManager) {
-          toast("Only managers can add employees or managers.", "error");
-          return;
-        }
-
-        data.job_title = addUserForm.job_title?.value.trim();
-        data.salary = parseFloat(addUserForm.salary?.value) || 0.0;
+      if (["employee", "manager"].includes(data.role) && !isManager) {
+        toast("Only managers can add employees or managers.", "error");
+        return;
       }
 
       const res = await fetch("/api/add_user", {
@@ -95,8 +83,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (result.success) {
         toast("User added");
         addUserForm.reset();
-        fetchUsers();
         jobFields?.classList.add("d-none");
+        fetchUsers();
       } else {
         toast(result.error || "Error adding user", "error");
       }
@@ -111,16 +99,18 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch(`/api/get_user?account_id=${id}`);
       const user = await safeJson(res);
 
-      editForm.editUserId.value = user.account_id;
-      editForm.editUsername.value = user.username;
-      editForm.editFirstName.value = user.first_name;
-      editForm.editLastName.value = user.last_name;
-      editForm.editEmail.value = user.email;
-      editForm.editPhone.value = user.phone;
-      editForm.editRole.value = user.role;
-      editForm.editPassword.value = "";
+      Object.assign(editForm, {
+        editUserId: { value: user.account_id },
+        editUsername: { value: user.username },
+        editFirstName: { value: user.first_name },
+        editLastName: { value: user.last_name },
+        editEmail: { value: user.email },
+        editPhone: { value: user.phone },
+        editRole: { value: user.role },
+        editPassword: { value: "" }
+      });
 
-      if (user.role === "employee" || user.role === "manager") {
+      if (["employee", "manager"].includes(user.role)) {
         editForm.editJobTitle.value = user.job_title || "";
         editForm.editSalary.value = user.salary || 0;
         editEmployeeFields.classList.remove("d-none");
@@ -146,21 +136,8 @@ document.addEventListener("DOMContentLoaded", () => {
     editForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const data = {
-        account_id: editForm.editUserId.value,
-        username: editForm.editUsername.value.trim(),
-        first_name: editForm.editFirstName.value.trim(),
-        last_name: editForm.editLastName.value.trim(),
-        email: editForm.editEmail.value.trim(),
-        phone: editForm.editPhone.value.trim(),
-        role: editForm.editRole.value,
-        password: editForm.editPassword?.value?.trim()
-      };
-
-      if (["employee", "manager"].includes(data.role)) {
-        data.job_title = editForm.editJobTitle?.value?.trim();
-        data.salary = parseFloat(editForm.editSalary?.value) || 0.0;
-      }
+      const data = Object.fromEntries(new FormData(editForm).entries());
+      data.salary = parseFloat(data.salary) || 0.0;
 
       await fetch("/api/update_user", {
         method: "POST",
@@ -206,4 +183,47 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   fetchUsers();
+
+  // Autocomplete for Movie Title
+  const movieTitleInput = document.getElementById("movieTitle");
+  let allMovies = [];
+
+  fetch("/api/movies/all")
+    .then(res => res.json())
+    .then(data => {
+      allMovies = data;
+    });
+
+  movieTitleInput?.addEventListener("input", () => {
+    const val = movieTitleInput.value.toLowerCase();
+    const matches = allMovies.filter(m => m.title.toLowerCase().includes(val));
+    showMovieSuggestions(matches);
+  });
+
+  function showMovieSuggestions(matches) {
+    let list = document.getElementById("movie-suggestions");
+    if (!list) {
+      list = document.createElement("ul");
+      list.id = "movie-suggestions";
+      list.className = "list-group position-absolute z-3 w-100 mt-1";
+      movieTitleInput.parentNode.appendChild(list);
+    }
+
+    list.innerHTML = "";
+    matches.slice(0, 5).forEach(movie => {
+      const item = document.createElement("li");
+      item.className = "list-group-item list-group-item-action";
+      item.textContent = movie.title;
+      item.onclick = () => {
+        movieTitleInput.value = movie.title;
+        list.innerHTML = "";
+        document.getElementById("movieYear").value = movie.release_year || "";
+        document.getElementById("movieRating").value = movie.rating || "";
+        document.getElementById("moviePrice").value = movie.price || "";
+        document.getElementById("movieImage").value = movie.image_path || "";
+      };
+      list.appendChild(item);
+    });
+  }
 });
+
