@@ -43,7 +43,7 @@
               <label class="form-label">Role</label>
               <select id="role" class="form-select" required>
                 <option value="customer">Customer</option>
-                {% if current_user.job_title.lower() == 'manager' %}
+                {% if current_user.role.lower() == 'manager' %}
                   <option value="employee">Employee</option>
                   <option value="manager">Manager</option>
                 {% endif %}
