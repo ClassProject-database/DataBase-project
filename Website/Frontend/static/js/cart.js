@@ -18,6 +18,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   
+    const roleEl = document.querySelector("[data-role]");
+    const isManager = (roleEl?.dataset.title || "").toLowerCase() === "manager";
+    const isEmployee = (roleEl?.dataset.role || "").toLowerCase() === "employee";
+  
     const userTable = document.getElementById("user-table-body");
     const addUserForm = document.getElementById("add-user-form");
     const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
@@ -26,19 +30,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchUsers");
     const editEmployeeFields = document.getElementById("edit-employee-fields");
   
-    const roleEl = document.querySelector("[data-role]");
-    const roleAttr = roleEl?.dataset.role?.toLowerCase() || "";
-    const titleAttr = roleEl?.dataset.title?.toLowerCase() || "";
-    const isManager = titleAttr === "manager";
-    const isEmployee = roleAttr === "employee";
-  
     const fetchUsers = async (query = "") => {
       const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
       const users = await safeJson(res);
       userTable.innerHTML = users.length
         ? users.map(u => {
-            const isCustomer = u.role === "customer";
-            const canEditDelete = isManager || (isEmployee && isCustomer);
+            const canEdit = isManager || (isEmployee && u.role === "customer");
             return `
               <tr data-account-id="${u.account_id}">
                 <td>${u.account_id}</td>
@@ -48,8 +45,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${u.role}</td>
                 <td>
                   <a href="/admin/user/${u.account_id}" class="btn btn-sm btn-info">View</a>
-                  ${canEditDelete ? `<button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>` : ""}
-                  ${canEditDelete ? `<button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>` : ""}
+                  ${canEdit ? `<button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>` : ""}
+                  ${canEdit ? `<button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>` : ""}
                 </td>
               </tr>`;
           }).join("")
@@ -61,15 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const jobFields = document.getElementById("employee-fields");
   
       roleInput?.addEventListener("change", () => {
-        const show = ["employee", "manager"].includes(roleInput.value) && isManager;
-        jobFields?.classList.toggle("d-none", !show);
+        jobFields?.classList.toggle("d-none", !("employee,manager".includes(roleInput.value) && isManager));
       });
   
       addUserForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(addUserForm).entries());
         ["username", "password", "first_name", "last_name", "email", "phone", "role", "job_title"].forEach(k => data[k] = data[k]?.trim());
-        data.salary = parseFloat(data.salary) || 0.0;
+        data.salary = parseFloat(data.salary) || 0;
   
         if (["employee", "manager"].includes(data.role) && !isManager) {
           toast("Only managers can add employees or managers.", "error");
@@ -135,97 +131,120 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   
-    if (editForm) {
-      editForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
+    editForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(editForm).entries());
+      data.salary = parseFloat(data.salary) || 0;
   
-        const data = Object.fromEntries(new FormData(editForm).entries());
-        data.salary = parseFloat(data.salary) || 0.0;
-  
-        await fetch("/api/update_user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-  
-        editUserModal.hide();
-        fetchUsers();
-        toast("User updated");
+      await fetch("/api/update_user", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
       });
-    }
+  
+      editUserModal.hide();
+      fetchUsers();
+      toast("User updated");
+    });
   
     const addMovieForm = document.getElementById("add-movie-form");
-    if (addMovieForm) {
-      addMovieForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const formData = new FormData(addMovieForm);
-        const movie = {};
-  
-        for (const [key, value] of formData.entries()) {
-          if (key.includes("genre_ids")) {
-            movie.genre_ids = movie.genre_ids || [];
-            movie.genre_ids.push(value);
-          } else {
-            movie[key] = value;
-          }
-        }
-  
-        await fetch("/api/add_movie", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(movie)
-        });
-  
-        addMovieForm.reset();
-        toast("Movie added");
-      });
-    }
-  
-    searchBtn?.addEventListener("click", () => {
-      fetchUsers(searchInput?.value || "");
-    });
-  
-    fetchUsers();
-  
+    const movieList = document.getElementById("movie-table-body");
     const movieTitleInput = document.getElementById("movieTitle");
+    const movieIdField = document.createElement("input");
+    movieIdField.type = "hidden";
+    movieIdField.name = "movie_id";
+    addMovieForm?.appendChild(movieIdField);
+  
     let allMovies = [];
   
-    fetch("/api/movies/all")
-      .then(res => res.json())
-      .then(data => {
-        allMovies = data;
-      });
+    async function fetchMovies() {
+      const res = await fetch("/api/movies/all");
+      const data = await safeJson(res);
+      allMovies = data || [];
+  
+      if (movieList) {
+        movieList.innerHTML = allMovies.map(m => `
+          <tr>
+            <td>${m.title}</td>
+            <td>${m.release_year}</td>
+            <td>${m.rating}</td>
+            <td>${m.price}</td>
+            <td>
+              <button class="btn btn-sm btn-primary fill-movie-btn" data-title="${m.title}">Edit</button>
+              <button class="btn btn-sm btn-danger delete-movie-btn" data-id="${m.movie_id}">Delete</button>
+            </td>
+          </tr>`).join("");
+      }
+    }
   
     movieTitleInput?.addEventListener("input", () => {
-      const val = movieTitleInput.value.toLowerCase();
-      const matches = allMovies.filter(m => m.title.toLowerCase().includes(val));
-      showMovieSuggestions(matches);
+      const val = movieTitleInput.value.trim().toLowerCase();
+      const match = allMovies.find(m => m.title.toLowerCase() === val);
+      if (match) {
+        document.getElementById("movieYear").value = match.release_year || "";
+        document.getElementById("movieRating").value = match.rating || "";
+        document.getElementById("moviePrice").value = match.price || "";
+        document.getElementById("movieImage").value = match.image_path || "";
+        document.getElementById("movieDescription")?.value = match.description || "";
+        document.getElementById("movieTrailer")?.value = match.trailer_url || "";
+        movieIdField.value = match.movie_id;
+      } else {
+        movieIdField.value = "";
+      }
     });
   
-    function showMovieSuggestions(matches) {
-      let list = document.getElementById("movie-suggestions");
-      if (!list) {
-        list = document.createElement("ul");
-        list.id = "movie-suggestions";
-        list.className = "list-group position-absolute z-3 w-100 mt-1";
-        movieTitleInput.parentNode.appendChild(list);
+    addMovieForm?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(addMovieForm).entries());
+      data.genre_ids = [...addMovieForm.querySelectorAll("[name='genre_ids[]']")].map(el => el.value);
+  
+      const url = data.movie_id ? "/api/update_movie" : "/api/add_movie";
+      await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+  
+      toast(data.movie_id ? "Movie updated" : "Movie added");
+      addMovieForm.reset();
+      movieIdField.value = "";
+      fetchMovies();
+    });
+  
+    document.addEventListener("click", async (e) => {
+      const deleteBtn = e.target.closest(".delete-movie-btn");
+      const editBtn = e.target.closest(".fill-movie-btn");
+  
+      if (deleteBtn) {
+        const id = deleteBtn.dataset.id;
+        if (!confirm("Are you sure you want to delete this movie?")) return;
+        await fetch("/api/delete_movie", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ movie_id: id })
+        });
+        toast("Movie deleted");
+        fetchMovies();
       }
   
-      list.innerHTML = "";
-      matches.slice(0, 5).forEach(movie => {
-        const item = document.createElement("li");
-        item.className = "list-group-item list-group-item-action";
-        item.textContent = movie.title;
-        item.onclick = () => {
-          movieTitleInput.value = movie.title;
-          list.innerHTML = "";
-          document.getElementById("movieYear").value = movie.release_year || "";
-          document.getElementById("movieRating").value = movie.rating || "";
-          document.getElementById("moviePrice").value = movie.price || "";
-          document.getElementById("movieImage").value = movie.image_path || "";
-        };
-        list.appendChild(item);
-      });
-    }
+      if (editBtn) {
+        const title = editBtn.dataset.title.toLowerCase();
+        const match = allMovies.find(m => m.title.toLowerCase() === title);
+        if (match) {
+          movieTitleInput.value = match.title;
+          document.getElementById("movieYear").value = match.release_year || "";
+          document.getElementById("movieRating").value = match.rating || "";
+          document.getElementById("moviePrice").value = match.price || "";
+          document.getElementById("movieImage").value = match.image_path || "";
+          document.getElementById("movieDescription")?.value = match.description || "";
+          document.getElementById("movieTrailer")?.value = match.trailer_url || "";
+          movieIdField.value = match.movie_id;
+        }
+      }
+    });
+  
+    searchBtn?.addEventListener("click", () => fetchUsers(searchInput?.value || ""));
+    fetchUsers();
+    fetchMovies();
   });
   

@@ -754,7 +754,6 @@ def add_to_cart(movie_id):
     if current_user.is_authenticated:
         return redirect(url_for('views.view_cart'))
     else:
-        # Store the destination and redirect to login
         session['next'] = url_for('views.view_cart')
         return redirect(url_for('auth.login'))
     
@@ -765,3 +764,69 @@ def view_cart():
         return redirect(url_for('auth.login'))
     
     return render_template('UserCart.html')
+
+# UPDATE Movie
+@views.route('/api/update_movie', methods=['POST'])
+@login_required
+def update_movie():
+    if current_user.role != 'employee':
+        return '', 403
+
+    data = request.get_json()
+    movie_id = data.get("movie_id")
+    title = data.get("title")
+    release_year = int(data.get("release_year", 0))
+    rating = data.get("rating")
+    price = float(data.get("price", 0))
+    image_path = data.get("image_path", "keyboard.jpg")
+    description = data.get("description", "")
+    trailer_url = data.get("trailer_url", "")
+    genre_ids = data.get("genre_ids", [])
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Update base movie
+    cursor.execute("""
+        UPDATE movies
+        SET title = %s, release_year = %s, rating = %s,
+            price = %s, image_path = %s, description = %s,
+            trailer_url = %s
+        WHERE movie_id = %s
+    """, (title, release_year, rating, price, image_path, description, trailer_url, movie_id))
+
+    # Update genres
+    cursor.execute("DELETE FROM moviegenres WHERE movie_id = %s", (movie_id,))
+    for gid in genre_ids:
+        cursor.execute("INSERT INTO moviegenres (movie_id, genre_id) VALUES (%s, %s)", (movie_id, gid))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True, "message": "Movie updated successfully"})
+
+# DELETE Movie
+@views.route('/api/delete_movie', methods=['POST'])
+@login_required
+def delete_movie():
+    if current_user.role != 'employee':
+        return '', 403
+
+    data = request.get_json()
+    movie_id = data.get("movie_id")
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Delete genre
+    cursor.execute("DELETE FROM moviegenres WHERE movie_id = %s", (movie_id,))
+
+    # Delete movie record
+    cursor.execute("DELETE FROM movies WHERE movie_id = %s", (movie_id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return jsonify({"success": True, "message": "Movie deleted successfully"})
