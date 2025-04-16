@@ -159,6 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
   movieTitleInput?.addEventListener("input", () => {
     const val = movieTitleInput.value.trim().toLowerCase();
     const match = allMovies.find(m => m.title.toLowerCase() === val);
+    const suggestions = allMovies.filter(m => m.title.toLowerCase().includes(val));
+    buildMovieDropdownSuggestions(suggestions);
     if (match) {
       document.getElementById("movieYear").value = match.release_year || "";
       document.getElementById("movieRating").value = match.rating || "";
@@ -169,6 +171,35 @@ document.addEventListener("DOMContentLoaded", () => {
       movieIdField.value = match.movie_id;
     }
   });
+
+  function buildMovieDropdownSuggestions(matches) {
+    let list = document.getElementById("movie-suggestions");
+    if (!list) {
+      list = document.createElement("ul");
+      list.id = "movie-suggestions";
+      list.className = "list-group position-absolute z-3 w-100 mt-1";
+      movieTitleInput.parentNode.appendChild(list);
+    }
+
+    list.innerHTML = "";
+    matches.slice(0, 5).forEach(movie => {
+      const item = document.createElement("li");
+      item.className = "list-group-item list-group-item-action";
+      item.textContent = movie.title;
+      item.onclick = () => {
+        movieTitleInput.value = movie.title;
+        list.innerHTML = "";
+        document.getElementById("movieYear").value = movie.release_year || "";
+        document.getElementById("movieRating").value = movie.rating || "";
+        document.getElementById("moviePrice").value = movie.price || "";
+        document.getElementById("movieImage").value = movie.image_path || "";
+        document.getElementById("movieDescription")?.value = movie.description || "";
+        document.getElementById("movieTrailer")?.value = movie.trailer_url || "";
+        movieIdField.value = movie.movie_id;
+      };
+      list.appendChild(item);
+    });
+  }
 
   addMovieForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
