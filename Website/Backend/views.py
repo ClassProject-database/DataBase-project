@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from . import get_db_connection, bcrypt
+from flask import session
 
 views = Blueprint('views', __name__)
 
@@ -687,3 +688,28 @@ def search_rented_movies():
     conn.close()
 
     return jsonify(results)
+
+
+@views.route('/add_to_cart/<int:movie_id>')
+def add_to_cart(movie_id):
+    cart = session.get('cart', [])
+
+    if movie_id not in cart:
+        cart.append(movie_id)
+        session['cart'] = cart
+
+    # If the user is logged in, go straight to cart
+    if current_user.is_authenticated:
+        return redirect(url_for('views.view_cart'))
+    else:
+        # Store the destination and redirect to login
+        session['next'] = url_for('views.view_cart')
+        return redirect(url_for('auth.login'))
+    
+@views.route('/UserCart')
+def view_cart():
+    if not current_user.is_authenticated:
+        session['next'] = request.path
+        return redirect(url_for('auth.login'))
+    
+    return render_template('UserCart.html')
