@@ -490,6 +490,47 @@ def get_user():
     return jsonify(user)
 
 
+@views.route('/userRentals')
+@login_required
+def user_rentals():
+    if current_user.role != 'customer':
+        abort(403, description="Only customers can access the dashboard.")
+
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    # Fetch basic user info
+    cursor.execute("SELECT * FROM users WHERE account_id = %s", (current_user.id,))
+    user = cursor.fetchone()
+
+    # Fetch rental history
+    cursor.execute("""
+        SELECT r.rentalID, r.rental_date, r.return_date,
+               rm.price AS rental_price, m.title
+        FROM rentals r
+        JOIN rental_movies rm ON r.rentalID = rm.rental_id
+        JOIN movies m ON rm.movie_id = m.movie_id
+        WHERE r.account_id = %s
+        ORDER BY r.rental_date DESC
+    """, (current_user.id,))
+    rentals = cursor.fetchall()
+
+    # Fetch reviews
+    cursor.execute("""
+        SELECT r.rating, r.review_comment, r.review_date, m.title
+        FROM reviews r
+        JOIN movies m ON r.movie_id = m.movie_id
+        WHERE r.account_id = %s
+        ORDER BY r.review_date DESC
+    """, (current_user.id,))
+    reviews = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return render_template('userRentals.html', user=user, rentals=rentals, reviews=reviews)
+
+
 # 16) API: Update User
 @views.route('/api/update_user', methods=['POST'])
 @login_required
