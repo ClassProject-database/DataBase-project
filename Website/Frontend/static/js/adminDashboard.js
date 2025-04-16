@@ -169,6 +169,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("movieDescription")?.value = match.description || "";
       document.getElementById("movieTrailer")?.value = match.trailer_url || "";
       movieIdField.value = match.movie_id;
+    } else {
+      movieIdField.value = "";
     }
   });
 
@@ -177,14 +179,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!list) {
       list = document.createElement("ul");
       list.id = "movie-suggestions";
-      list.className = "list-group position-absolute z-3 w-100 mt-1";
+      list.className = "list-group position-absolute z-3 w-100 mt-1 bg-dark";
       movieTitleInput.parentNode.appendChild(list);
     }
 
     list.innerHTML = "";
     matches.slice(0, 5).forEach(movie => {
       const item = document.createElement("li");
-      item.className = "list-group-item list-group-item-action";
+      item.className = "list-group-item list-group-item-action text-white bg-secondary";
       item.textContent = movie.title;
       item.onclick = () => {
         movieTitleInput.value = movie.title;

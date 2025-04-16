@@ -94,7 +94,7 @@
     </div>
   </div>
 
-  <!-- Movie Management -->
+ <!-- Movie Management -->
 <div class="row g-4 mt-4">
   <div class="col-12">
     <div class="card bg-dark text-white shadow">
@@ -104,35 +104,45 @@
       <div class="card-body position-relative">
         <form id="add-movie-form" class="row g-3">
           <input type="hidden" name="movie_id">
-          <div class="col-md-6">
+
+          <!-- Title Input + Suggestion List -->
+          <div class="col-md-6 position-relative">
             <label class="form-label">Title</label>
             <input type="text" id="movieTitle" name="title" class="form-control" autocomplete="off" required>
-            <ul id="movie-suggestions" class="list-group position-absolute w-100 z-3 d-none"></ul>
+            <!-- ✅ Must exist and be outside the input tag, inside a relatively positioned container -->
+            <ul id="movie-suggestions" class="list-group position-absolute w-100 z-3 d-none bg-dark"></ul>
           </div>
+
           <div class="col-md-6">
             <label class="form-label">Release Year</label>
             <input type="number" id="movieYear" name="release_year" class="form-control" required>
           </div>
+
           <div class="col-md-6">
             <label class="form-label">Rating</label>
             <input type="text" id="movieRating" name="rating" class="form-control">
           </div>
+
           <div class="col-md-6">
             <label class="form-label">Price ($)</label>
             <input type="text" pattern="^\d{1,8}(\.\d{1,2})?$" id="moviePrice" name="price" class="form-control" required>
           </div>
+
           <div class="col-md-6">
             <label class="form-label">Image Filename</label>
             <input type="text" id="movieImage" name="image_path" class="form-control">
           </div>
+
           <div class="col-md-6">
             <label class="form-label">Description</label>
             <textarea id="movieDescription" name="description" class="form-control" rows="3" required></textarea>
           </div>
+
           <div class="col-md-6">
             <label class="form-label">Trailer URL</label>
             <input type="url" id="movieTrailer" name="trailer_url" class="form-control">
           </div>
+
           <div class="col-md-6">
             <label class="form-label">Genres</label>
             <select id="genreIds" name="genre_ids[]" class="form-select" multiple required>
@@ -141,6 +151,7 @@
               {% endfor %}
             </select>
           </div>
+
           <div class="col-12 d-flex justify-content-between gap-3">
             <button type="submit" class="btn btn-success w-50">Save Movie</button>
             <button type="button" class="btn btn-danger w-50" id="deleteMovieBtn">Delete Movie</button>
@@ -164,7 +175,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Edit User Modal -->
 <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
