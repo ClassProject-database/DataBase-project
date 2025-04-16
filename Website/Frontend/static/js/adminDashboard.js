@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
   const toast = (msg, type = "success") => {
     const el = document.createElement("div");
-    el.className = `toast-message bg-${type === "error" ? "danger" : "success"} text-white p-2 px-3 rounded shadow position-fixed bottom-0 end-0 m-3`;
+    el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3`;
     el.innerText = msg;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 3000);
@@ -147,11 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const addMovieForm = document.getElementById("add-movie-form");
   const movieTitleInput = document.getElementById("movieTitle");
-  const movieIdField = document.createElement("input");
-  movieIdField.type = "hidden";
-  movieIdField.name = "movie_id";
-  addMovieForm?.appendChild(movieIdField);
-
+  const movieIdField = document.querySelector("input[name='movie_id']");
   let allMovies = [];
 
   const fetchMovies = async () => {
@@ -161,39 +157,18 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   movieTitleInput?.addEventListener("input", () => {
-    const val = movieTitleInput.value.toLowerCase();
-    const matches = allMovies.filter(m => m.title.toLowerCase().includes(val));
-    showMovieSuggestions(matches);
-  });
-
-  function showMovieSuggestions(matches) {
-    let list = document.getElementById("movie-suggestions");
-    if (!list) {
-      list = document.createElement("ul");
-      list.id = "movie-suggestions";
-      list.className = "list-group position-absolute z-3 w-100 mt-1";
-      movieTitleInput.parentNode.appendChild(list);
+    const val = movieTitleInput.value.trim().toLowerCase();
+    const match = allMovies.find(m => m.title.toLowerCase() === val);
+    if (match) {
+      document.getElementById("movieYear").value = match.release_year || "";
+      document.getElementById("movieRating").value = match.rating || "";
+      document.getElementById("moviePrice").value = match.price || "";
+      document.getElementById("movieImage").value = match.image_path || "";
+      document.getElementById("movieDescription")?.value = match.description || "";
+      document.getElementById("movieTrailer")?.value = match.trailer_url || "";
+      movieIdField.value = match.movie_id;
     }
-
-    list.innerHTML = "";
-    matches.slice(0, 5).forEach(movie => {
-      const item = document.createElement("li");
-      item.className = "list-group-item list-group-item-action";
-      item.textContent = movie.title;
-      item.onclick = () => {
-        movieTitleInput.value = movie.title;
-        list.innerHTML = "";
-        document.getElementById("movieYear").value = movie.release_year || "";
-        document.getElementById("movieRating").value = movie.rating || "";
-        document.getElementById("moviePrice").value = movie.price || "";
-        document.getElementById("movieImage").value = movie.image_path || "";
-        document.getElementById("movieDescription")?.value = movie.description || "";
-        document.getElementById("movieTrailer")?.value = movie.trailer_url || "";
-        movieIdField.value = movie.movie_id;
-      };
-      list.appendChild(item);
-    });
-  }
+  });
 
   addMovieForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -201,17 +176,17 @@ document.addEventListener("DOMContentLoaded", () => {
     const movie = {};
 
     for (const [key, value] of formData.entries()) {
-      if (key.includes("genre_ids")) {
+      if (key === "genre_ids[]") {
         movie.genre_ids = movie.genre_ids || [];
         movie.genre_ids.push(value);
       } else {
-        movie[key] = value;
+        movie[key] = value.trim();
       }
     }
 
-    const titleLower = movie.title?.trim().toLowerCase();
-    const existingMovie = allMovies.find(m => m.title.toLowerCase() === titleLower);
-    if (existingMovie) movie.movie_id = existingMovie.movie_id;
+    const titleLower = movie.title?.toLowerCase();
+    const existing = allMovies.find(m => m.title.toLowerCase() === titleLower);
+    if (existing) movie.movie_id = existing.movie_id;
 
     const url = movie.movie_id ? "/api/update_movie" : "/api/add_movie";
     const res = await fetch(url, {
@@ -227,7 +202,7 @@ document.addEventListener("DOMContentLoaded", () => {
       movieIdField.value = "";
       fetchMovies();
     } else {
-      toast(result.error || "Movie submission failed", "error");
+      toast(result.error || "Failed to save movie", "error");
     }
   });
 

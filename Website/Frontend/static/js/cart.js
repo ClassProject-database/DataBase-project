@@ -1,270 +1,184 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const toast = (msg, type = "success") => {
-      const el = document.createElement("div");
-      el.className = `toast-message bg-${type === "error" ? "danger" : "success"} text-white p-2 px-3 rounded shadow position-fixed bottom-0 start-50 translate-middle-x mb-4 fade show`;
-      el.innerText = msg;
-      document.body.appendChild(el);
-      setTimeout(() => {
-        el.classList.remove("show");
-        el.addEventListener("transitionend", () => el.remove());
-      }, 3000);
-    };
-  
-    const safeJson = async res => {
-      try {
-        return await res.json();
-      } catch {
-        return {};
-      }
-    };
-  
-    const roleEl = document.querySelector("[data-role]");
-    const isManager = (roleEl?.dataset.title || "").toLowerCase() === "manager";
-    const isEmployee = (roleEl?.dataset.role || "").toLowerCase() === "employee";
-  
-    const userTable = document.getElementById("user-table-body");
-    const addUserForm = document.getElementById("add-user-form");
-    const editUserModal = new bootstrap.Modal(document.getElementById("editUserModal"));
-    const editForm = document.getElementById("edit-user-form");
-    const searchBtn = document.getElementById("searchBtn");
-    const searchInput = document.getElementById("searchUsers");
-    const editEmployeeFields = document.getElementById("edit-employee-fields");
-  
-    const fetchUsers = async (query = "") => {
-      const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
-      const users = await safeJson(res);
-      userTable.innerHTML = users.length
-        ? users.map(u => {
-            const canEdit = isManager || (isEmployee && u.role === "customer");
-            return `
-              <tr data-account-id="${u.account_id}">
-                <td>${u.account_id}</td>
-                <td>${u.username}</td>
-                <td>${u.first_name} ${u.last_name}</td>
-                <td>${u.email}</td>
-                <td>${u.role}</td>
-                <td>
-                  <a href="/admin/user/${u.account_id}" class="btn btn-sm btn-info">View</a>
-                  ${canEdit ? `<button class="btn btn-sm btn-primary edit-user-btn" data-id="${u.account_id}">Edit</button>` : ""}
-                  ${canEdit ? `<button class="btn btn-sm btn-danger delete-user-btn" data-id="${u.account_id}">Delete</button>` : ""}
-                </td>
-              </tr>`;
-          }).join("")
-        : `<tr><td colspan="6" class="text-center">No users found.</td></tr>`;
-    };
-  
-    if (addUserForm) {
-      const roleInput = addUserForm.role;
-      const jobFields = document.getElementById("employee-fields");
-  
-      roleInput?.addEventListener("change", () => {
-        jobFields?.classList.toggle("d-none", !("employee,manager".includes(roleInput.value) && isManager));
-      });
-  
-      addUserForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const data = Object.fromEntries(new FormData(addUserForm).entries());
-        ["username", "password", "first_name", "last_name", "email", "phone", "role", "job_title"].forEach(k => data[k] = data[k]?.trim());
-        data.salary = parseFloat(data.salary) || 0;
-  
-        if (["employee", "manager"].includes(data.role) && !isManager) {
-          toast("Only managers can add employees or managers.", "error");
-          return;
-        }
-  
-        const res = await fetch("/api/add_user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(data)
-        });
-  
-        const result = await safeJson(res);
-        if (result.success) {
-          toast("User added");
-          addUserForm.reset();
-          jobFields?.classList.add("d-none");
-          fetchUsers();
-        } else {
-          toast(result.error || "Error adding user", "error");
-        }
-      });
+console.log("cart.js loaded!");
+
+// Add to Cart Function
+window.addToCart = function (movie_id, name, price) {
+    console.log("Adding to cart:", movie_id, name, price);
+
+    if (!movie_id || !name || isNaN(price)) {
+        console.error(" Invalid item data:", { movie_id, name, price });
+        return;
     }
-  
-    userTable.addEventListener("click", async (e) => {
-      const target = e.target.closest("button");
-      if (!target) return;
-  
-      const id = target.dataset.id;
-      if (!id) return;
-  
-      if (target.classList.contains("edit-user-btn")) {
-        try {
-          const res = await fetch(`/api/get_user?account_id=${id}`);
-          const user = await safeJson(res);
-          if (!user || user.error) {
-            toast(user.error || "User not found", "error");
+
+    try {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        if (cart.some(item => item.movie_id === movie_id)) {
+            console.warn(` Movie ID ${movie_id} is already in the cart.`);
             return;
-          }
-  
-          editForm.editUserId.value = user.account_id || "";
-          editForm.editUsername.value = user.username || "";
-          editForm.editFirstName.value = user.first_name || "";
-          editForm.editLastName.value = user.last_name || "";
-          editForm.editEmail.value = user.email || "";
-          editForm.editPhone.value = user.phone || "";
-          editForm.editRole.value = user.role || "";
-          editForm.editPassword.value = "";
-  
-          if (["employee", "manager"].includes(user.role)) {
-            editForm.editJobTitle.value = user.job_title || "";
-            editForm.editSalary.value = user.salary || 0;
-            editEmployeeFields.classList.remove("d-none");
-          } else {
-            editEmployeeFields.classList.add("d-none");
-          }
-  
-          editUserModal.show();
-        } catch (err) {
-          toast("Failed to fetch user data", "error");
-          console.error(err);
         }
-      }
-  
-      if (target.classList.contains("delete-user-btn")) {
-        try {
-          const res = await fetch("/api/delete_user", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ account_id: id })
-          });
-  
-          const result = await safeJson(res);
-          if (result.success) {
-            toast("User deleted");
-            fetchUsers();
-          } else {
-            toast(result.error || "Delete failed", "error");
-          }
-        } catch (err) {
-          toast("Failed to delete user", "error");
-          console.error(err);
-        }
-      }
-    });
-  
-    editForm?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(editForm).entries());
-      data.salary = parseFloat(data.salary) || 0;
-  
-      await fetch("/api/update_user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-  
-      editUserModal.hide();
-      fetchUsers();
-      toast("User updated");
-    });
-  
-    const addMovieForm = document.getElementById("add-movie-form");
-    const movieList = document.getElementById("movie-table-body");
-    const movieTitleInput = document.getElementById("movieTitle");
-    const movieIdField = document.createElement("input");
-    movieIdField.type = "hidden";
-    movieIdField.name = "movie_id";
-    addMovieForm?.appendChild(movieIdField);
-  
-    let allMovies = [];
-  
-    async function fetchMovies() {
-      const res = await fetch("/api/movies/all");
-      const data = await safeJson(res);
-      allMovies = data || [];
-  
-      if (movieList) {
-        movieList.innerHTML = allMovies.map(m => `
-          <tr>
-            <td>${m.title}</td>
-            <td>${m.release_year}</td>
-            <td>${m.rating}</td>
-            <td>${m.price}</td>
-            <td>
-              <button class="btn btn-sm btn-primary fill-movie-btn" data-title="${m.title}">Edit</button>
-              <button class="btn btn-sm btn-danger delete-movie-btn" data-id="${m.movie_id}">Delete</button>
-            </td>
-          </tr>`).join("");
-      }
+
+        cart.push({ movie_id, name, price: parseFloat(price) });
+        localStorage.setItem("cart", JSON.stringify(cart));
+
+        updateCartBadge();
+        updateCartList();
+        showModal(`${name} has been added to your cart!`);
+    } catch (err) {
+        console.error("Error adding to cart:", err);
     }
-  
-    movieTitleInput?.addEventListener("input", () => {
-      const val = movieTitleInput.value.trim().toLowerCase();
-      const match = allMovies.find(m => m.title.toLowerCase() === val);
-      if (match) {
-        document.getElementById("movieYear").value = match.release_year || "";
-        document.getElementById("movieRating").value = match.rating || "";
-        document.getElementById("moviePrice").value = match.price || "";
-        document.getElementById("movieImage").value = match.image_path || "";
-        document.getElementById("movieDescription")?.value = match.description || "";
-        document.getElementById("movieTrailer")?.value = match.trailer_url || "";
-        movieIdField.value = match.movie_id;
-      } else {
-        movieIdField.value = "";
-      }
-    });
-  
-    addMovieForm?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(addMovieForm).entries());
-      data.genre_ids = [...addMovieForm.querySelectorAll("[name='genre_ids[]']")].map(el => el.value);
-  
-      const url = data.movie_id ? "/api/update_movie" : "/api/add_movie";
-      await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      });
-  
-      toast(data.movie_id ? "Movie updated" : "Movie added");
-      addMovieForm.reset();
-      movieIdField.value = "";
-      fetchMovies();
-    });
-  
-    document.addEventListener("click", async (e) => {
-      const deleteBtn = e.target.closest(".delete-movie-btn");
-      const editBtn = e.target.closest(".fill-movie-btn");
-  
-      if (deleteBtn) {
-        const id = deleteBtn.dataset.id;
-        if (!confirm("Are you sure you want to delete this movie?")) return;
-        await fetch("/api/delete_movie", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ movie_id: id })
-        });
-        toast("Movie deleted");
-        fetchMovies();
-      }
-  
-      if (editBtn) {
-        const title = editBtn.dataset.title.toLowerCase();
-        const match = allMovies.find(m => m.title.toLowerCase() === title);
-        if (match) {
-          movieTitleInput.value = match.title;
-          document.getElementById("movieYear").value = match.release_year || "";
-          document.getElementById("movieRating").value = match.rating || "";
-          document.getElementById("moviePrice").value = match.price || "";
-          document.getElementById("movieImage").value = match.image_path || "";
-          document.getElementById("movieDescription")?.value = match.description || "";
-          document.getElementById("movieTrailer")?.value = match.trailer_url || "";
-          movieIdField.value = match.movie_id;
+};
+
+// Update Cart Badge in Navbar
+function updateCartBadge() {
+    try {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const badge = document.querySelector(".cart-badge");
+        if (badge) badge.innerText = cart.length;
+    } catch (err) {
+        console.error("Error updating cart badge:", err);
+    }
+}
+
+function getDiscountRate(code) {
+    switch ((code || "").toUpperCase().trim()) {
+        case "VIP": return 0.20;
+        case "ADMIN": return 1.00;
+        default: return 0;
+    }
+}
+
+// Update Cart
+function updateCartList() {
+    try {
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        const cartList = document.getElementById("cart-items");
+        const totalPriceEl = document.getElementById("total-price");
+        const totalItemsEl = document.getElementById("total-items");
+
+        if (!cartList) return;
+
+        cartList.innerHTML = "";
+        let total = 0;
+
+        if (!cart.length) {
+            cartList.innerHTML = `<li class="list-group-item text-center">Your cart is empty.</li>`;
+        } else {
+            cart.forEach((item, i) => {
+                total += item.price;
+                cartList.innerHTML += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><strong>${item.name}</strong> - $${item.price.toFixed(2)}</div>
+                        <button class="btn btn-sm btn-danger remove-btn" data-index="${i}">Remove</button>
+                    </li>`;
+            });
         }
-      }
-    });
-    searchBtn?.addEventListener("click", () => fetchUsers(searchInput?.value || ""));
-    fetchUsers();
-    fetchMovies();
-  });
-  
+
+        const discountCode = localStorage.getItem("discount_code") || "";
+        const discountRate = getDiscountRate(discountCode);
+        const taxRate = 0.08;
+
+        const discountAmount = total * discountRate;
+        const subtotal = total;
+        const totalAfterDiscount = subtotal - discountAmount;
+        const taxedTotal = totalAfterDiscount * (1 + taxRate);
+
+        localStorage.setItem("pricing_summary", JSON.stringify({
+            subtotal: subtotal.toFixed(2),
+            discount_code: discountCode,
+            discount_percent: (discountRate * 100).toFixed(0),
+            tax_percent: (taxRate * 100).toFixed(0),
+            final_total: taxedTotal.toFixed(2)
+        }));
+
+        if (totalItemsEl) totalItemsEl.innerText = cart.length;
+        if (totalPriceEl) totalPriceEl.innerText = taxedTotal.toFixed(2);
+    } catch (err) {
+        console.error("Error updating cart list:", err);
+    }
+}
+
+// Remove from Cart Handler
+document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".remove-btn");
+    if (!btn) return;
+
+    const index = parseInt(btn.dataset.index);
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+    if (index >= 0 && index < cart.length) {
+        cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCartList();
+        updateCartBadge();
+        showModal("Item removed from your cart.");
+    }
+});
+
+function showModal(message) {
+    const overlay = document.getElementById("customModalOverlay");
+    const messageDiv = document.getElementById("customModalMessage");
+    const okBtn = document.getElementById("customModalOkBtn");
+
+    if (!overlay || !messageDiv || !okBtn) return;
+
+    messageDiv.textContent = message;
+    overlay.classList.add("show");
+    okBtn.onclick = () => overlay.classList.remove("show");
+}
+
+// Page Initialization
+document.addEventListener("DOMContentLoaded", () => {
+    updateCartBadge();
+    updateCartList();
+
+    const discountInput = document.getElementById("discount-code");
+    if (discountInput) {
+        discountInput.value = localStorage.getItem("discount_code") || "";
+        discountInput.addEventListener("input", function () {
+            localStorage.setItem("discount_code", this.value.trim().toUpperCase());
+            updateCartList();
+        });
+    }
+
+    const clearBtn = document.getElementById("clear-cart-btn");
+    if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+            localStorage.removeItem("cart");
+            updateCartList();
+            updateCartBadge();
+            showModal("🧹 Cart cleared.");
+        });
+    }
+
+    const checkoutBtn = document.getElementById("checkout-btn");
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener("click", () => {
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+            if (!cart.length) {
+                showModal(" Your cart is empty!");
+            } else {
+                window.location.href = "/checkout";
+            }
+        });
+    }
+});
+
+//Add-to-Cart Button Listener
+document.addEventListener("click", (event) => {
+    const btn = event.target.closest(".add-to-cart-btn");
+    if (!btn) return;
+
+    const movieId = btn.dataset.movieId;
+    const title = btn.dataset.title;
+    const price = btn.dataset.price;
+
+    if (!movieId || !title || !price) {
+        console.error("Missing button data attributes.");
+        return;
+    }
+
+    if (typeof addToCart === "function") {
+        addToCart(movieId, title, price);
+    } else {
+        console.warn("addToCart is not defined.");
+    }
+});
