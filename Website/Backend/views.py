@@ -74,18 +74,21 @@ def admin_user_view(account_id):
     """, (account_id,))
     user = cursor.fetchone()
 
-    # 2) Fetch rental history (dates now live on rental_movies)
+    # 2) Fetch rental history
     cursor.execute("""
-        SELECT 
+        SELECT
             r.rentalID,
             rm.rental_date   AS rental_date,
             rm.return_date   AS return_date,
-            rm.total_price   AS price,
+            r.total_price    AS total_price,  -- overall cost from rentals
+            rm.price         AS item_price,   -- per‐movie cost from rental_movies
             rm.movie_id,
             m.title
         FROM rentals r
-        LEFT JOIN rental_movies rm ON r.rentalID = rm.rental_id
-        LEFT JOIN movies        m  ON rm.movie_id = m.movie_id
+        LEFT JOIN rental_movies rm 
+          ON r.rentalID = rm.rental_id
+        LEFT JOIN movies m 
+          ON rm.movie_id = m.movie_id
         WHERE r.account_id = %s
         ORDER BY rm.rental_date DESC
     """, (account_id,))
@@ -94,12 +97,12 @@ def admin_user_view(account_id):
     cursor.close()
     conn.close()
 
-    # 3) Render template
     return render_template(
         "adminViewUser.html",
         user=user,
         rentals=rentals
     )
+
 
 # 4) Admin Dashboard
 @views.route('/admin', methods=['GET'])
