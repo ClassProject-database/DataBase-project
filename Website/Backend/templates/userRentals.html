@@ -40,7 +40,7 @@
                   <td>{{ rental.title }}</td>
                   <td>{{ rental.rental_date }}</td>
                   <td>{{ rental.return_date if rental.return_date else "Not Returned" }}</td>
-                  <td>${{ rental.rental_price }}</td>
+                  <td>${{ rental_movies.price }}</td>
                   <td>
                     {% if not rental.return_date %}
                     <button class="btn btn-sm btn-warning return-rental-btn" data-rental-id="{{ rental.rentalID }}">Return</button>
