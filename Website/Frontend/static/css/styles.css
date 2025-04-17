@@ -133,20 +133,33 @@ footer {
   backdrop-filter: blur(3px);
 }
 
-#inv-search-dd {
-  z-index: 2000; 
-}
-#inv-search-dd .dropdown-item {
-  color: rgba(232, 233, 255, 0.7);
-  background: #1e1f27;
-  transition: background 0.15s, color 0.15s;
-}
-#inv-search-dd .dropdown-item:hover,
-#inv-search-dd .dropdown-item:focus,
-#inv-search-dd .dropdown-item.active {
-  background: rgba(255, 255, 255, 0.15) !important;
-  color: rgba(255, 255, 255, 0.9) !important;
-  backdrop-filter: blur(3px);
-}
+   #movieDropdown {
+    z-index: 2000; 
+  }
+  
+  #movieDropdown .dropdown-item {
+    color: rgba(232, 233, 255, 0.7) !important;
+    background-color: #1e1f27          !important;
+    transition: background-color 0.15s, color 0.15s;
+  }
+  
+  #movieDropdown .dropdown-item:hover,
+  #movieDropdown .dropdown-item:focus,
+  #movieDropdown .dropdown-item.active {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: rgba(255, 255, 255, 0.9)    !important;
+    backdrop-filter: blur(3px);
+  }
 
-
+  .genre-btn {
+    color: #eef !important;
+    background: rgba(30,31,39,0.75);
+    border: 1px solid #444;
+  }
+  .genre-btn:hover,
+  .genre-btn.active {
+    background: rgba(255,255,255,0.2) !important;
+    color: #fff !important;
+    border-color: #888;
+  }
+  
