@@ -51,36 +51,46 @@ def inventory():
         genres = genres
     )
 
-# 3)  API  /api/movies
 @views.route('/api/movies')
 def get_movies():
-
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
+    q        = request.args.get('q', '').strip().lower()
     genre_id = request.args.get('genre_id', type=int)
-
-    if genre_id:
+    if q:
         cursor.execute("""
             SELECT m.*,
                    GROUP_CONCAT(mg.genre_id) AS genre_ids
-            FROM movies           AS m
-            JOIN moviegenres      AS mg ON m.movie_id = mg.movie_id
+            FROM movies m
+            LEFT JOIN moviegenres mg ON m.movie_id = mg.movie_id
+            WHERE LOWER(m.title) LIKE %s
+            GROUP BY m.movie_id
+        """, (f"%{q}%",))
+    #  genre filter
+    elif genre_id:
+        cursor.execute("""
+            SELECT m.*,
+                   GROUP_CONCAT(mg.genre_id) AS genre_ids
+            FROM movies m
+            JOIN moviegenres mg ON m.movie_id = mg.movie_id
             WHERE mg.genre_id = %s
             GROUP BY m.movie_id
         """, (genre_id,))
+    # all movies
     else:
         cursor.execute("""
             SELECT m.*,
                    GROUP_CONCAT(mg.genre_id) AS genre_ids
-            FROM movies           AS m
-            LEFT JOIN moviegenres AS mg ON m.movie_id = mg.movie_id
+            FROM movies m
+            LEFT JOIN moviegenres mg ON m.movie_id = mg.movie_id
             GROUP BY m.movie_id
         """)
 
     movies = cursor.fetchall()
     cursor.close(); conn.close()
     return jsonify(movies)
+
 
 
 @views.route("/admin/user/<int:account_id>")

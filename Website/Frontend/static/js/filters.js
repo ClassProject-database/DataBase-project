@@ -98,14 +98,102 @@ document.addEventListener("DOMContentLoaded", () => {
   
     document.querySelectorAll(".filter-btn").forEach((button) => {
       button.addEventListener("click", () => {
-        let genreId = button.dataset.genreId;
+        let genr
+        document.addEventListener("DOMContentLoaded", () => {
+          console.log("Movie-grid script loaded");
+        
+          let activeGenreId = null;      
+          let debounceTimer = null;     
+        
+    
+          const $   = (sel) => document.querySelector(sel);
+          const $$  = (sel) => [...document.querySelectorAll(sel)];
+          const qs  = (obj) => Object.keys(obj)
+                                      .filter(k => obj[k] !== null && obj[k] !== "")
+                                      .map(k => `${k}=${encodeURIComponent(obj[k])}`)
+                                      .join("&");
+    
+          async function fetchMovies({ genreId = null, query = "" } = {}) {
+            const url = "/api/movies" + (qs({ genre_id: genreId, q: query }) ? "?" + qs({ genre_id: genreId, q: query }) : "");
+            console.log("GET", url);
+        
+            try {
+              const res = await fetch(url);
+              if (!res.ok) throw new Error(`Server ${res.status}`);
+              const movies = await res.json();
+              render(movies);
+            } catch (err) {
+              console.error("Movie fetch failed:", err);
+              $("#movies-container").innerHTML =
+                `<div class="text-center text-danger w-100 py-5">Could not load movies.</div>`;
+            }
+          }
+        
+          function render(list) {
+            const box = $("#movies-container");
+            if (!box) return console.error(" #movies-container missing from DOM");
+        
+            box.innerHTML = list.length
+              ? list.map(toCard).join("")
+              : `<div class="text-center text-white-50 w-100 py-5">No movies found.</div>`;
+          }
+        
+       
+          function toCard(m) {
+            const img = m.image_path ? `/static/images/${m.image_path}` : "/static/images/keyboard.jpg";
+            const price = Number(m.price).toFixed(2);
+        
+            return `
+            <div class="col movie-card" data-genre="${m.genre_id || ""}">
+              <div class="card h-100 bg-dark text-white shadow">
+                <a href="/movie/${m.movie_id}">
+                  <img class="card-img-top movie-img" src="${img}" alt="${m.title}">
+                </a>
+                <div class="card-body text-center">
+                  <h5 class="fw-bolder">${m.title}</h5>
+                  <p>${m.release_year} &nbsp;•&nbsp; ${m.rating}</p>
+                  <p>$${price}</p>
+                </div>
+                <div class="card-footer text-center">
+                  <button class="btn btn-outline-light add-to-cart-btn"
+                          onclick="addToCart?.(${m.movie_id}, '${m.title.replace(/'/g, "\\'")}', ${price})">
+                    Add&nbsp;to&nbsp;Cart
+                  </button>
+                </div>
+              </div>
+            </div>`;
+          }
+        
+          
+          $$(".filter-btn").forEach(btn => {
+            btn.addEventListener("click", () => {
+              activeGenreId = btn.dataset.genreId === "" ? null : Number(btn.dataset.genreId);
+              $$(".filter-btn").forEach(b => b.classList.toggle("active", b === btn));
+              fetchMovies({ genreId: activeGenreId, query: $("#inventory-search")?.value.trim() });
+            });
+          });
+        
+     
+          const searchBox = $("#inventory-search");   
+          if (searchBox) {
+            searchBox.addEventListener("input", () => {
+              clearTimeout(debounceTimer);
+              debounceTimer = setTimeout(() => {
+                fetchMovies({ genreId: activeGenreId, query: searchBox.value.trim() });
+              }, 300);
+            });
+          }
+        
+        
+          fetchMovies();         
+        });
+        eId = button.dataset.genreId;
         genreId = genreId === "null" ? null : parseInt(genreId);
         console.log(`Filtering movies by Genre ID: ${genreId ?? "All"}`);
         fetchMovies(genreId);
       });
     });
   
-    // Load all movies on page load 
     fetchMovies();
   });
   

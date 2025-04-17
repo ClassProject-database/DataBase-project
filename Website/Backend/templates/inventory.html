@@ -3,28 +3,26 @@
 
 {% block content %}
 
-<!-- ─────────── HERO ─────────── -->
+<!--  HERO  -->
 <section class="py-5 text-center position-relative overflow-hidden">
-  <!-- background image (swap file name if needed) -->
   <img src="{{ url_for('static', filename='images/hero-popcorn.jpg') }}"
        class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-25" loading="lazy">
   <div class="position-relative z-1 container">
     <h1 class="display-5 fw-bold">Rent · Stream · Enjoy</h1>
     <p class="lead text-secondary mb-4">Browse 100+ classics &amp; new releases</p>
 
-    <!-- quick search bar -->
     <form action="/search" class="row justify-content-center">
       <div class="col-10 col-md-6 col-lg-4">
         <div class="input-group shadow">
-          <input class="form-control" name="q" placeholder="Search movies…">
-          <button class="btn btn-primary" type="submit">Search</button>
+            <input id="inventory-search" class="form-control" placeholder="Search movies…">
+            <button class="btn btn-primary" type="submit">Search</button>
         </div>
       </div>
     </form>
   </div>
 </section>
 
-<!-- ─────────── GENRE FILTER ─────────── -->
+<!--  GENRE FILTER  -->
 <div class="container text-center my-4 overflow-auto">
   <div class="d-inline-flex genres gap-2 flex-wrap flex-md-nowrap">
     <button class="btn genre-btn active" data-genre="">All</button>
@@ -34,10 +32,9 @@
   </div>
 </div>
 
-<!-- ─────────── MOVIE GRID ─────────── -->
+<!--  MOVIE GRID  -->
 <section class="py-4">
   <div class="container">
-    <!-- adjust columns as you wish -->
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4" id="movies-container">
       {% for movie in movies %}
       <div class="col movie-card" data-genre="{{ movie.genre_ids|join(',') }}">
@@ -69,7 +66,6 @@
 
 {% block extra_js %}
 <script>
-  /* client‑side genre filtering */
   const btns  = document.querySelectorAll('.genre-btn');
   const cards = document.querySelectorAll('.movie-card');
 
