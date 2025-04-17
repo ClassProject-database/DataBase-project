@@ -142,7 +142,7 @@ footer {
 #inv-search-dd .dropdown-item:focus,
 #inv-search-dd .dropdown-item.active{
   background:rgba(255,255,255,.15) !important;
-  color:#fff !important;
+  color:#ffffff36 !important;
   backdrop-filter:blur(3px);
 }
 
