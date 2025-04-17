@@ -437,90 +437,89 @@ def get_rentals():
     return jsonify(rentals)
 
 
+
+#  /api/checkout
 @views.route('/api/checkout', methods=['POST'])
 @login_required
 def checkout():
-    data = request.get_json()
-    cart_items = data["cart"]
-    total_price = float(data["amount"])
-    discount_code = data.get("discount_code", "").upper().strip()
-    card_number = data.get("card_number","").strip()
-    card_name = data.get("card_holder_name", "").strip()
-    expiration = data.get("expiration", "").strip()
-    hashed_cardNumber = bcrypt.generate_password_hash(card_number).decode('utf-8')
-    expiration_month, expiration_year = map(int, expiration.split("/"))
-    if expiration_year < 100:
-        expiration_year += 2000
-   
+    data          = request.get_json()
+    cart_items    = data["cart"]                      
+    total_price   = float(data["amount"])
+    discount_code = data.get("discount_code", "").upper().strip() or None
+    card_number   = data.get("card_number", "").strip()
+    card_name     = data.get("card_holder_name", "").strip()
+    expiration    = data.get("expiration", "")         
+
+    if not all([cart_items, total_price, card_number, card_name, expiration]):
+        abort(400, description="Missing checkout fields.")
+    hashed_card = bcrypt.generate_password_hash(card_number).decode()
+
+    exp_month, exp_year = map(int, expiration.split("/"))
+    if exp_year < 100:                
+        exp_year += 2000
+
     if discount_code == "VIP":
         final_price = round(total_price * 0.80, 2)
     elif discount_code == "ADMIN":
         final_price = 0.00
     else:
-        final_price = round(total_price, 2)
-        discount_code = None
+        final_price = total_price
+        discount_code = None         
 
-    conn = get_db_connection()
+    conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM customers WHERE account_id = %s", (current_user.id,))
-    if cursor.fetchone() is None:
-        cursor.execute("INSERT INTO customers (account_id, address) VALUES (%s, %s)", (current_user.id, "Unknown"))
+    
+    cursor.execute(
+        "INSERT IGNORE INTO customers (account_id, address) VALUES (%s, %s)",
+        (current_user.id, "Unknown")
+    )
 
-    # Insert into payment
+ 
     cursor.execute("""
         INSERT INTO payment (
             account_id, card_holder_name, card_number,
             expiration_month, expiration_year,
             discount_code, discounted_amount
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s)
     """, (
-        current_user.id,
-        card_name,
-        hashed_cardNumber,
-        expiration_month,
-        expiration_year,
-        discount_code,
-        final_price
+        current_user.id, card_name, hashed_card,
+        exp_month, exp_year,
+        discount_code, final_price
     ))
-    conn.commit()
     payment_id = cursor.lastrowid
 
-    # Insert into rentals
     cursor.execute("""
-    INSERT INTO rentals (
-        account_id, payment_id, rental_date, return_date, total_price
-    )
-    VALUES (
-        %s, 
-        %s, 
-        CURDATE(), 
-        NULL, 
-        %s
-    )
-""", (current_user.id, payment_id, final_price))
-
-    conn.commit()
+        INSERT INTO rentals (
+            account_id, payment_id, total_price
+        ) VALUES (%s, %s, %s)
+    """, (current_user.id, payment_id, final_price))
     rental_id = cursor.lastrowid
 
-
-    # Link each rented movie
+   
+    now_sql = "NOW()"                 
+    line_rows = []
     for item in cart_items:
-        movie_id = item.get("movie_id")
-        original_price = float(item.get("price", 0.00))
-        line_price = 0.00 if discount_code == "ADMIN" else original_price
+        movie_id = int(item["movie_id"])
+        orig     = float(item["price"])
+        line_price = 0.0 if discount_code == "ADMIN" else orig
+        line_rows.append((rental_id, movie_id, line_price))
 
-        cursor.execute("""
-            INSERT INTO rental_movies (rental_id, movie_id, price)
-            VALUES (%s, %s, %s)
-        """, (rental_id, movie_id, line_price))
+    cursor.executemany(f"""
+        INSERT INTO rental_movies (
+            rental_id, movie_id, price, rental_date
+        ) VALUES (%s, %s, %s, {now_sql})
+    """, line_rows)
 
     conn.commit()
-    cursor.close()
-    conn.close()
+    cursor.close(); conn.close()
 
-    return jsonify({"success": True, "message": "Checkout complete!"})
+    return jsonify({
+        "success": True,
+        "message": "Checkout complete!",
+        "rental_id": rental_id
+    })
+
 
 # 15) API: Get User
 @views.route('/api/get_user', methods=['GET'])
