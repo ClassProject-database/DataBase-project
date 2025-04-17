@@ -19,46 +19,83 @@ def HomePage():
 
     return render_template('home.html', featured_movies=featured_movies)
 
-# 2) Inventory Page
+# 
+# 2)  Inventory Page
+# 
 @views.route('/inventory')
 def inventory():
-    conn = get_db_connection()
+    """
+    Renders the catalog page with:
+      • movies  – each row has .genre_ids = ['1','2',…]
+      • genres  – for the filter buttons
+    """
+    conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM genres;")
+    # 1) all genres
+    cursor.execute("SELECT * FROM genres ORDER BY genre_name;")
     genres = cursor.fetchall()
 
-    cursor.execute("SELECT * FROM movies;")
-    movies = cursor.fetchall()
+    # 2) movies +   "1,2,5"  string of genre_ids  (MySQL GROUP_CONCAT)
+    cursor.execute("""
+        SELECT 
+            m.*,
+            COALESCE(GROUP_CONCAT(mg.genre_id), '') AS genre_ids
+        FROM movies           AS m
+        LEFT JOIN moviegenres AS mg ON m.movie_id = mg.movie_id
+        GROUP BY m.movie_id
+    """)
+    rows = cursor.fetchall()
 
-    cursor.close()
-    conn.close()
+    # 3) turn  "1,2,5"  → ['1','2','5']   so Jinja can |join(',')
+    for r in rows:
+        r["genre_ids"] = r["genre_ids"].split(',') if r["genre_ids"] else []
 
-    return render_template("inventory.html", movies=movies, genres=genres)
+    cursor.close(); conn.close()
+    return render_template(
+        "inventory.html",
+        movies = rows,
+        genres = genres
+    )
 
-# 3) API to Fetch Movies
+
+# 
+# 3)  API  /api/movies
+# 
 @views.route('/api/movies')
 def get_movies():
-    conn = get_db_connection()
+    """
+    Returns JSON list of movies.
+    Optional   ?genre_id=3   filters by genre.
+    Each movie includes   "genre_ids": "1,3,5"   (comma string for compact JSON)
+    """
+    conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
     genre_id = request.args.get('genre_id', type=int)
-    if genre_id is not None:
+
+    if genre_id:
         cursor.execute("""
-            SELECT DISTINCT m.* 
-            FROM movies m
-            JOIN moviegenres mg ON m.movie_id = mg.movie_id
+            SELECT m.*,
+                   GROUP_CONCAT(mg.genre_id) AS genre_ids
+            FROM movies           AS m
+            JOIN moviegenres      AS mg ON m.movie_id = mg.movie_id
             WHERE mg.genre_id = %s
+            GROUP BY m.movie_id
         """, (genre_id,))
-        movies = cursor.fetchall()
     else:
-        cursor.execute("SELECT * FROM movies")
-        movies = cursor.fetchall()
+        cursor.execute("""
+            SELECT m.*,
+                   GROUP_CONCAT(mg.genre_id) AS genre_ids
+            FROM movies           AS m
+            LEFT JOIN moviegenres AS mg ON m.movie_id = mg.movie_id
+            GROUP BY m.movie_id
+        """)
 
-    cursor.close()
-    conn.close()
-
+    movies = cursor.fetchall()
+    cursor.close(); conn.close()
     return jsonify(movies)
+
 
 @views.route("/admin/user/<int:account_id>")
 @login_required
