@@ -117,32 +117,36 @@ footer {
 }
 
 
-.filter-btn{
-  color:#c7cbff !important;
-  background:transparent !important;
-  border:none !important;
-  font-weight:500;
-  transition:background .18s,color .18s,border-color .18s;
+
+.filter-btn {
+  color: rgba(199, 203, 255, 0.9) !important;
+  background: transparent !important;
+  border: none !important;
+  font-weight: 500;
+  transition: background 0.18s, color 0.18s;
 }
-
-
 .filter-btn:hover,
-.filter-btn.active{
-  background:rgba(255,255,255,.15) !important;  
-  border-bottom:2px solid transparent;         
-  backdrop-filter:blur(3px);                
+.filter-btn.active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #fff !important;
+  border-bottom: 2px solid transparent !important;
+  backdrop-filter: blur(3px);
 }
 
-#inv-search-dd .dropdown-item{
-  color:#e8e9ff65;
-  background:#1e1f27;
-  transition:background .15s,color .15s;
+#inv-search-dd {
+  z-index: 2000; 
+}
+#inv-search-dd .dropdown-item {
+  color: rgba(232, 233, 255, 0.7);
+  background: #1e1f27;
+  transition: background 0.15s, color 0.15s;
 }
 #inv-search-dd .dropdown-item:hover,
 #inv-search-dd .dropdown-item:focus,
-#inv-search-dd .dropdown-item.active{
-  background:rgba(255,255,255,.15) !important;
-  color:#ffffff36 !important;
-  backdrop-filter:blur(3px);
+#inv-search-dd .dropdown-item.active {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(3px);
 }
+
 
