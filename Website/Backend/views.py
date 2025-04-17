@@ -63,7 +63,7 @@ def get_movies():
 @views.route("/admin/user/<int:account_id>")
 @login_required
 def admin_user_view(account_id):
-    conn = get_db_connection()
+    conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
     # 1) Fetch the user
@@ -74,22 +74,22 @@ def admin_user_view(account_id):
     """, (account_id,))
     user = cursor.fetchone()
 
-    # 2) Fetch rental history 
+    # 2) Fetch rental history (dates now live on rental_movies)
     cursor.execute("""
-        SELECT r.rentalID, 
-            r.rental_date, 
-            r.return_date,
+        SELECT 
+            r.rentalID,
+            rm.rental_date   AS rental_date,
+            rm.return_date   AS return_date,
+            rm.total_price   AS price,
             rm.movie_id,
             m.title
         FROM rentals r
         LEFT JOIN rental_movies rm ON r.rentalID = rm.rental_id
-        LEFT JOIN movies m ON rm.movie_id = m.movie_id
+        LEFT JOIN movies        m  ON rm.movie_id = m.movie_id
         WHERE r.account_id = %s
-        ORDER BY r.rental_date DESC
+        ORDER BY rm.rental_date DESC
     """, (account_id,))
-
     rentals = cursor.fetchall()
-
 
     cursor.close()
     conn.close()

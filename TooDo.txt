@@ -7,14 +7,14 @@ Priorties :
 
 (please put your name next to item and then set to finished when done)
 
-(matt)-2- Remove duplicate Films, just need to rewrite sql satement to insert movies, include new movies if not at 100.
+(evelyn)-0- Remove duplicate Films
 
 -2- Resize all images that dont fit well into the in the inventory frames.
 
 -3- (duplicate all images and resize for the featured movies section on the home page 
      or find another way to resize them for them the samller frame size)
 
-(evelyn)-1- write a descripton and add YouTube urls for each movie to be inserted into movies table
+(evelyn)-0- write a descripton and add YouTube urls for each movie to be inserted into movies table
 
 (Matt) -0- fix the search movie bar in userDahboard/Myrentals
 
@@ -29,7 +29,9 @@ Priorties :
 -4- mention the fact that people can  ddos/hack site by hijacking api calls 
     and making a custom request such as posting reviews or adding movies, data base is secured from being deleted tho or major sql injections
 
---1-- move both rental dates from rentals table to rental_movies
+--4--replace Broken links  
+
+(Antonio)--0-- move both rental dates from rentals table to rental_movies
 
 --2-- fix the name of movie not appearing in "my reviews" on myrentals
 
