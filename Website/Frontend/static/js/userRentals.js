@@ -1,43 +1,52 @@
-// USER RENTALS DASHBOARD JS
 
 const toast = (msg, type = "success") => {
     const el = document.createElement("div");
-    el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3 shadow`;
+    el.className =
+      `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3 shadow`;
     el.style.zIndex = 9999;
-    el.innerText = msg;
+    el.textContent = msg;
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 3000);
   };
   
-  const safeJson = async res => JSON.parse(await res.text());
+  const safeJson = async (res) => JSON.parse(await res.text());
   
-  rentalsTable.addEventListener("click", async (e) => {
-    if (!e.target.classList.contains("return-rental-btn")) return;
+  document.addEventListener("DOMContentLoaded", () => {
+    /* ---------- RENTAL‑RETURN LOGIC ------------------------------ */
+    const rentalsTable = document.getElementById("rentalsTableBody");
+    if (rentalsTable) {
+      rentalsTable.addEventListener("click", async (e) => {
+        if (!e.target.classList.contains("return-rental-btn")) return;
   
-    const rentalId = e.target.dataset.rentalId;
-    const movieId  = e.target.dataset.movieId;
-    if (!rentalId || !movieId) return;
+        const rentalId = e.target.dataset.rentalId;
+        const movieId  = e.target.dataset.movieId;       
+        if (!rentalId || !movieId) return;
   
-    try {
-      const res  = await fetch(`/api/return_movie/${rentalId}/${movieId}`, {
-                      method: "POST"
-                   });
-      const data = await safeJson(res);
+        try {
+          const res  = await fetch(`/api/return_movie/${rentalId}/${movieId}`, {
+            method: "POST",
+          });
+          const data = await safeJson(res);
   
-      if (data.success) {
-        toast("Movie returned!");
-        const row = e.target.closest("tr");
-        row.querySelector("td:nth-child(3)").textContent =
-              new Date().toISOString().split("T")[0]; // today
-        e.target.remove();               // hide the button for this row
-      } else {
-        toast(data.message || "Could not return movie.", "error");
-      }
-    } catch (err) {
-      toast("Failed to communicate with server.", "error");
-      console.error(err);
+          if (data.success) {
+            toast("Movie returned!");
+            const row = e.target.closest("tr");
+            row.querySelector("td:nth-child(3)").textContent =
+              new Date().toISOString().split("T")[0];   
+            e.target.remove();                             
+          } else {
+            toast(data.message || "Could not return movie.", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          toast("Failed to communicate with server.", "error");
+        }
+      });
     }
+  
+
   });
+  
   
   
   // POST REVIEW LOGIC
