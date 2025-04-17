@@ -139,7 +139,10 @@ footer {
   transition:background .15s,color .15s;
 }
 #inv-search-dd .dropdown-item:hover,
+#inv-search-dd .dropdown-item:focus,
 #inv-search-dd .dropdown-item.active{
-  background:rgba(255,255,255,.15);            
-  color:#ffffff5b;
+  background:rgba(255,255,255,.15) !important;
+  color:#fff !important;
+  backdrop-filter:blur(3px);
 }
+
