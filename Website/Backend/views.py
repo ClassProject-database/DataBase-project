@@ -32,11 +32,11 @@ def inventory():
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # 1) all genres
+   
     cursor.execute("SELECT * FROM genres ORDER BY genre_name;")
     genres = cursor.fetchall()
 
-    # 2) movies +   "1,2,5"  string of genre_ids  (MySQL GROUP_CONCAT)
+
     cursor.execute("""
         SELECT 
             m.*,
@@ -47,7 +47,7 @@ def inventory():
     """)
     rows = cursor.fetchall()
 
-    # 3) turn  "1,2,5"  → ['1','2','5']   so Jinja can |join(',')
+  
     for r in rows:
         r["genre_ids"] = r["genre_ids"].split(',') if r["genre_ids"] else []
 
@@ -560,42 +560,56 @@ def get_user():
 @views.route('/user_Rentals')
 @login_required
 def user_rentals():
+    # only customers may view their rental history
     if current_user.role != 'customer':
-        abort(403, description="Only customers can access the dashboard.")
+        abort(403, description="Only customers can access this page.")
 
-    conn = get_db_connection()
+    conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Fetch basic user info
-    cursor.execute("SELECT * FROM users WHERE account_id = %s", (current_user.id,))
+    # user info 
+    cursor.execute(
+        "SELECT * FROM users WHERE account_id = %s",
+        (current_user.id,)
+    )
     user = cursor.fetchone()
 
-    # Fetch rental history
+    #  rental history  
     cursor.execute("""
-        SELECT r.rentalID, r.rental_date, r.return_date,
-               rm.price AS rental_price, m.title
-        FROM rentals r
-        JOIN rental_movies rm ON r.rentalID = rm.rental_id
-        JOIN movies m ON rm.movie_id = m.movie_id
+        SELECT
+            r.rentalID,
+            rm.rental_date,       
+            rm.return_date,         
+            r.total_price,          
+            rm.price  AS line_price,
+            m.title
+        FROM rentals        AS r
+        JOIN rental_movies  AS rm ON r.rentalID = rm.rental_id
+        JOIN movies         AS m  ON rm.movie_id = m.movie_id
         WHERE r.account_id = %s
-        ORDER BY r.rental_date DESC
+        ORDER BY rm.rental_date DESC, rm.movie_id
     """, (current_user.id,))
     rentals = cursor.fetchall()
 
-    # Fetch reviews
+    #  reviews by this user 
     cursor.execute("""
         SELECT r.rating, r.review_comment, r.review_date, m.title
         FROM reviews r
-        JOIN movies m ON r.movie_id = m.movie_id
+        JOIN movies  m ON r.movie_id = m.movie_id
         WHERE r.account_id = %s
         ORDER BY r.review_date DESC
     """, (current_user.id,))
     reviews = cursor.fetchall()
 
-    cursor.close()
-    conn.close()
+    cursor.close(); conn.close()
 
-    return render_template('userRentals.html', user=user, rentals=rentals, reviews=reviews)
+    return render_template(
+        'userRentals.html',
+        user=user,
+        rentals=rentals,
+        reviews=reviews
+    )
+
 
 
 @views.route('/api/update_user', methods=['POST'])
