@@ -2,7 +2,8 @@
 {% block title %}Catalog · Movie Store{% endblock %}
 
 {% block content %}
-<section class="py-5 text-center position-relative overflow-hidden">
+<!-- hero -->
+<section class="py-5 text-center position-relative">
   <img src="{{ url_for('static', filename='images/hero-popcorn.jpg') }}"
        class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-25" loading="lazy"
        alt="">
@@ -78,11 +79,11 @@
   
   .genre-btn{color:#cfd3ff;background:#1e1f27;border:1px solid #343643;}
   .genre-btn.active,
-  .genre-btn:hover{background:#0d6efd;color:#fff;border-color:#0d6efd;}
+  .genre-btn:hover{background:#fdfdfd;color:#fff;border-color:#272829;}
 
   #inv-search-dd .dropdown-item{color:#e8e9ff;background:#1e1f27;}
   #inv-search-dd .dropdown-item:hover,
-  #inv-search-dd .dropdown-item.active{background:#0d6efd;color:#fff;}
+  #inv-search-dd .dropdown-item.active{background:#9d0dfd;color:#fff;}
 </style>
 {% endblock %}
 
