@@ -20,44 +20,59 @@
       </div>
 
       <!-- Rental History -->
-      <div class="card shadow bg-dark text-white mb-4">
-        <div class="card-body">
-          <h4 class="mb-3"><i class="fa fa-film"></i> My Rentals</h4>
-          <div class="table-responsive">
-            <table class="table table-dark table-hover text-center">
-              <thead>
-                <tr>
-                  <th>Movie Title</th>
-                  <th>Rented On</th>
-                  <th>Return Date</th>
-                  <th>Price</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody id="rentalsTableBody">
-                {% for rental in rentals %}
-                <tr>
-                  <td>{{ rental.title }}</td>
-                  <td>{{ rental.rental_date }}</td>
-                  <td>{{ rental.return_date if rental.return_date else "Not Returned" }}</td>
-                  <td>${{ rental_movies.price }}</td>
-                  <td>
-                    {% if not rental.return_date %}
-                    <button class="btn btn-sm btn-warning return-rental-btn" data-rental-id="{{ rental.rentalID }}">Return</button>
-                    {% endif %}
-                  </td>
-                </tr>
-                {% else %}
-                <tr>
-                  <td colspan="5" class="text-center">No rentals found.</td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
+<div class="card shadow bg-dark text-white mb-4">
+  <div class="card-body">
+    <h4 class="mb-3"><i class="fa fa-film"></i> My Rentals</h4>
+
+    <div class="table-responsive">
+      <table class="table table-dark table-hover text-center">
+        <thead>
+        <tr>
+          <th>Movie Title</th>
+          <th>Rented&nbsp;On</th>
+          <th>Return&nbsp;Date</th>
+          <th>Price</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+
+        <tbody id="rentalsTableBody">
+        {% for rental in rentals %}
+          <tr>
+            <td>{{ rental.title }}</td>
+
+            <td>{{ rental.rental_date.strftime('%Y‑%m‑%d') if rental.rental_date else '' }}</td>
+
+            <td>
+              {{ rental.return_date.strftime('%Y‑%m‑%d')
+                 if rental.return_date else 'Not Returned' }}
+            </td>
+
+            <td>${{ '%.2f'|format(rental.line_price) }}</td>
+
+            <td>
+              {% if not rental.return_date %}
+                <button class="btn btn-sm btn-warning return-rental-btn"
+                        data-rental-id="{{ rental.rentalID }}"
+                        data-movie-id="{{ rental.movie_id }}">
+                  Return
+                </button>
+              {% else %}
+                <span class="text-success"><i class="fa fa-check"></i></span>
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-center">No rentals found.</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
     </div>
+  </div>
+</div>
+
 
     <!-- Right Column -->
     <div class="col-lg-4">

@@ -18,7 +18,7 @@ Priorties :
 
 (Matt) -0- fix the search movie bar in userDahboard/Myrentals
 
--2- add search bar for the main inventory page
+(Matt)-0- add search bar for the main inventory page
 
 (Matt)-0- fix return movie for user
 

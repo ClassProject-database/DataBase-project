@@ -19,20 +19,13 @@ def HomePage():
 
     return render_template('home.html', featured_movies=featured_movies)
 
-# 
 # 2)  Inventory Page
-# 
 @views.route('/inventory')
 def inventory():
-    """
-    Renders the catalog page with:
-      • movies  – each row has .genre_ids = ['1','2',…]
-      • genres  – for the filter buttons
-    """
+    
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-   
     cursor.execute("SELECT * FROM genres ORDER BY genre_name;")
     genres = cursor.fetchall()
 
@@ -58,17 +51,10 @@ def inventory():
         genres = genres
     )
 
-
-# 
 # 3)  API  /api/movies
-# 
 @views.route('/api/movies')
 def get_movies():
-    """
-    Returns JSON list of movies.
-    Optional   ?genre_id=3   filters by genre.
-    Each movie includes   "genre_ids": "1,3,5"   (comma string for compact JSON)
-    """
+
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
@@ -414,25 +400,25 @@ def delete_rental():
 @views.route('/api/rentals', methods=['GET'])
 @login_required
 def get_rentals():
-    conn = get_db_connection()
+    conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
     cursor.execute("""
         SELECT r.rentalID,
-               r.rental_date,
-               r.return_date,
+               rm.rental_date   AS rental_date,   -- ← from rental_movies
+               rm.return_date   AS return_date,   -- ← from rental_movies
                r.total_price,
                m.title,
-               rm.price AS rental_price
-        FROM rentals r
-        JOIN rental_movies rm ON r.rentalID = rm.rental_id
-        JOIN movies m ON rm.movie_id = m.movie_id
-        WHERE r.account_id = %s
+               rm.price         AS rental_price
+        FROM   rentals        AS r
+        JOIN   rental_movies  AS rm ON r.rentalID = rm.rental_id
+        JOIN   movies         AS m  ON rm.movie_id = m.movie_id
+        WHERE  r.account_id = %s
+        ORDER BY rm.rental_date DESC            -- keep newest first
     """, (current_user.id,))
-    rentals = cursor.fetchall()
 
-    cursor.close()
-    conn.close()
+    rentals = cursor.fetchall()
+    cursor.close(); conn.close()
 
     return jsonify(rentals)
 
@@ -559,43 +545,37 @@ def get_user():
 @views.route('/user_Rentals')
 @login_required
 def user_rentals():
-    # only customers may view their rental history
     if current_user.role != 'customer':
         abort(403, description="Only customers can access this page.")
 
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # user info 
     cursor.execute(
         "SELECT * FROM users WHERE account_id = %s",
         (current_user.id,)
     )
     user = cursor.fetchone()
 
-    #  rental history  
     cursor.execute("""
-        SELECT
-            r.rentalID,
-            rm.rental_date,       
-            rm.return_date,         
-            r.total_price,          
-            rm.price  AS line_price,
-            m.title
-        FROM rentals        AS r
-        JOIN rental_movies  AS rm ON r.rentalID = rm.rental_id
-        JOIN movies         AS m  ON rm.movie_id = m.movie_id
-        WHERE r.account_id = %s
-        ORDER BY rm.rental_date DESC, rm.movie_id
+        SELECT r.rentalID,
+               rm.rental_date   AS rental_date,     -- from rental_movies
+               rm.return_date   AS return_date,     -- from rental_movies
+               rm.price         AS line_price,
+               m.title
+        FROM   rentals        AS r
+        JOIN   rental_movies  AS rm ON r.rentalID = rm.rental_id
+        JOIN   movies         AS m  ON rm.movie_id = m.movie_id
+        WHERE  r.account_id = %s
+        ORDER BY rm.rental_date DESC
     """, (current_user.id,))
     rentals = cursor.fetchall()
 
-    #  reviews by this user 
     cursor.execute("""
         SELECT r.rating, r.review_comment, r.review_date, m.title
-        FROM reviews r
-        JOIN movies  m ON r.movie_id = m.movie_id
-        WHERE r.account_id = %s
+        FROM   reviews r
+        JOIN   movies  m ON r.movie_id = m.movie_id
+        WHERE  r.account_id = %s
         ORDER BY r.review_date DESC
     """, (current_user.id,))
     reviews = cursor.fetchall()
@@ -604,10 +584,12 @@ def user_rentals():
 
     return render_template(
         'userRentals.html',
-        user=user,
-        rentals=rentals,
-        reviews=reviews
+        user      = user,
+        rentals   = rentals,
+        reviews   = reviews
     )
+
+
 
 
 
@@ -746,25 +728,48 @@ def movie_details(movie_id):
 
     return render_template("movieDetails.html", movie=movie, genres=genres, reviews=reviews)
 
-#20) API : return movie 
-@views.route('/api/return_movie/<int:rentalId>', methods=['POST'])
+# Return 
+@views.route('/api/return_movie/<int:rental_id>/<int:movie_id>', methods=['POST'])
 @login_required
-def return_movie(rentalId):
-    conn = get_db_connection()
+def return_single_movie(rental_id: int, movie_id: int):
+    conn   = get_db_connection()
     cursor = conn.cursor()
-    
-    # Update return_date if it's not eturned
-    cursor.execute("""
-        UPDATE rentals
-        SET return_date = NOW()
-        WHERE rentalID = %s AND return_date IS NULL AND account_id = %s
-    """, (rentalId, current_user.id))
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
 
+    cursor.execute("""
+        UPDATE  rental_movies rm
+        JOIN    rentals       r   ON r.rentalID = rm.rental_id
+        SET     rm.return_date = NOW()
+        WHERE   rm.rental_id  = %s
+          AND   rm.movie_id   = %s
+          AND   r.account_id  = %s      -- ensure ownership
+          AND   rm.return_date IS NULL  -- only if not yet returned
+    """, (rental_id, movie_id, current_user.id))
+    conn.commit()
+
+    if cursor.rowcount == 0:      
+        cursor.execute("""
+            SELECT rm.return_date
+            FROM   rental_movies rm
+            JOIN   rentals       r ON r.rentalID = rm.rental_id
+            WHERE  rm.rental_id = %s
+              AND  rm.movie_id  = %s
+        """, (rental_id, movie_id))
+        row = cursor.fetchone()
+        cursor.close(); conn.close()
+
+        if row is None:
+            return jsonify({"success": False,
+                            "message": "Rental/movie not found."}), 404
+        if row[0] is not None:
+            return jsonify({"success": False,
+                            "message": "Movie already returned."}), 409
+        return jsonify({"success": False,
+                        "message": "Not authorized to return this movie."}), 403
+
+    # 2) success
+    cursor.close(); conn.close()
     return jsonify({"success": True, "message": "Movie returned!"})
+
 
 #21) API : user review search 
 @views.route('/api/search_rented_movies')

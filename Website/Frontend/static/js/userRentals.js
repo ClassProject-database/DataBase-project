@@ -11,32 +11,34 @@ const toast = (msg, type = "success") => {
   
   const safeJson = async res => JSON.parse(await res.text());
   
-  // RENTAL RETURN LOGIC
-  const rentalsTable = document.getElementById("rentalsTableBody");
-  if (rentalsTable) {
-    rentalsTable.addEventListener("click", async (e) => {
-      if (e.target.classList.contains("return-rental-btn")) {
-        const rentalId = e.target.dataset.rentalId;
-        if (!rentalId) return;
+  rentalsTable.addEventListener("click", async (e) => {
+    if (!e.target.classList.contains("return-rental-btn")) return;
   
-        try {
-          const res = await fetch(`/api/return_movie/${rentalId}`, { method: "POST" });
-          const data = await safeJson(res);
-          if (data.success) {
-            toast("Movie returned successfully!");
-            const row = e.target.closest("tr");
-            row.querySelector("td:nth-child(3)").textContent = new Date().toISOString().split("T")[0];
-            e.target.remove();
-          } else {
-            toast("Error: " + (data.error || "Could not return movie."), "error");
-          }
-        } catch (err) {
-          toast("Failed to return movie.", "error");
-          console.error(err);
-        }
+    const rentalId = e.target.dataset.rentalId;
+    const movieId  = e.target.dataset.movieId;
+    if (!rentalId || !movieId) return;
+  
+    try {
+      const res  = await fetch(`/api/return_movie/${rentalId}/${movieId}`, {
+                      method: "POST"
+                   });
+      const data = await safeJson(res);
+  
+      if (data.success) {
+        toast("Movie returned!");
+        const row = e.target.closest("tr");
+        row.querySelector("td:nth-child(3)").textContent =
+              new Date().toISOString().split("T")[0]; // today
+        e.target.remove();               // hide the button for this row
+      } else {
+        toast(data.message || "Could not return movie.", "error");
       }
-    });
-  }
+    } catch (err) {
+      toast("Failed to communicate with server.", "error");
+      console.error(err);
+    }
+  });
+  
   
   // POST REVIEW LOGIC
   const reviewForm = document.getElementById("review-form");
