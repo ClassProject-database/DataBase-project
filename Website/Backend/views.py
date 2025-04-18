@@ -1,3 +1,4 @@
+import datetime
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort, current_app
 from flask_login import login_required, current_user
 from . import get_db_connection, bcrypt
@@ -317,24 +318,49 @@ def post_review():
 
     movie_id = data.get('movie_id')
     rating = data.get('rating')
-    review_comment = data.get('review_comment') 
+    review_comment = data.get('review_comment')
+
+    if not all([movie_id, rating, review_comment]):
+        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+
+    try:
+        rating = int(rating)
+        if rating < 1 or rating > 5:
+            return jsonify({'success': False, 'error': 'Rating must be 1–5'}), 400
+    except ValueError:
+        return jsonify({'success': False, 'error': 'Invalid rating'}), 400
 
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT account_id FROM users WHERE account_id = %s", (current_user.id,))
-    user = cursor.fetchone()
+    # Optional: prevent duplicate reviews
+    cursor.execute("""
+        SELECT 1 FROM reviews
+        WHERE account_id = %s AND movie_id = %s
+    """, (current_user.id, movie_id))
+    if cursor.fetchone():
+        cursor.close()
+        conn.close()
+        return jsonify({'success': False, 'error': 'You already reviewed this movie.'}), 409
 
     cursor.execute("""
         INSERT INTO reviews (movie_id, account_id, rating, review_comment)
         VALUES (%s, %s, %s, %s)
-    """, (movie_id, user['account_id'], rating, review_comment))
+    """, (movie_id, current_user.id, rating, review_comment))
     conn.commit()
+
+    # Fetch movie title to show it in the frontend
+    cursor.execute("SELECT title FROM movies WHERE movie_id = %s", (movie_id,))
+    movie = cursor.fetchone()
 
     cursor.close()
     conn.close()
 
-    return jsonify({'success': True})
+    return jsonify({
+        'success': True,
+        'movie_title': movie['title'] if movie else 'Movie',
+        'review_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    })
 
 
 # 9) Reviews Page
