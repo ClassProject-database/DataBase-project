@@ -562,26 +562,37 @@ def user_rentals():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM users WHERE account_id = %s", (current_user.id,))
+    # 1) Basic user info
+    cursor.execute(
+        "SELECT * FROM users WHERE account_id = %s",
+        (current_user.id,)
+    )
     user = cursor.fetchone()
 
+    # 2) Rental history: get each line item including movie_id and line_price
     cursor.execute("""
         SELECT
-            rm.rental_id     AS rentalID,
-            rm.rental_date   AS rental_date,
-            rm.return_date   AS return_date,
-            rm.price         AS rental_price,
+            rm.rental_id   AS rentalID,
+            rm.movie_id    AS movie_id,
+            rm.rental_date AS rental_date,
+            rm.return_date AS return_date,
+            rm.price       AS line_price,
             m.title
         FROM rental_movies rm
-        JOIN rentals r     ON rm.rental_id = r.rentalID
-        JOIN movies m      ON rm.movie_id  = m.movie_id
+        JOIN rentals r ON rm.rental_id = r.rentalID
+        JOIN movies  m ON rm.movie_id  = m.movie_id
         WHERE r.account_id = %s
         ORDER BY rm.rental_date DESC
     """, (current_user.id,))
     rentals = cursor.fetchall()
 
+    # 3) Past reviews
     cursor.execute("""
-        SELECT r.rating, r.review_comment, r.review_date, m.title
+        SELECT
+            r.rating,
+            r.review_comment,
+            r.review_date,
+            m.title
         FROM reviews r
         JOIN movies m ON r.movie_id = m.movie_id
         WHERE r.account_id = %s
@@ -598,6 +609,7 @@ def user_rentals():
         rentals=rentals,
         reviews=reviews
     )
+
 
 
 

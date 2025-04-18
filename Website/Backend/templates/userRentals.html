@@ -53,11 +53,13 @@
 
                   <td>
                     {% if not rental.return_date %}
-                      <button class="btn btn-sm btn-warning return-rental-btn"
-                              data-rental-id="{{ rental.rentalID }}"
-                              data-movie-id="{{ rental.movie_id }}">
-                        Return
-                      </button>
+                    <button
+                    class="btn btn-sm btn-warning return-rental-btn"
+                    data-rental-id="{{ rental.rentalID }}"
+                    data-movie-id="{{ rental.movie_id }}">
+                    Return
+                  </button>
+                  
                     {% else %}
                       <span class="text-success"><i class="fa fa-check"></i></span>
                     {% endif %}
