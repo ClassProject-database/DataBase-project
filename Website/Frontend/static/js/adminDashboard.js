@@ -26,8 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchUsers");
   const editEmployeeFields = document.getElementById("edit-employee-fields");
-  if (!confirmed) return;
-
 
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
