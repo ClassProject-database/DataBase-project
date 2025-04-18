@@ -17,7 +17,6 @@
     color: #ffffff;
 }
 
-/* ========== Form Elements ========== */
 .checkout-container .form-group {
     margin-bottom: 15px;
 }
@@ -45,26 +44,22 @@
     color: #bbb;
 }
 
-/* Input focus effect */
 .checkout-container input:focus {
     outline: none;
     border-color: #28a745;
     box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
 }
 
-/* Invalid input styling */
 .checkout-container input.is-invalid {
     border-color: #dc35c6 !important;
     background-color: #3b1e1e !important;
 }
 
-/* Success input styling */
 .checkout-container input.is-valid {
     border-color: #28a745 !important;
     background-color: #1e3b1e !important;
 }
 
-/* ========== Checkout Button ========== */
 .checkout-container button {
     width: 100%;
     padding: 14px;
@@ -78,7 +73,6 @@
     transition: background 0.3s ease, transform 0.2s ease;
 }
 
-/* Hover and Click Effects */
 .checkout-container button:hover {
     background-color: #218838;
 }
@@ -86,13 +80,11 @@
     transform: scale(0.98);
 }
 
-/* Disabled button */
 .checkout-container button:disabled {
     background-color: #5a5a5a;
     cursor: not-allowed;
 }
 
-/* ========== Checkout Message ========== */
 .checkout-message {
     text-align: center;
     margin-top: 15px;
@@ -100,17 +92,14 @@
     font-size: 1rem;
 }
 
-/* Success Message */
 .checkout-message.success {
     color: #28a745;
 }
 
-/* Error Message */
 .checkout-message.error {
     color: #eb54e3;
 }
 
-/* ========== Responsive Design ========== */
 @media (max-width: 600px) {
     .checkout-container {
         padding: 20px;
@@ -129,18 +118,17 @@
         font-size: 1rem;
     }
 }
-/* Hide all validation error messages by default */
 .invalid-feedback {
     display: none;
-    color: #ccc; /* neutral color, not red */
+    color: #ccc; 
     font-size: 0.9rem;
   }
   
-  /* Only show the error message when input is marked invalid */
+ 
   input.is-invalid + .invalid-feedback,
   textarea.is-invalid + .invalid-feedback,
   select.is-invalid + .invalid-feedback {
     display: block;
-    color: #ff4d4d; /* bright red when invalid */
+    color: #ff4d4d; 
   }
   
