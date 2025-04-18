@@ -12,42 +12,59 @@ const toast = (msg, type = "success") => {
   const safeJson = async (res) => JSON.parse(await res.text());
   
   document.addEventListener("DOMContentLoaded", () => {
-    /* ---------- RENTAL‑RETURN LOGIC ------------------------------ */
+    const toast = (msg, type = "success") => {
+      const el = document.createElement("div");
+      el.className = `toast text-white bg-${type === "error" ? "danger" : "success"} p-2 rounded position-fixed bottom-0 end-0 m-3 shadow`;
+      el.style.zIndex = 9999;
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    };
+  
+    const safeJson = async res => {
+      try { return await res.json(); }
+      catch { return {}; }
+    };
+  
     const rentalsTable = document.getElementById("rentalsTableBody");
-    if (rentalsTable) {
-      rentalsTable.addEventListener("click", async (e) => {
-        if (!e.target.classList.contains("return-rental-btn")) return;
+    if (!rentalsTable) return;
   
-        const rentalId = e.target.dataset.rentalId;
-        const movieId  = e.target.dataset.movieId;       
-        if (!rentalId || !movieId) return;
+    rentalsTable.addEventListener("click", async e => {
+      const btn = e.target.closest(".return-rental-btn");
+      if (!btn) return;
   
-        try {
-          const res  = await fetch(`/api/return_movie/${rentalId}/${movieId}`, {
-            method: "POST",
-          });
-          const data = await safeJson(res);
+      const rentalId = btn.dataset.rentalId;
+      if (!rentalId) return;
   
-          if (data.success) {
-            toast("Movie returned!");
-            const row = e.target.closest("tr");
-            row.querySelector("td:nth-child(3)").textContent =
-              new Date().toISOString().split("T")[0];   
-            e.target.remove();                             
-          } else {
-            toast(data.message || "Could not return movie.", "error");
-          }
-        } catch (err) {
-          console.error(err);
-          toast("Failed to communicate with server.", "error");
+      try {
+        const res = await fetch(`/api/return_movie/${rentalId}`, {
+          method: "POST"
+        });
+        const data = await safeJson(res);
+  
+        if (!data.success) {
+          toast(data.message || "Could not return movie.", "error");
+          return;
         }
-      });
-    }
   
-
+      
+        const row = btn.closest("tr");
+        row.querySelector("td:nth-child(3)").textContent =
+          new Date().toISOString().slice(0, 10);
+        btn.replaceWith(
+          Object.assign(document.createElement("span"), {
+            className: "text-success",
+            innerHTML: '<i class="fa fa-check"></i>'
+          })
+        );
+  
+        toast("Movie returned");
+      } catch (err) {
+        console.error(err);
+        toast("Failed to communicate with server.", "error");
+      }
+    });
   });
-  
-  
   
   // POST REVIEW LOGIC
   const reviewForm = document.getElementById("review-form");
@@ -99,7 +116,7 @@ const toast = (msg, type = "success") => {
     });
   }
   
-  // MOVIE SEARCH AUTOCOMPLETE WITH DEBOUNCE
+  // MOVIE SEARCH
   const movieSearchInput = document.getElementById("movieSearch");
   if (movieSearchInput) {
     let debounceTimer;
