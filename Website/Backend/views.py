@@ -568,18 +568,22 @@ def user_rentals():
     user = cursor.fetchone()
 
     cursor.execute("""
-        SELECT r.rentalID,
-               r.rental_date,
-               r.return_date,
-               rm.movie_id,
-               rm.price AS rental_price,
-               m.title
+        SELECT
+            r.rentalID            AS rentalID,
+            r.rentalDate          AS rental_date,
+            r.returnDate          AS return_date,
+            rm.movie_id           AS movie_id,
+            rm.price              AS rental_price,
+            m.title
         FROM rentals r
-        JOIN rental_movies rm ON r.rentalID = rm.rental_id
-        JOIN movies m ON rm.movie_id = m.movie_id
+        JOIN rental_movies rm
+          ON r.rentalID = rm.rental_id
+        JOIN movies m
+          ON rm.movie_id = m.movie_id
         WHERE r.account_id = %s
-        ORDER BY r.rental_date DESC
+        ORDER BY r.rentalDate DESC
     """, (current_user.id,))
+
 
     rentals = cursor.fetchall()
 
