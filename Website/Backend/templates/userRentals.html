@@ -48,8 +48,7 @@
                        if rental.return_date else 'Not Returned' }}
                   </td>
 
-                  <!-- FIXED: use rental.rental_price (alias from your query) -->
-                  <td>${{ '%.2f'|format(rental.rental_price) }}</td>
+                  <td>${{ '%.2f'|format(rental.line_price) }}</td>
 
                   <td>
                     {% if not rental.return_date %}
