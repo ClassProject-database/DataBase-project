@@ -26,6 +26,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchUsers");
   const editEmployeeFields = document.getElementById("edit-employee-fields");
+  const confirmed = await confirmAction("Are you sure you want to delete this user?", "Delete User");
+  if (!confirmed) return;
+
 
   const fetchUsers = async (query = "") => {
     const res = await fetch(`/api/search_users?query=${encodeURIComponent(query)}`);
@@ -167,8 +170,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const confirmed = confirm("Are you sure you want to delete this movie?");
+  const confirmed = await confirmAction("Are you sure you want to delete this movie?", "Delete Movie");
   if (!confirmed) return;
+  
 
   try {
     const res = await fetch("/api/delete_movie", {
@@ -287,3 +291,36 @@ document.addEventListener("DOMContentLoaded", async () => {
   searchBtn?.addEventListener("click", () => fetchUsers(searchInput?.value || ""));
   fetchUsers();
 });
+
+function confirmAction(message = "Are you sure?", confirmBtnText = "Confirm") {
+  return new Promise((resolve) => {
+    const modalEl = document.getElementById("confirmModal");
+    const modalMsg = document.getElementById("confirmModalMessage");
+    const okBtn = document.getElementById("confirmModalOk");
+    const modal = new bootstrap.Modal(modalEl);
+
+    modalMsg.textContent = message;
+    okBtn.textContent = confirmBtnText;
+
+    const cleanup = () => {
+      okBtn.removeEventListener("click", handleOk);
+      modalEl.removeEventListener("hidden.bs.modal", handleCancel);
+    };
+
+    const handleOk = () => {
+      cleanup();
+      modal.hide();
+      resolve(true);
+    };
+
+    const handleCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    okBtn.addEventListener("click", handleOk);
+    modalEl.addEventListener("hidden.bs.modal", handleCancel);
+
+    modal.show();
+  });
+}
