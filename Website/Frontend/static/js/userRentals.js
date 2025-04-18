@@ -32,14 +32,15 @@ const toast = (msg, type = "success") => {
     rentalsTable.addEventListener("click", async e => {
       const btn = e.target.closest(".return-rental-btn");
       if (!btn) return;
-  
+      const movieId = btn.dataset.movieId;
       const rentalId = btn.dataset.rentalId;
       if (!rentalId) return;
   
       try {
-        const res = await fetch(`/api/return_movie/${rentalId}`, {
-          method: "POST"
-        });
+        const res = await fetch(
+            `/api/return_movie/${rentalId}/${movieId}`,
+            { method: "POST" }
+          );
         const data = await safeJson(res);
   
         if (!data.success) {
