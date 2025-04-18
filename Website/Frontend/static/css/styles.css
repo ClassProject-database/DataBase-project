@@ -1,5 +1,4 @@
 
-
 body {
   background-color: #12121b;
   color: #dcdcdc;
@@ -78,6 +77,25 @@ section {
   object-fit: cover;
   border-radius: 12px 12px 0 0;
   background-color: #111;  
+}
+
+.inventory-img:hover {
+  animation: pop-glow 0.3s ease;
+}
+
+@keyframes pop-glow {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.06);
+    filter: brightness(1.15);
+  }
+  100% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
 }
 
 
@@ -184,7 +202,7 @@ footer {
   }
   
   .toast-message.success {
-    background-color: rgba(40, 167, 69, 0.95); /* green */
+    background-color: rgba(34, 29, 42, 0.95); /* green */
   }
   
   .toast-message.error {
