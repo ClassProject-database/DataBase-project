@@ -134,6 +134,15 @@ footer {
   cursor: pointer;
 }
 
+#particles-js {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0.2;
+}
+
 
 
 .filter-btn {
@@ -226,4 +235,27 @@ footer {
     }
   }
   
+  .hero-section {
+    background: url('/static/images/hero-banner.jpg') no-repeat center center/cover;
+    min-height: 80vh;
+    padding: 60px 0;
+    position: relative;
+    z-index: 1;
+    backdrop-filter: brightness(0.8);
+  }
+  .hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+  }
+  
+  .how-it-works i {
+    color: #ffd700;
+    transition: transform 0.3s;
+  }
+  .how-it-works i:hover {
+    transform: scale(1.2);
+  }
   
