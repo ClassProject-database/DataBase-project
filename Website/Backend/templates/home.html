@@ -1,81 +1,78 @@
 {% extends "base.html" %}
-
-{% block title %}Home - Movie Rentals{% endblock %}
+{% block title %}Home - Movie Rental{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section d-flex align-items-center text-center text-white">
-  <div class="container position-relative z-2">
-    <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInDown">
-      Discover, Rent, Enjoy.
-    </h1>
-    <p class="lead mb-4 animate__animated animate__fadeInUp">
-      Stream your favorite movies anytime, anywhere.
-    </p>
-    <a href="/inventory2" class="btn btn-primary btn-lg me-3 animate__animated animate__fadeInUp">
-      Browse Movies
-    </a>
-    <a href="/user_Rentals" class="btn btn-outline-light btn-lg animate__animated animate__fadeInUp">
-      My Dashboard
-    </a>
-  </div>
+
+<!-- HERO SECTION (Compact) -->
+<section class="hero-box text-center mx-auto my-3 py-5">
+  <h1 class="fw-bold display-5">Discover, Rent, Enjoy.</h1>
+  <p class="lead">Stream your favorite movies anytime, anywhere.</p>
+  <a href="{{ url_for('views.inventory2') }}" class="btn btn-primary mt-2">Browse Movies</a>
 </section>
 
-<!-- How It Works -->
-<section class="py-5 how-it-works text-center text-light">
-  <div class="container">
-    <h2 class="mb-5">How It Works</h2>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <i class="fas fa-film fa-3x mb-3"></i>
-        <h5>Browse</h5>
-        <p>Discover a wide range of movies from all genres.</p>
+<!-- MAIN FLEX CONTAINER -->
+<div class="homepage-container d-flex flex-wrap justify-content-between align-items-start px-3">
+
+  <!-- SIDEBAR: Latest Reviews -->
+  <aside class="latest-reviews-sidebar mb-4">
+    <h2 class="section-title text-center">Latest Reviews</h2>
+    <div class="reviews-list">
+      <div class="review-item mb-3">
+        <p><strong>User123</strong> rated <strong>Inception</strong> ⭐⭐⭐⭐⭐</p>
+        <p>"Amazing movie! Must watch!"</p>
       </div>
-      <div class="col-md-4">
-        <i class="fas fa-cart-plus fa-3x mb-3"></i>
-        <h5>Add to Cart</h5>
-        <p>Select your favorites and add them to your cart.</p>
+      <div class="review-item mb-3">
+        <p><strong>JohnDoe</strong> rated <strong>Interstellar</strong> ⭐⭐⭐⭐⭐</p>
+        <p>"Mind-blowing visuals and story!"</p>
       </div>
-      <div class="col-md-4">
-        <i class="fas fa-play-circle fa-3x mb-3"></i>
-        <h5>Watch</h5>
-        <p>Stream instantly or watch later from your dashboard.</p>
+      <div class="review-item mb-3">
+        <p><strong>MovieFan99</strong> rated <strong>The Dark Knight</strong> ⭐⭐⭐⭐</p>
+        <p>"Heath Ledger was incredible!"</p>
       </div>
     </div>
-  </div>
-</section>
+    <a href="{{ url_for('views.reviews_page') }}" class="btn btn-outline-primary w-100 mt-3">View All Reviews</a>
+  </aside>
 
-<!-- Featured Movies (Optional Dynamic Block) -->
-<section class="py-5 bg-dark">
-  <div class="container">
-    <h2 class="text-white text-center mb-4">Top Picks for You</h2>
-    <div class="row g-4">
-      {% for movie in featured_movies %}
-      <div class="col-md-3">
-        <div class="movie-card h-100">
-          <a href="/movie/{{ movie.movie_id }}">
-            <img src="{{ url_for('static', filename='images/' ~ movie.image_path) }}"
-                 alt="{{ movie.title }}"
-                 class="inventory-img rounded-top w-100"
-                 onerror="this.onerror=null;this.src='/static/images/keyboard.jpg';">
-          </a>
-          <div class="p-3">
-            <h5 class="text-white">{{ movie.title }}</h5>
-          </div>
+  <!-- MAIN CONTENT AREA -->
+  <main class="main-content flex-grow-1 ps-lg-4">
+
+    <!-- FEATURED MOVIES CAROUSEL -->
+    <section class="featured-movies mb-5">
+      <h2 class="section-title text-center">Featured Movies</h2>
+      <div class="carousel-container position-relative">
+        <button class="carousel-btn prev" aria-label="Previous"><i class="fa fa-chevron-left"></i></button>
+        <div id="carousel-track" class="carousel-track d-flex align-items-center overflow-hidden"></div>
+        <button class="carousel-btn next" aria-label="Next"><i class="fa fa-chevron-right"></i></button>
+      </div>
+    </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section class="how-it-works">
+      <h2 class="section-title text-center mb-4">How It Works</h2>
+      <div class="how-it-works-grid d-flex justify-content-center flex-wrap gap-4">
+        <div class="step-card text-center">
+          <i class="fa fa-search step-icon"></i>
+          <h4>Find a Movie</h4>
+          <p>Explore our vast collection.</p>
+        </div>
+        <div class="step-card text-center">
+          <i class="fa fa-shopping-cart step-icon"></i>
+          <h4>Rent Instantly</h4>
+          <p>Seamless checkout & instant access.</p>
+        </div>
+        <div class="step-card text-center">
+          <i class="fa fa-play-circle step-icon"></i>
+          <h4>Watch Anywhere</h4>
+          <p>Enjoy your movies anytime.</p>
         </div>
       </div>
-      {% endfor %}
-    </div>
-  </div>
-</section>
+    </section>
+
+  </main>
+</div>
+
 {% endblock %}
 
 {% block extra_css %}
-<!-- Animate.css for animations -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-{% endblock %}
-
-{% block extra_js %}
-<script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
-<script src="{{ url_for('static', filename='js/toast.js') }}" defer></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/homepage.css') }}">
 {% endblock %}
