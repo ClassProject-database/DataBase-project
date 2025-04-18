@@ -306,7 +306,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const result = await safeJson(res);
     if (result.success) {
-      toast(movie.movie_id ? "Movie updated" : "Movie added");
+      toast(
+        movie.movie_id
+          ? " Movie successfully updated!"
+          : " New movie added to inventory!",
+        "success"
+      );
+    
       addMovieForm.reset();
       movieIdField.value = "";
       await fetchMovies();
