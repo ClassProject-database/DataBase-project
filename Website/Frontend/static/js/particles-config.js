@@ -10,7 +10,7 @@ tsParticles.load("tsparticles", {
     },
     particles: {
       number: {
-        value: 80,
+        value: 40,
         density: {
           enable: true,
           area: 800
@@ -26,19 +26,19 @@ tsParticles.load("tsparticles", {
         value: 0.5
       },
       size: {
-        value: 3,
+        value: 2,
         random: true
       },
       links: {
         enable: true,
-        distance: 150,
+        distance: 130,
         color: "#ffffff",
-        opacity: 0.4,
+        opacity: 0.15,
         width: 1
       },
       move: {
         enable: true,
-        speed: 2,
+        speed: .3,
         direction: "none",
         outModes: {
           default: "out"
