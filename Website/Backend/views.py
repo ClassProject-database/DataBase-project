@@ -552,58 +552,53 @@ def get_user():
 
 
 
+# 21) User Rentals Page
 @views.route('/user_Rentals')
 @login_required
 def user_rentals():
     if current_user.role != 'customer':
-        abort(403, description="Only customers can access this page.")
+        abort(403, description="Only customers can access the dashboard.")
 
-    conn   = get_db_connection()
+    conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute(
-        "SELECT * FROM users WHERE account_id = %s",
-        (current_user.id,)
-    )
+    cursor.execute("SELECT * FROM users WHERE account_id = %s", (current_user.id,))
     user = cursor.fetchone()
 
     cursor.execute("""
         SELECT
-            r.rentalID            AS rentalID,
-            r.rentalDate          AS rental_date,
-            r.returnDate          AS return_date,
-            rm.movie_id           AS movie_id,
-            rm.price              AS rental_price,
+            rm.rental_id     AS rentalID,
+            rm.rental_date   AS rental_date,
+            rm.return_date   AS return_date,
+            rm.price         AS rental_price,
             m.title
-        FROM rentals r
-        JOIN rental_movies rm
-          ON r.rentalID = rm.rental_id
-        JOIN movies m
-          ON rm.movie_id = m.movie_id
+        FROM rental_movies rm
+        JOIN rentals r     ON rm.rental_id = r.rentalID
+        JOIN movies m      ON rm.movie_id  = m.movie_id
         WHERE r.account_id = %s
-        ORDER BY r.rentalDate DESC
+        ORDER BY rm.rental_date DESC
     """, (current_user.id,))
-
-
     rentals = cursor.fetchall()
 
     cursor.execute("""
         SELECT r.rating, r.review_comment, r.review_date, m.title
-        FROM   reviews r
-        JOIN   movies  m ON r.movie_id = m.movie_id
-        WHERE  r.account_id = %s
+        FROM reviews r
+        JOIN movies m ON r.movie_id = m.movie_id
+        WHERE r.account_id = %s
         ORDER BY r.review_date DESC
     """, (current_user.id,))
     reviews = cursor.fetchall()
 
-    cursor.close(); conn.close()
+    cursor.close()
+    conn.close()
 
     return render_template(
         'userRentals.html',
-        user      = user,
-        rentals   = rentals,
-        reviews   = reviews
+        user=user,
+        rentals=rentals,
+        reviews=reviews
     )
+
 
 
 @views.route('/api/update_user', methods=['POST'])
