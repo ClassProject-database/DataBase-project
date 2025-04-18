@@ -165,22 +165,47 @@ footer {
   
   .toast-message {
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transform: translate(-50%, -30%);
+    transition: opacity 0.3s ease, transform 0.3s ease;
     position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    background-color: #198754; /* green default */
-    color: white;
-    padding: 0.75rem 1rem;
-    border-radius: 5px;
+    top: 20%;
+    left: 50%;
+    background-color: rgba(33, 37, 41, 0.95); /* dark background */
+    color: #f8f9fa;
+    padding: 1rem 2rem;
+    border-radius: 10px;
     z-index: 9999;
     pointer-events: none;
-    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    max-width: 90%;
+    text-align: center;
+    animation: slideIn 0.4s ease-out;
   }
+  
+  .toast-message.success {
+    background-color: rgba(40, 167, 69, 0.95); /* green */
+  }
+  
   .toast-message.error {
-    background-color: #dc3545; /* red for errors */
+    background-color: rgba(220, 53, 69, 0.95); /* red */
   }
+  
   .toast-message.show {
     opacity: 1;
+    transform: translate(-50%, 0%);
   }
+  
+  /* Slide-in animation keyframes */
+  @keyframes slideIn {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -40%);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, 0%);
+    }
+  }
+  
   

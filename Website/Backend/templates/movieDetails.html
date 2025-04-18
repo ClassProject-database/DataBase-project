@@ -87,17 +87,6 @@
   </div>
 </div>
 
-<!-- Modal for Add to Cart Confirmation -->
-<div id="cartModal" class="modal fade" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark text-white">
-      <div class="modal-body text-center">
-        <p class="fs-5"><i class="fa fa-check-circle text-success me-2"></i><span id="cartModalMsg"></span></p>
-        <button type="button" class="btn btn-outline-light mt-2" data-bs-dismiss="modal">OK</button>
-      </div>
-    </div>
-  </div>
-</div>
 {% endblock %}
 
 {% block extra_css %}
@@ -136,9 +125,7 @@
 
       if (typeof addToCart === "function") {
         addToCart(id, name, price);
-        const modal = new bootstrap.Modal(document.getElementById("cartModal"));
-        document.getElementById("cartModalMsg").textContent = `${name} added to your cart!`;
-        modal.show();
+        window.showToast(`${name} added to your cart!`, "success");
       }
     });
   });
