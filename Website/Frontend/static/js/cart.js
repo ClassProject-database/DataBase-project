@@ -21,7 +21,9 @@ window.addToCart = function (movie_id, name, price) {
 
         updateCartBadge();
         updateCartList();
-        showModal(`${name} has been added to your cart!`);
+
+        window.showToast(`${name} added to cart!`, "success");        
+
     } catch (err) {
         console.error("Error adding to cart:", err);
     }
@@ -96,7 +98,7 @@ function updateCartList() {
     }
 }
 
-// Remove from Cart Handler
+// Remove from Cart 
 document.addEventListener("click", function (e) {
     const btn = e.target.closest(".remove-btn");
     if (!btn) return;
@@ -125,7 +127,6 @@ function showModal(message) {
     okBtn.onclick = () => overlay.classList.remove("show");
 }
 
-// Page Initialization
 document.addEventListener("DOMContentLoaded", () => {
     updateCartBadge();
     updateCartList();
@@ -162,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-//Add-to-Cart Button Listener
+//Add-to-Cart Button 
 document.addEventListener("click", (event) => {
     const btn = event.target.closest(".add-to-cart-btn");
     if (!btn) return;

@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
       img.src = movie.image ? `/static/images/${movie.image}` : "/static/images/keyboard.jpg";
       img.alt = movie.title || "Untitled";
   
-      // Wrap the image in an anchor
       const imgLink = document.createElement("a");
       imgLink.href = `/movie/${movie.movie_id}`;
       imgLink.appendChild(img);
@@ -75,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
   
       cardFooter.appendChild(addButton);
   
-      // Append imgLink, not img, so the link is in the DOM
       card.append(imgLink, cardBody, cardFooter);
       col.appendChild(card);
       moviesRow.appendChild(col);
