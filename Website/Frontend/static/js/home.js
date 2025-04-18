@@ -2,13 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
     initializeHomepage();
 });
 
-// Entry point for homepage setup
+// Entry  for homepage 
 function initializeHomepage() {
     fetchFeaturedMovies();
     setupCarouselControls();
 }
 
-// Fetch random movies from backend 
+// Fetch random movies   
 async function fetchFeaturedMovies() {
     const carouselTrack = document.getElementById("carousel-track");
     if (!carouselTrack) return;

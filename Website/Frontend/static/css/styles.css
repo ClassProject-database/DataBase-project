@@ -198,7 +198,7 @@ footer {
     position: fixed;
     top: 20%;
     left: 50%;
-    background-color: rgba(33, 37, 41, 0.95); /* dark background */
+    background-color: rgba(33, 37, 41, 0.95); 
     color: #f8f9fa;
     padding: 1rem 2rem;
     border-radius: 10px;
@@ -212,11 +212,11 @@ footer {
   }
   
   .toast-message.success {
-    background-color: rgba(34, 29, 42, 0.95); /* green */
+    background-color: rgba(34, 29, 42, 0.95); 
   }
   
   .toast-message.error {
-    background-color: rgba(220, 53, 69, 0.95); /* red */
+    background-color: rgba(220, 53, 69, 0.95);
   }
   
   .toast-message.show {
@@ -224,7 +224,6 @@ footer {
     transform: translate(-50%, 0%);
   }
   
-  /* Slide-in animation keyframes */
   @keyframes slideIn {
     0% {
       opacity: 0;

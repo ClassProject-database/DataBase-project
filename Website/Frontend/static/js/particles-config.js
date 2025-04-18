@@ -10,7 +10,7 @@ tsParticles.load("tsparticles", {
     },
     particles: {
       number: {
-        value: 40,
+        value: 50,
         density: {
           enable: true,
           area: 800

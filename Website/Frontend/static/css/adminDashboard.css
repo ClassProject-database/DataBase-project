@@ -165,7 +165,6 @@
   box-shadow: var(--focus-box-shadow);
 }
 
-/* Autofill Handling */
 .modal-content input:-webkit-autofill,
 .modal-content textarea:-webkit-autofill,
 .modal-content select:-webkit-autofill {
@@ -175,9 +174,9 @@
   transition: background-color 5000s ease-in-out;
 }
 
-/* ==========================
+/* 
    Buttons
-========================== */
+ */
 .btn {
   transition: all var(--btn-transition);
   border-radius: var(--btn-radius);
@@ -212,9 +211,9 @@
   background-color: var(--btn-danger-hover-bg);
 }
 
-/* ==========================
+/* 
    Movie Dropdown
-========================== */
+ */
 #movieDropdown {
   position: absolute;
   background: var(--dropdown-bg);

@@ -17,9 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
   
-    // ======================
-    // RENTAL RETURN LOGIC
-    // ======================
+  
     const rentalsTable = document.getElementById("rentalsTableBody");
     if (rentalsTable) {
       rentalsTable.addEventListener("click", async e => {
@@ -64,9 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   
-    // ======================
-    // MOVIE AUTOCOMPLETE FOR REVIEWS
-    // ======================
+   
     const movieSearchInput = document.getElementById("movieSearch");
     const dropdown = document.getElementById("movieDropdown");
     const movieIdField = document.getElementById("selectedMovieId");
@@ -118,9 +114,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   
-    // ======================
-    // POST REVIEW LOGIC
-    // ======================
+    // POST REVIEW
+   
     const reviewForm = document.getElementById("review-form");
     if (reviewForm) {
       reviewForm.addEventListener("submit", async e => {

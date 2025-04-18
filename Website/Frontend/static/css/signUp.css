@@ -1,6 +1,4 @@
-/* ================================
-   Base Layout & Background
-================================ */
+
 html, body {
   height: 100%;
   margin: 0;
@@ -19,18 +17,13 @@ body.signup-page {
   min-height: 100vh;
 }
 
-/* ================================
-   Navbar (if present)
-================================ */
+
 nav.navbar {
   width: 100%;
   position: relative;
   z-index: 1000;
 }
 
-/* ================================
-   Sign-Up Form Container
-================================ */
 .signup-container {
   display: flex;
   justify-content: center;
@@ -39,7 +32,6 @@ nav.navbar {
   padding: 1rem;
 }
 
-/* Sign-Up Form Box */
 .form-signUp {
   max-width: 400px;
   width: 100%;
@@ -62,9 +54,6 @@ nav.navbar {
   color: #ffffff;
 }
 
-/* ================================
-   Form Inputs & Labels
-================================ */
 .form-signUp .form-floating {
   margin-bottom: 16px;
 }
@@ -93,9 +82,6 @@ nav.navbar {
   box-shadow: none;
 }
 
-/* ================================
-   Submit Button
-================================ */
 .form-signUp button {
   width: 100%;
   background-color: #0056b3 !important;
@@ -113,9 +99,7 @@ nav.navbar {
   transform: scale(1.05);
 }
 
-/* ================================
-   Flash Messages
-================================ */
+
 #flash-messages .alert {
   font-size: 0.9rem;
   padding: 10px;
@@ -123,9 +107,6 @@ nav.navbar {
   border-radius: 5px;
 }
 
-/* ================================
-   Mobile Responsive
-================================ */
 @media (max-width: 768px) {
   .form-signUp {
     width: 90%;

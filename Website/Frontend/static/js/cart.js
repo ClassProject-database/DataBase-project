@@ -29,7 +29,6 @@ window.addToCart = function (movie_id, name, price) {
     }
 };
 
-// Update Cart Badge in Navbar
 function updateCartBadge() {
     try {
         const cart = JSON.parse(localStorage.getItem("cart") || "[]");

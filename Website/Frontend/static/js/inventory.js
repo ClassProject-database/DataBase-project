@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
  
   pills.forEach(btn => btn.addEventListener("click", async () => {
     pills.forEach(b => b.classList.toggle("active", b === btn));
-    const id = btn.dataset.genre || "";     // "" == All
+    const id = btn.dataset.genre || "";   
     try { renderGrid(await fetchMovies({ genreId: id || undefined })); }
     catch (e) { console.error(e); }
   }));

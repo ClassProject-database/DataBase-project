@@ -14,7 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    // === Helpers ===
     const showError = (field, msg) => {
         field.classList.add("is-invalid");
         if (field.nextElementSibling) field.nextElementSibling.textContent = msg;
@@ -35,7 +34,6 @@ document.addEventListener("DOMContentLoaded", function () {
         submitButton.disabled = false;
     };
 
-    // === Submit Handler ===
     checkoutForm.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (isSubmitting) return;
@@ -44,7 +42,6 @@ document.addEventListener("DOMContentLoaded", function () {
         isSubmitting = true;
         showErrorGlobal("Processing checkout...", "blue");
 
-        // Form Fields
         const cardNumberEl = document.getElementById("cardNumber");
         const cardHolderEl = document.getElementById("cardHolder");
         const expiryDateEl = document.getElementById("expiration");
@@ -55,10 +52,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const expiryDate = expiryDateEl.value.trim();
         const cvv = cvvEl.value.trim();
 
-        // Clear old errors
         [cardNumberEl, cardHolderEl, expiryDateEl, cvvEl].forEach(clearError);
 
-        // Get cart & pricing
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
         const pricing = JSON.parse(localStorage.getItem("pricing_summary") || "{}");
 
