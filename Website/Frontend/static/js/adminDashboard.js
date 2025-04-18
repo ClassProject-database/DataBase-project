@@ -157,6 +157,44 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await fetchMovies();
 
+
+  const deleteMovieBtn = document.getElementById("deleteMovieBtn");
+
+  deleteMovieBtn?.addEventListener("click", async () => {
+  const movieId = movieIdField.value;
+  if (!movieId) {
+    toast("No movie selected to delete.", "error");
+    return;
+  }
+
+  const confirmed = confirm("Are you sure you want to delete this movie?");
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch("/api/delete_movie", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ movie_id: movieId })
+    });
+    
+
+    const result = await safeJson(res);
+    if (result.success) {
+      toast("Movie deleted");
+      addMovieForm.reset();
+      movieIdField.value = "";
+      await fetchMovies();
+    } else {
+      toast(result.error || "Failed to delete movie.", "error");
+    }
+  } catch (err) {
+    console.error("Movie delete error:", err);
+    toast("Server error while deleting movie", "error");
+  }
+});
+
+
+
   movieTitleInput?.addEventListener("input", () => {
     const val = movieTitleInput.value.trim().toLowerCase();
     const suggestions = allMovies.filter(m => m.title.toLowerCase().includes(val));
@@ -215,43 +253,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     e.preventDefault();
     const formData = new FormData(addMovieForm);
     const movie = {};
-    const deleteMovieBtn = document.getElementById("deleteMovieBtn");
-
-  deleteMovieBtn?.addEventListener("click", async () => {
-    const movieId = movieIdField.value;
-    if (!movieId) {
-      toast("No movie selected to delete.", "error");
-      return;
-    }
-
-    const confirmed = confirm("Are you sure you want to delete this movie?");
-    if (!confirmed) return;
-
-    try {
-      const res = await fetch("/api/delete_movie", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ movie_id: movieId })
-      });
-      
-
-      const result = await safeJson(res);
-      if (result.success) {
-        toast("Movie deleted");
-        addMovieForm.reset();
-        movieIdField.value = "";
-        await fetchMovies();
-      } else {
-        toast(result.error || "Failed to delete movie.", "error");
-      }
-    } catch (err) {
-      console.error("Movie delete error:", err);
-      toast("Server error while deleting movie", "error");
-    }
-  });
-
-
-
+   
     for (const [key, value] of formData.entries()) {
       if (key === "genre_ids[]") {
         movie.genre_ids = movie.genre_ids || [];
