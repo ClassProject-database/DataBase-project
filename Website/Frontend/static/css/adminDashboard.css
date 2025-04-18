@@ -207,8 +207,12 @@
   background-color: var(--btn-danger-bg);
 }
 
-.btn.btn-danger:hover {
-  background-color: var(--btn-danger-hover-bg);
+.btn-danger:hover {
+  box-shadow: 0 0 8px red;
+}
+
+.card-header h5 {
+  text-align: center;
 }
 
 /* 

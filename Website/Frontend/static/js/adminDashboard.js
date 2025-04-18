@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const searchBtn = document.getElementById("searchBtn");
   const searchInput = document.getElementById("searchUsers");
   const editEmployeeFields = document.getElementById("edit-employee-fields");
-  const confirmed = await confirmAction("Are you sure you want to delete this user?", "Delete User");
   if (!confirmed) return;
 
 
@@ -120,14 +119,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     if (e.target.classList.contains("delete-user-btn")) {
-      await fetch("/api/delete_user", {
+      const confirmed = await confirmAction("Are you sure you want to delete this user?");
+      if (!confirmed) return;
+    
+      const res = await fetch("/api/delete_user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ account_id: id })
       });
-      fetchUsers();
-      toast("User deleted");
+    
+      const result = await safeJson(res);
+      if (result.success) {
+        toast("User deleted");
+        fetchUsers();
+      } else {
+        toast(result.error || "Failed to delete user", "error");
+      }
     }
+    
   });
 
   editForm?.addEventListener("submit", async (e) => {
@@ -169,6 +178,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     toast("No movie selected to delete.", "error");
     return;
   }
+
+
+  async function confirmAction(message = "Are you sure?") {
+    return new Promise((resolve) => {
+      const modal = new bootstrap.Modal(document.getElementById("confirmModal"));
+      document.getElementById("confirmModalMessage").textContent = message;
+  
+      const confirmBtn = document.getElementById("confirmModalOk");
+  
+      const onClick = () => {
+        confirmBtn.removeEventListener("click", onClick);
+        resolve(true);
+        modal.hide();
+      };
+  
+      confirmBtn.addEventListener("click", onClick);
+      modal.show();
+    });
+  }
+  
 
   const confirmed = await confirmAction("Are you sure you want to delete this movie?", "Delete Movie");
   if (!confirmed) return;
