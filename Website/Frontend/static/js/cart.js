@@ -66,7 +66,7 @@ function updateCartList() {
         cartList.innerHTML += `
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <div><strong>${item.name}</strong> - $${item.price.toFixed(2)}</div>
-            <button class="btn btn-sm btn-danger remove-btn" data-index="${i}">Remove</button>
+            <button class="btn btn-sm btn-danger remove-btn" data-id="${item.movie_id}">Remove</button>
           </li>`;
       });
     }
@@ -101,16 +101,15 @@ document.addEventListener("click", (e) => {
   const btn = e.target.closest(".remove-btn");
   if (!btn) return;
 
-  const index = parseInt(btn.dataset.index);
-  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const id = btn.dataset.id;
+    let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-  if (index >= 0 && index < cart.length) {
-    const removed = cart.splice(index, 1)[0];
+    cart = cart.filter(item => item.movie_id !== id);
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartList();
     updateCartBadge();
-    window.showToast(`${removed.name} removed from cart.`, "success");
-  }
+    window.showToast("Item removed from your cart.", "success");
+
 });
 
 document.addEventListener("DOMContentLoaded", () => {
