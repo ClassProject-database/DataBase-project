@@ -1,92 +1,68 @@
 {% extends "base.html" %}
 {% block title %}Checkout - Movie Store{% endblock %}
 
-{% block extra_css %}
-<style>
-  .checkout-container {
-    max-width: 600px;
-    margin: 50px auto;
-  }
-
-  .summary-list {
-    margin-bottom: 1rem;
-    padding-left: 1rem;
-  }
-
-  .invalid-feedback {
-    display: none;
-    color: #ff4c4c;
-    font-size: 0.9rem;
-    margin-top: 4px;
-  }
-
-  .form-control.is-invalid + .invalid-feedback {
-    display: block;
-  }
-
-  .checkout-message {
-    margin-top: 1rem;
-    font-weight: 500;
-  }
-
-  .checkout-message.error {
-    color: #ff4c4c;
-  }
-
-  .checkout-message.success {
-    color: #28a745;
-  }
-</style>
-{% endblock %}
-
 {% block content %}
-<div class="container checkout-container">
-  <div class="card bg-dark text-white p-4 shadow">
-    <div class="checkout-header text-center mb-4">
-      <h1>Checkout</h1>
-      <p class="text-muted">Complete your purchase</p>
+<div class="container my-5">
+  <div class="card bg-dark text-white p-4 shadow-lg border border-secondary">
+    <div class="text-center mb-4">
+      <h2 class="fw-bold">Secure Checkout</h2>
+      <p class="text-muted">Complete your rental and enjoy the movie!</p>
     </div>
 
-    <div id="cart-summary" class="mb-4">
-      <h5>Order Summary</h5>
-      <ul id="cart-items" class="summary-list"></ul>
-      <p><strong>Subtotal:</strong> $<span id="subtotal">0.00</span></p>
-      <p><strong>Discount Code:</strong> <span id="discount-code-text">None</span></p>
-      <p><strong>Discount:</strong> <span id="discount-percent">0%</span></p>
-      <p><strong>Tax:</strong> <span id="tax-percent">0%</span></p>
-      <p class="fw-bold">Total: $<span id="total-price">0.00</span></p>
+    <!-- Order Summary -->
+    <div id="cart-summary" class="mb-4 bg-secondary bg-opacity-10 rounded p-3">
+      <h5 class="mb-3"><i class="fa fa-list me-2"></i>Order Summary</h5>
+      <ul id="cart-items" class="summary-list list-group list-group-flush mb-3">
+        <li class="list-group-item bg-transparent text-muted text-center">Your cart is empty.</li>
+      </ul>
+      <div class="d-flex justify-content-between">
+        <span><strong>Subtotal:</strong></span> <span>$<span id="subtotal">0.00</span></span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span><strong>Discount:</strong></span> 
+        <span><span id="discount-code-text">None</span> (<span id="discount-percent">0%</span>)</span>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span><strong>Tax:</strong></span> <span><span id="tax-percent">0%</span></span>
+      </div>
+      <div class="d-flex justify-content-between fs-5 mt-2 border-top border-secondary pt-2">
+        <strong>Total:</strong> <strong>$<span id="total-price">0.00</span></strong>
+      </div>
     </div>
 
+    <!-- Payment Form -->
     <form id="checkout-form" novalidate>
       <div class="mb-3">
         <label for="cardHolder" class="form-label">Cardholder Name</label>
-        <input type="text" id="cardHolder" class="form-control" placeholder="John Doe">
+        <input type="text" id="cardHolder" class="form-control bg-dark text-white border-secondary" placeholder="John Doe">
         <div class="invalid-feedback">Enter the name on your card.</div>
       </div>
 
       <div class="mb-3">
         <label for="cardNumber" class="form-label">Card Number</label>
-        <input type="text" id="cardNumber" class="form-control" placeholder="13–19 Digits">
+        <input type="text" id="cardNumber" class="form-control bg-dark text-white border-secondary" placeholder="•••• •••• •••• ••••">
         <div class="invalid-feedback">Enter a valid 13–19 digit card number.</div>
       </div>
 
       <div class="row">
         <div class="col-md-6 mb-3">
           <label for="expiration" class="form-label">Expiration (MM/YY)</label>
-          <input type="text" id="expiration" class="form-control" placeholder="MM/YY">
+          <input type="text" id="expiration" class="form-control bg-dark text-white border-secondary" placeholder="MM/YY">
           <div class="invalid-feedback">Enter a valid expiration date.</div>
         </div>
         <div class="col-md-6 mb-3">
           <label for="cvv" class="form-label">CVV</label>
-          <input type="text" id="cvv" class="form-control" placeholder="3 or 4 digits">
+          <input type="text" id="cvv" class="form-control bg-dark text-white border-secondary" placeholder="123">
           <div class="invalid-feedback">Enter a valid CVV.</div>
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary w-100" id="submit-button">Complete Purchase</button>
+      <button type="submit" class="btn btn-success w-100 mt-3" id="submit-button">
+        <i class="fa fa-lock me-1"></i> Complete Purchase
+      </button>
     </form>
 
-    <div id="checkout-message" class="checkout-message"></div>
+    <div id="checkout-message" class="checkout-message mt-3 text-center"></div>
   </div>
 </div>
 {% endblock %}
@@ -94,7 +70,7 @@
 {% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     const pricing = JSON.parse(localStorage.getItem("pricing_summary") || "{}");
 
     document.getElementById("subtotal").textContent = pricing.subtotal || "0.00";
@@ -105,8 +81,10 @@
 
     const cartList = document.getElementById("cart-items");
     cartList.innerHTML = cart.length
-      ? cart.map(item => `<li>${item.name} - $${(+item.price).toFixed(2)}</li>`).join("")
-      : `<li class="text-center">Your cart is empty.</li>`;
+      ? cart.map(item => `<li class="list-group-item bg-transparent text-white d-flex justify-content-between">
+                            <span>${item.name}</span><span>$${(+item.price).toFixed(2)}</span>
+                          </li>`).join("")
+      : `<li class="list-group-item bg-transparent text-muted text-center">Your cart is empty.</li>`;
 
     const checkoutForm = document.getElementById("checkout-form");
     const messageDiv = document.getElementById("checkout-message");
@@ -126,40 +104,21 @@
       };
 
       let valid = true;
-      for (const field in fields) {
-        fields[field].classList.remove("is-invalid");
-      }
+      for (const field in fields) fields[field].classList.remove("is-invalid");
 
-      if (!fields.cardHolder.value.trim()) {
-        fields.cardHolder.classList.add("is-invalid");
-        valid = false;
-      }
-
-      if (!/^\d{13,19}$/.test(fields.cardNumber.value.trim())) {
-        fields.cardNumber.classList.add("is-invalid");
-        valid = false;
-      }
-
-      const expiration = fields.expiration.value.trim();
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiration)) {
-        fields.expiration.classList.add("is-invalid");
-        valid = false;
+      if (!fields.cardHolder.value.trim()) { fields.cardHolder.classList.add("is-invalid"); valid = false; }
+      if (!/^\d{13,19}$/.test(fields.cardNumber.value.trim())) { fields.cardNumber.classList.add("is-invalid"); valid = false; }
+      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(fields.expiration.value.trim())) {
+        fields.expiration.classList.add("is-invalid"); valid = false;
       } else {
-        const year = parseInt(expiration.split("/")[1], 10);
-        if (year <= 24) {
-          fields.expiration.classList.add("is-invalid");
-          valid = false;
-        }
+        const year = parseInt(fields.expiration.value.split("/")[1], 10);
+        if (year <= 24) { fields.expiration.classList.add("is-invalid"); valid = false; }
       }
-
-      if (!/^\d{3,4}$/.test(fields.cvv.value.trim())) {
-        fields.cvv.classList.add("is-invalid");
-        valid = false;
-      }
+      if (!/^\d{3,4}$/.test(fields.cvv.value.trim())) { fields.cvv.classList.add("is-invalid"); valid = false; }
 
       if (!valid) {
         messageDiv.textContent = "Please correct the highlighted fields.";
-        messageDiv.classList.add("error");
+        messageDiv.classList.add("text-danger");
         submitButton.disabled = false;
         return;
       }
@@ -182,19 +141,19 @@
 
         const data = await res.json();
         if (data.success) {
-          messageDiv.textContent = "Purchase complete! Redirecting...";
-          messageDiv.classList.add("success");
+          messageDiv.textContent = "🎉 Purchase complete! Redirecting...";
+          messageDiv.classList.add("text-success");
           localStorage.clear();
           setTimeout(() => window.location.href = "/user_Rentals", 1500);
         } else {
-          messageDiv.textContent = " " + (data.error || "Checkout failed.");
-          messageDiv.classList.add("error");
+          messageDiv.textContent = "❌ " + (data.error || "Checkout failed.");
+          messageDiv.classList.add("text-danger");
           submitButton.disabled = false;
         }
       } catch (err) {
         console.error("Checkout error:", err);
         messageDiv.textContent = "An error occurred. Please try again.";
-        messageDiv.classList.add("error");
+        messageDiv.classList.add("text-danger");
         submitButton.disabled = false;
       }
     });

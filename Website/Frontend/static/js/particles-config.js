@@ -59,7 +59,7 @@ tsParticles.load("tsparticles", {
       },
       modes: {
         repulse: {
-          distance: 100,
+          distance: 70,
           duration: 0.4
         },
         push: {

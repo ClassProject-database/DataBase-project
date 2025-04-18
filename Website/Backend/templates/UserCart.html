@@ -1,56 +1,42 @@
 {% extends "base.html" %}
-
 {% block title %}Your Cart - Movie Store{% endblock %}
 
 {% block content %}
-<header class="bg-dark py-5">
-  <div class="container text-center text-white">
-    <h1 class="display-4 fw-bolder">Your Cart</h1>
-    <p class="lead fw-normal text-white-50 mb-0">Review your selections</p>
-  </div>
-</header>
+<div class="container py-5">
+  <div class="card bg-dark text-white shadow-lg p-4">
+    <div class="text-center mb-4">
+      <h1 class="display-5 fw-bold">🛒 Your Cart</h1>
+      <p class="text-muted">Review your selections before checkout</p>
+    </div>
 
-<section class="py-5">
-  <div class="container">
-    <h3 class="mb-4">Cart Items</h3>
-
-    <ul id="cart-items" class="list-group mb-4">
-      <li class="list-group-item text-center">Your cart is empty.</li>
+    <ul id="cart-items" class="list-group list-group-flush mb-4 rounded overflow-hidden">
+      <li class="list-group-item bg-dark text-center text-muted">Your cart is empty.</li>
     </ul>
 
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3 px-2">
       <h5>Total Items: <span id="total-items">0</span></h5>
       <h5>Total Price: $<span id="total-price">0.00</span></h5>
     </div>
 
-    <!-- Discount Code -->
-    <div class="mb-3">
-      <label for="discount-code" class="form-label">Discount Code:</label>
-      <input 
-        type="text" 
-        id="discount-code" 
-        class="form-control" 
-        placeholder="Enter Dicount code"
-      >
+    <div class="mb-4 px-2">
+      <label for="discount-code" class="form-label">Discount Code</label>
+      <input type="text" id="discount-code" class="form-control bg-dark text-white border-secondary" placeholder="Enter code (e.g. VIP)">
     </div>
 
-    <div class="d-flex justify-content-between">
-      <button id="clear-cart-btn" class="btn btn-outline-danger">Clear Cart</button>
-      <button id="checkout-btn" class="btn btn-success">Proceed to Checkout</button>
+    <div class="d-flex justify-content-between px-2">
+      <button id="clear-cart-btn" class="btn btn-outline-danger"><i class="fa fa-trash me-1"></i> Clear Cart</button>
+      <button id="checkout-btn" class="btn btn-success"><i class="fa fa-credit-card me-1"></i> Proceed to Checkout</button>
     </div>
   </div>
-</section>
+</div>
 
+<!-- Modal for Notifications -->
 <div id="customModalOverlay" class="modal-overlay" role="alert" aria-live="assertive">
-  <div class="modal-content">
+  <div class="modal-content text-dark">
     <p id="customModalMessage" class="mb-3"></p>
     <button id="customModalOkBtn" class="btn btn-primary">OK</button>
   </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
 {% endblock %}
 
 {% block extra_css %}
@@ -61,10 +47,10 @@
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.65);
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 1050;
   }
 
   .modal-overlay.show {
@@ -74,10 +60,44 @@
   .modal-content {
     background: #fff;
     padding: 20px 30px;
-    border-radius: 10px;
+    border-radius: 12px;
     text-align: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     min-width: 300px;
+    animation: zoomIn 0.3s ease-out;
+  }
+
+  @keyframes zoomIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  #cart-items .list-group-item {
+    background-color: #1d1d2b;
+    color: #dcdcdc;
+    border-color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #cart-items .btn-sm {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+  }
+
+  #discount-code {
+    border-color: #444;
+  }
+
+  .btn-success:hover {
+    background-color: #28a745;
+    border-color: #1e7e34;
+    box-shadow: 0 0 10px limegreen;
   }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/cart.js') }}" defer></script>
 {% endblock %}
