@@ -569,16 +569,18 @@ def user_rentals():
 
     cursor.execute("""
         SELECT r.rentalID,
-               rm.rental_date   AS rental_date,     -- from rental_movies
-               rm.return_date   AS return_date,     -- from rental_movies
-               rm.price         AS line_price,
+               r.rental_date,
+               r.return_date,
+               rm.movie_id,
+               rm.price AS rental_price,
                m.title
-        FROM   rentals        AS r
-        JOIN   rental_movies  AS rm ON r.rentalID = rm.rental_id
-        JOIN   movies         AS m  ON rm.movie_id = m.movie_id
-        WHERE  r.account_id = %s
-        ORDER BY rm.rental_date DESC
+        FROM rentals r
+        JOIN rental_movies rm ON r.rentalID = rm.rental_id
+        JOIN movies m ON rm.movie_id = m.movie_id
+        WHERE r.account_id = %s
+        ORDER BY r.rental_date DESC
     """, (current_user.id,))
+
     rentals = cursor.fetchall()
 
     cursor.execute("""
@@ -598,9 +600,6 @@ def user_rentals():
         rentals   = rentals,
         reviews   = reviews
     )
-
-
-
 
 
 @views.route('/api/update_user', methods=['POST'])
