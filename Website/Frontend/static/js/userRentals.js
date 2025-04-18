@@ -9,16 +9,17 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   
     const safeJson = async res => {
-      try { return await res.json(); }
-      catch (err) {
+      try {
+        return await res.json();
+      } catch (err) {
         console.error("safeJson failed:", err);
         return {};
       }
     };
   
-
-    // Return rental logic
-
+    // ======================
+    // RENTAL RETURN LOGIC
+    // ======================
     const rentalsTable = document.getElementById("rentalsTableBody");
     if (rentalsTable) {
       rentalsTable.addEventListener("click", async e => {
@@ -63,6 +64,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
   
+    // ======================
+    // MOVIE AUTOCOMPLETE FOR REVIEWS
+    // ======================
     const movieSearchInput = document.getElementById("movieSearch");
     const dropdown = document.getElementById("movieDropdown");
     const movieIdField = document.getElementById("selectedMovieId");
@@ -89,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const res = await fetch(`/api/search_rented_movies?query=${encodeURIComponent(query)}`);
           if (!res.ok) throw new Error("Failed to fetch movies");
           const movies = await res.json();
-  
           if (!movies.length) return;
   
           movies.forEach(movie => {
@@ -114,5 +117,60 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
+  
+    // ======================
+    // POST REVIEW LOGIC
+    // ======================
+    const reviewForm = document.getElementById("review-form");
+    if (reviewForm) {
+      reviewForm.addEventListener("submit", async e => {
+        e.preventDefault();
+  
+        const movieId = document.getElementById("selectedMovieId").value;
+        const rating = document.getElementById("reviewRating").value;
+        const reviewText = document.getElementById("reviewComment").value.trim();
+        const reviewList = document.getElementById("review-list");
+  
+        if (!movieId || !rating || !reviewText) {
+          toast("All fields are required!", "error");
+          return;
+        }
+  
+        try {
+          const response = await fetch("/api/post_review", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ movie_id: movieId, rating, review_comment: reviewText })
+          });
+  
+          const data = await safeJson(response);
+          if (data.success) {
+            toast("Review submitted successfully!");
+  
+            // Reset form
+            reviewForm.reset();
+            movieIdField.value = "";
+            movieSearchInput.value = "";
+  
+            if (reviewList) {
+              const newReview = document.createElement("li");
+              newReview.classList.add("list-group-item", "bg-dark", "text-white");
+              newReview.innerHTML = `
+                <strong>${data.movie_title || "Movie"}</strong> (⭐ ${rating}/5)
+                <br>${reviewText}
+                <br><small>Posted: ${data.review_date || "Just now"}</small>
+              `;
+              reviewList.prepend(newReview);
+            }
+          } else {
+            toast("Error: " + data.error, "error");
+          }
+        } catch (error) {
+          console.error(error);
+          toast("Error submitting review.", "error");
+        }
+      });
+    }
   });
+  
   

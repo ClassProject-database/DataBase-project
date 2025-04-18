@@ -23,52 +23,43 @@
       <div class="card shadow bg-dark text-white mb-4">
         <div class="card-body">
           <h4 class="mb-3"><i class="fa fa-film"></i> My Rentals</h4>
-
           <div class="table-responsive">
             <table class="table table-dark table-hover text-center">
               <thead>
-              <tr>
-                <th>Movie Title</th>
-                <th>Rented&nbsp;On</th>
-                <th>Return&nbsp;Date</th>
-                <th>Price</th>
-                <th>Actions</th>
-              </tr>
+                <tr>
+                  <th>Movie Title</th>
+                  <th>Rented&nbsp;On</th>
+                  <th>Return&nbsp;Date</th>
+                  <th>Price</th>
+                  <th>Actions</th>
+                </tr>
               </thead>
-
               <tbody id="rentalsTableBody">
-              {% for rental in rentals %}
-                <tr>
-                  <td>{{ rental.title }}</td>
-
-                  <td>{{ rental.rental_date.strftime('%Y‑%m‑%d') if rental.rental_date else '' }}</td>
-
-                  <td>
-                    {{ rental.return_date.strftime('%Y‑%m‑%d')
-                       if rental.return_date else 'Not Returned' }}
-                  </td>
-
-                  <td>${{ '%.2f'|format(rental.line_price) }}</td>
-
-                  <td>
-                    {% if not rental.return_date %}
-                    <button
-                    class="btn btn-sm btn-warning return-rental-btn"
-                    data-rental-id="{{ rental.rentalID }}"
-                    data-movie-id="{{ rental.movie_id }}">
-                    Return
-                  </button>
-                  
-                    {% else %}
-                      <span class="text-success"><i class="fa fa-check"></i></span>
-                    {% endif %}
-                  </td>
-                </tr>
-              {% else %}
-                <tr>
-                  <td colspan="5" class="text-center">No rentals found.</td>
-                </tr>
-              {% endfor %}
+                {% for rental in rentals %}
+                  <tr>
+                    <td>{{ rental.title }}</td>
+                    <td>{{ rental.rental_date.strftime('%Y-%m-%d') if rental.rental_date else '' }}</td>
+                    <td>
+                      {{ rental.return_date.strftime('%Y-%m-%d') if rental.return_date else 'Not Returned' }}
+                    </td>
+                    <td>${{ '%.2f'|format(rental.line_price) }}</td>
+                    <td>
+                      {% if not rental.return_date %}
+                        <button class="btn btn-sm btn-warning return-rental-btn"
+                                data-rental-id="{{ rental.rentalID }}"
+                                data-movie-id="{{ rental.movie_id }}">
+                          Return
+                        </button>
+                      {% else %}
+                        <span class="text-success"><i class="fa fa-check"></i></span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="5" class="text-center">No rentals found.</td>
+                  </tr>
+                {% endfor %}
               </tbody>
             </table>
           </div>
@@ -107,13 +98,13 @@
           <h4 class="mb-3"><i class="fa fa-comments"></i> My Reviews</h4>
           <ul class="list-group list-group-flush" id="review-list">
             {% for review in reviews %}
-            <li class="list-group-item bg-dark text-white">
-              <strong>{{ review.title }}</strong> (⭐ {{ review.rating }}/5)<br>
-              {{ review.review_comment }}<br>
-              <small>Posted: {{ review.review_date }}</small>
-            </li>
+              <li class="list-group-item bg-dark text-white">
+                <strong>{{ review.title }}</strong> (⭐ {{ review.rating }}/5)<br>
+                {{ review.review_comment }}<br>
+                <small>Posted: {{ review.review_date }}</small>
+              </li>
             {% else %}
-            <li class="list-group-item bg-dark text-white text-center">No reviews yet.</li>
+              <li class="list-group-item bg-dark text-white text-center">No reviews yet.</li>
             {% endfor %}
           </ul>
         </div>
@@ -126,4 +117,5 @@
 {% block extra_js %}
   <script src="{{ url_for('static', filename='js/toast.js') }}" defer></script>
   <script src="{{ url_for('static', filename='js/userRentals.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/reviews.js') }}" defer></script> 
 {% endblock %}
