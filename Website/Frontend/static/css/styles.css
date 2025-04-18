@@ -237,7 +237,7 @@ footer {
   }
   
   .hero-section {
-    background: url('/static/images/hero-banner.jpg') no-repeat center center/cover;
+    background: url('/static/images/hero-popcorn.jpg') no-repeat center center/cover;
     min-height: 80vh;
     padding: 60px 0;
     position: relative;
@@ -253,7 +253,7 @@ footer {
   }
   
   .how-it-works i {
-    color: #ffd700;
+    color: #464646;
     transition: transform 0.3s;
   }
   .how-it-works i:hover {
