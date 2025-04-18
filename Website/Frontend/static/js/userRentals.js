@@ -32,15 +32,16 @@ const toast = (msg, type = "success") => {
     rentalsTable.addEventListener("click", async e => {
       const btn = e.target.closest(".return-rental-btn");
       if (!btn) return;
-      const movieId = btn.dataset.movieId;
+  
       const rentalId = btn.dataset.rentalId;
-      if (!rentalId) return;
+      const movieId  = btn.dataset.movieId;
+      if (!rentalId || !movieId) return;
   
       try {
         const res = await fetch(
-            `/api/return_movie/${rentalId}/${movieId}`,
-            { method: "POST" }
-          );
+          `/api/return_movie/${rentalId}/${movieId}`,
+          { method: "POST" }
+        );
         const data = await safeJson(res);
   
         if (!data.success) {
@@ -48,24 +49,25 @@ const toast = (msg, type = "success") => {
           return;
         }
   
-      
+        // 1) Update the cell in the row
         const row = btn.closest("tr");
         row.querySelector("td:nth-child(3)").textContent =
           new Date().toISOString().slice(0, 10);
-        btn.replaceWith(
-          Object.assign(document.createElement("span"), {
-            className: "text-success",
-            innerHTML: '<i class="fa fa-check"></i>'
-          })
-        );
   
-        toast("Movie returned");
+        // 2) Replace the button with a green checkmark
+        const check = document.createElement("span");
+        check.className = "text-success";
+        check.innerHTML = '<i class="fa fa-check"></i>';
+        btn.replaceWith(check);
+  
+        toast("Movie returned!");
       } catch (err) {
         console.error(err);
         toast("Failed to communicate with server.", "error");
       }
     });
   });
+  
   
   // POST REVIEW LOGIC
   const reviewForm = document.getElementById("review-form");
