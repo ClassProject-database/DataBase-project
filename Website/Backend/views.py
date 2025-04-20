@@ -333,15 +333,7 @@ def post_review():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Optional: prevent duplicate reviews
-    cursor.execute("""
-        SELECT 1 FROM reviews
-        WHERE account_id = %s AND movie_id = %s
-    """, (current_user.id, movie_id))
-    if cursor.fetchone():
-        cursor.close()
-        conn.close()
-        return jsonify({'success': False, 'error': 'You already reviewed this movie.'}), 409
+    # Optional: prevent duplicate review
 
     cursor.execute("""
         INSERT INTO reviews (movie_id, account_id, rating, review_comment)
