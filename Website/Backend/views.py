@@ -688,18 +688,22 @@ def update_user():
             WHERE account_id = %s
         """, (username, first_name, last_name, phone, role, email, account_id))
 
-    if role in ['employee', 'manager'] and job_title is not None and salary is not None:
-        cursor.execute("""
-            UPDATE employees 
-            SET job_title = %s, salary = %s
-            WHERE account_id = %s
-        """, (job_title, salary, account_id))
+        if role in ['employee', 'manager'] and job_title is not None and salary is not None:
+            cursor.execute("SELECT 1 FROM employees WHERE account_id = %s", (account_id,))
+            if cursor.fetchone():
+                # update existing
+                cursor.execute("""
+                    UPDATE employees
+                    SET job_title = %s, salary = %s
+                    WHERE account_id = %s
+                """, (job_title, salary, account_id))
+            else:
+                # insert new
+                cursor.execute("""
+                    INSERT INTO employees (account_id, job_title, salary)
+                    VALUES (%s, %s, %s)
+                """, (account_id, job_title, salary))
 
-        if cursor.rowcount == 0:
-            cursor.execute("""
-                INSERT INTO employees (account_id, job_title, salary)
-                VALUES (%s, %s, %s)
-            """, (account_id, job_title, salary))
 
     conn.commit()
     cursor.close()
