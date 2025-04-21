@@ -1,10 +1,16 @@
 
+@import url('../css/styles.css'); 
+
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom right, #1a1d21, #121416);
-  color: #cccccc;
+  background: linear-gradient(
+    to bottom right,
+    var(--bg-gradient-start, #1a1d21),
+    var(--bg-gradient-end,   #121416)
+  );
+  color: var(--text-secondary, #cccccc);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   scroll-behavior: smooth;
 }
@@ -14,9 +20,7 @@ body.signup-page {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
 }
-
 
 nav.navbar {
   width: 100%;
@@ -36,7 +40,7 @@ nav.navbar {
   max-width: 400px;
   width: 100%;
   padding: 2rem;
-  background: rgba(44, 51, 49, 0.9);
+  background: var(--bg-card, rgba(44, 51, 49, 0.9));
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
@@ -51,65 +55,82 @@ nav.navbar {
 .form-signUp h1 {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: #ffffff;
+  color: var(--text-primary, #ffffff);
 }
 
 .form-signUp .form-floating {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .form-signUp .form-floating label {
-  color: #aaa;
+  color: var(--text-placeholder, #aaa);
   font-size: 0.95rem;
 }
 
 .form-signUp input.form-control {
-  background-color: #222 !important;
-  color: #fff !important;
-  border: 1px solid #444;
+  background-color: var(--input-bg, #222);
+  color: var(--text-primary, #fff);
+  border: 1px solid var(--border-light, #444);
   border-radius: 6px;
-  padding: 10px;
+  padding: 0.6rem 0.75rem;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .form-signUp input::placeholder {
-  color: #888;
+  color: var(--text-placeholder, #888);
+  font-style: italic;
+  opacity: 1;
 }
 
 .form-signUp input:focus {
-  background-color: #2c2f33 !important;
-  color: #fff !important;
-  border-color: #007bff;
-  box-shadow: none;
+  background-color: var(--input-focus-bg, #2c2f33);
+  border-color: var(--accent-primary, #007bff);
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+  outline: none;
+}
+
+.form-signUp input.is-invalid {
+  border-color: var(--accent-error, #dc3545);
+  background-color: rgba(220, 53, 69, 0.1);
+}
+.form-signUp input.is-valid {
+  border-color: var(--accent-success, #28a745);
+  background-color: rgba(40, 167, 69, 0.1);
+}
+
+#flash-messages .alert {
+  font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  border-radius: 5px;
 }
 
 .form-signUp button {
   width: 100%;
-  background-color: #0056b3 !important;
-  color: #fff;
+  background-color: var(--button-bg, #0056b3);
+  color: var(--text-primary, #fff);
   font-weight: bold;
   font-size: 1.1rem;
   border: none;
-  padding: 12px;
+  padding: 0.75rem;
   border-radius: 6px;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .form-signUp button:hover {
-  background-color: #007bff;
+  background-color: var(--button-hover-bg, #007bff);
   transform: scale(1.05);
-}
-
-
-#flash-messages .alert {
-  font-size: 0.9rem;
-  padding: 10px;
-  margin-bottom: 12px;
-  border-radius: 5px;
 }
 
 @media (max-width: 768px) {
   .form-signUp {
     width: 90%;
     padding: 1.5rem;
+  }
+  .form-signUp h1 {
+    font-size: 1.6rem;
+  }
+  .form-signUp button {
+    font-size: 1rem;
   }
 }
