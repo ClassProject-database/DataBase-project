@@ -37,31 +37,6 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/cartStyles.css') }}">
-<style>
-  #cart-items .list-group-item {
-    background-color: #1d1d2b;
-    color: #414141;
-    border-color: #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  #cart-items .btn-sm {
-    font-size: 0.85rem;
-    padding: 4px 8px;
-  }
-
-  #discount-code {
-    border-color: #444;
-  }
-
-  .btn-success:hover {
-    background-color: #28a745;
-    border-color: #1e7e34;
-    box-shadow: 0 0 10px limegreen;
-  }
-</style>
 {% endblock %}
 
 {% block extra_js %}
