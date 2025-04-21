@@ -1,30 +1,32 @@
 
 :root {
-  --padding: 20px;
-  --margin-bottom: 40px;
-  --header-bg: #212529;
-  --row-hover-bg: #343a40;
-  --border-color: #9f9f9f;
-  --border-radius: 4px;
-  --input-padding: 8px;
-  --focus-border-color: #80bdff;
-  --focus-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-  --modal-overlay-bg: rgba(0, 0, 0, 0.6);
-  --modal-content-bg: #3c3a41;
-  --modal-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-  --btn-transition: 0.2s ease-in-out;
-  --btn-radius: 4px;
-  --btn-primary-bg: #007bff;
-  --btn-primary-hover-bg: #0056b3;
-  --btn-info-bg: #00bd1fc5;
-  --btn-info-hover-bg: #3fee32;
-  --btn-danger-bg: #dc3545;
-  --btn-danger-hover-bg: #c82333;
-  --dropdown-bg: #333;
-  --dropdown-border: #444;
-  --dropdown-item-bg: #222;
-  --dropdown-item-hover-bg: #007bff;
+  --header-bg:           #181826;   
+  --modal-content-bg:    #1f1f2a;  
+  --dropdown-bg:         #1b1b2f;  
+
+
+  --border-color:        #44445a;   
+  --dropdown-border:     #2a2a4a;   
+
+  --row-hover-bg:        #232339;   
+
+  --focus-border-color:  #4e8cff;   
+  --focus-box-shadow:    0 0 0 0.2rem rgba(78,140,255,0.25);
+
+  --modal-overlay-bg:    rgba(0, 0, 0, 0.7);
+
+
+  --btn-primary-bg:      #4e8cff;   
+  --btn-primary-hover-bg:#3a6fb8;   
+  --btn-info-bg:         #9c50e0;   
+  --btn-info-hover-bg:   #7a3ab2;  
+  --btn-danger-bg:       #e0506a;   
+  --btn-danger-hover-bg: #c0284c;   
+
+  --dropdown-item-bg:         #212135; 
+  --dropdown-item-hover-bg:   #4e8cff; 
 }
+
 
 
 .admin-dashboard {
