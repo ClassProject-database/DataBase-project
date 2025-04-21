@@ -452,25 +452,35 @@ def get_rentals():
 
 
 
-#  /api/checkout
+# /api/checkout
 @views.route('/api/checkout', methods=['POST'])
 @login_required
 def checkout():
-    data          = request.get_json()
-    cart_items    = data["cart"]                      
-    total_price   = float(data["amount"])
+    data = request.get_json(force=True)  # force JSON
+    
+    cart_items    = data.get("cart", [])
+    total_price   = data.get("amount")
     discount_code = data.get("discount_code", "").upper().strip() or None
     card_number   = data.get("card_number", "").strip()
     card_name     = data.get("card_holder_name", "").strip()
-    expiration    = data.get("expiration", "")         
+    expiration    = data.get("expiration", "").strip()
 
-    if not all([cart_items, total_price, card_number, card_name, expiration]):
-        abort(400, description="Missing checkout fields.")
-    hashed_card = bcrypt.generate_password_hash(card_number).decode()
+    # 1) Validate inputs
+    if not cart_items or not total_price or not card_number or not card_name or not expiration:
+        return jsonify(success=False, error="Missing checkout fields."), 400
 
-    exp_month, exp_year = map(int, expiration.split("/"))
-    if exp_year < 100:                
-        exp_year += 2000
+    try:
+        total_price = float(total_price)
+    except ValueError:
+        return jsonify(success=False, error="Invalid amount."), 400
+
+    # parse expiration safely
+    try:
+        exp_month, exp_year = map(int, expiration.split("/"))
+        if exp_year < 100:
+            exp_year += 2000
+    except Exception:
+        return jsonify(success=False, error="Expiration must be MM/YY"), 400
 
     if discount_code == "VIP":
         final_price = round(total_price * 0.80, 2)
@@ -478,24 +488,26 @@ def checkout():
         final_price = 0.00
     else:
         final_price = total_price
-        discount_code = None         
+        discount_code = None
+
+    from flask_bcrypt import generate_password_hash
+    hashed_card = generate_password_hash(card_number).decode()
 
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    
     cursor.execute(
         "INSERT IGNORE INTO customers (account_id, address) VALUES (%s, %s)",
         (current_user.id, "Unknown")
     )
 
- 
+    # payment
     cursor.execute("""
         INSERT INTO payment (
-            account_id, card_holder_name, card_number,
-            expiration_month, expiration_year,
-            discount_code, discounted_amount
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+          account_id, card_holder_name, card_number,
+          expiration_month, expiration_year,
+          discount_code, discounted_amount
+        ) VALUES (%s,%s,%s,%s,%s,%s,%s)
     """, (
         current_user.id, card_name, hashed_card,
         exp_month, exp_year,
@@ -503,36 +515,34 @@ def checkout():
     ))
     payment_id = cursor.lastrowid
 
+    # rental
     cursor.execute("""
-        INSERT INTO rentals (
-            account_id, payment_id, total_price
-        ) VALUES (%s, %s, %s)
+        INSERT INTO rentals (account_id, payment_id, total_price)
+        VALUES (%s, %s, %s)
     """, (current_user.id, payment_id, final_price))
     rental_id = cursor.lastrowid
 
-   
-    now_sql = "NOW()"                 
+    # rental line items
+    now_sql = "NOW()"
     line_rows = []
     for item in cart_items:
         movie_id = int(item["movie_id"])
-        orig     = float(item["price"])
+        orig      = float(item["price"])
         line_price = 0.0 if discount_code == "ADMIN" else orig
         line_rows.append((rental_id, movie_id, line_price))
 
     cursor.executemany(f"""
         INSERT INTO rental_movies (
-            rental_id, movie_id, price, rental_date
-        ) VALUES (%s, %s, %s, {now_sql})
+          rental_id, movie_id, price, rental_date
+        ) VALUES (%s,%s,%s,{now_sql})
     """, line_rows)
 
     conn.commit()
-    cursor.close(); conn.close()
+    cursor.close()
+    conn.close()
 
-    return jsonify({
-        "success": True,
-        "message": "Checkout complete!",
-        "rental_id": rental_id
-    })
+    return jsonify(success=True, message="Checkout complete!", rental_id=rental_id)
+
 
 
 # 15) API: Get User
