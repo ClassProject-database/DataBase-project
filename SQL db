@@ -1,39 +1,118 @@
-DROP DATABASE IF EXISTS movie_rental;
-CREATE DATABASE movie_rental;
-USE movie_rental;
+CREATE DATABASE  IF NOT EXISTS `movie_rental`;
+USE `movie_rental`;
 
--- USERS
-CREATE TABLE users (
-  account_id INT PRIMARY KEY AUTO_INCREMENT,
-  username VARCHAR(50) NOT NULL UNIQUE,
-  password_ VARCHAR(255) NOT NULL,
-  role ENUM('employee','customer') NOT NULL,
-  first_name VARCHAR(50) NOT NULL,
-  last_name VARCHAR(50) NOT NULL,
-  email VARCHAR(100) NOT NULL UNIQUE,
-  phone VARCHAR(15) NOT NULL UNIQUE
-);
+CREATE TABLE `users` (
+  `account_id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `password_` varchar(255) NOT NULL,
+  `role` enum('employee','customer','manager') NOT NULL,
+  `first_name` varchar(50) NOT NULL,
+  `last_name` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `phone` varchar(15) NOT NULL,
+  PRIMARY KEY (`account_id`),
+  UNIQUE KEY `username` (`username`),
+  UNIQUE KEY `email` (`email`),
+  UNIQUE KEY `phone` (`phone`)
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4;
 
--- CUSTOMERS
-CREATE TABLE customers (
-  account_id INT PRIMARY KEY,
-  address VARCHAR(100) NOT NULL,
-  FOREIGN KEY (account_id) REFERENCES users(account_id) ON DELETE CASCADE
-);
+CREATE TABLE `customers` (
+  `account_id` int(11) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  PRIMARY KEY (`account_id`),
+  CONSTRAINT `customers_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `users` (`account_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- EMPLOYEES
-CREATE TABLE employees (
-  account_id INT PRIMARY KEY,
-  job_title VARCHAR(100) NOT NULL,
-  salary DECIMAL(10,2) NOT NULL,
-  FOREIGN KEY (account_id) REFERENCES users(account_id) ON DELETE CASCADE
-);
+CREATE TABLE `employees` (
+  `account_id` int(11) NOT NULL,
+  `job_title` varchar(100) NOT NULL,
+  `salary` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`account_id`),
+  CONSTRAINT `employees_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `users` (`account_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- GENRES
-CREATE TABLE genres (
-  genre_id INT PRIMARY KEY AUTO_INCREMENT,
-  genre_name VARCHAR(50) NOT NULL UNIQUE
-);
+
+CREATE TABLE `genres` (
+  `genre_id` int(11) NOT NULL AUTO_INCREMENT,
+  `genre_name` varchar(50) NOT NULL,
+  PRIMARY KEY (`genre_id`),
+  UNIQUE KEY `genre_name` (`genre_name`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4;
+
+
+CREATE TABLE `moviegenres` (
+  `movie_id` int(11) NOT NULL,
+  `genre_id` int(11) NOT NULL,
+  PRIMARY KEY (`movie_id`,`genre_id`),
+  KEY `genre_id` (`genre_id`),
+  CONSTRAINT `moviegenres_ibfk_1` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`movie_id`) ON DELETE CASCADE,
+  CONSTRAINT `moviegenres_ibfk_2` FOREIGN KEY (`genre_id`) REFERENCES `genres` (`genre_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `movies` (
+  `movie_id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) NOT NULL,
+  `release_year` year(4) NOT NULL,
+  `rating` varchar(10) DEFAULT NULL,
+  `price` decimal(5,2) NOT NULL,
+  `image_path` varchar(255) DEFAULT 'default.jpg',
+  `description` text,
+  `trailer_url` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`movie_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `payment` (
+  `payment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_id` int(11) NOT NULL,
+  `card_holder_name` varchar(100) NOT NULL,
+  `card_number` varchar(19) NOT NULL,
+  `expiration_month` tinyint(4) NOT NULL,
+  `expiration_year` smallint(6) NOT NULL,
+  `discount_code` varchar(20) DEFAULT NULL,
+  `discounted_amount` decimal(10,2) DEFAULT NULL,
+  PRIMARY KEY (`payment_id`),
+  KEY `account_id` (`account_id`),
+  CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `customers` (`account_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `rental_movies` (
+  `rental_id` int(11) NOT NULL,
+  `movie_id` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `rental_date` date DEFAULT NULL,
+  `return_date` date DEFAULT NULL,
+  PRIMARY KEY (`rental_id`,`movie_id`),
+  KEY `movie_id` (`movie_id`),
+  CONSTRAINT `rental_movies_ibfk_1` FOREIGN KEY (`rental_id`) REFERENCES `rentals` (`rentalID`) ON DELETE CASCADE,
+  CONSTRAINT `rental_movies_ibfk_2` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`movie_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `rentals` (
+  `rentalID` int(11) NOT NULL AUTO_INCREMENT,
+  `account_id` int(11) DEFAULT NULL,
+  `payment_id` int(11) DEFAULT NULL,
+  `total_price` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`rentalID`),
+  KEY `account_id` (`account_id`),
+  KEY `payment_id` (`payment_id`),
+  CONSTRAINT `rentals_ibfk_1` FOREIGN KEY (`account_id`) REFERENCES `customers` (`account_id`) ON DELETE CASCADE,
+  CONSTRAINT `rentals_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`payment_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `reviews` (
+  `review_id` int(11) NOT NULL AUTO_INCREMENT,
+  `movie_id` int(11) NOT NULL,
+  `account_id` int(11) NOT NULL,
+  `review_date` datetime DEFAULT CURRENT_TIMESTAMP,
+  `rating` decimal(3,1) NOT NULL,
+  `review_comment` text,
+  PRIMARY KEY (`review_id`),
+  KEY `movie_id` (`movie_id`),
+  KEY `account_id` (`account_id`),
+  CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`movie_id`) REFERENCES `movies` (`movie_id`),
+  CONSTRAINT `reviews_ibfk_2` FOREIGN KEY (`account_id`) REFERENCES `customers` (`account_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=134 DEFAULT CHARSET=utf8mb4;
+
 
 INSERT INTO genres (genre_id, genre_name) VALUES
 (1, 'Sci-Fi'),
@@ -43,71 +122,6 @@ INSERT INTO genres (genre_id, genre_name) VALUES
 (5, 'Comedy'),
 (6, 'Fantasy');
 
--- MOVIES
-CREATE TABLE movies (
-  movie_id INT PRIMARY KEY AUTO_INCREMENT,
-  title VARCHAR(100) NOT NULL,
-  release_year YEAR NOT NULL,
-  rating VARCHAR(10),
-  price DECIMAL(5,2) NOT NULL,
-  image_path VARCHAR(255) DEFAULT 'default.jpg'
-);
-
--- MOVIEGENRES
-CREATE TABLE moviegenres (
-  movie_id INT NOT NULL,
-  genre_id INT NOT NULL,
-  PRIMARY KEY (movie_id, genre_id),
-  FOREIGN KEY (movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE,
-  FOREIGN KEY (genre_id) REFERENCES genres(genre_id) ON DELETE CASCADE
-);
-
--- PAYMENTS (with integrated discount fields and no card_type)
-CREATE TABLE payment (
-  payment_id INT PRIMARY KEY AUTO_INCREMENT,
-  account_id INT NOT NULL,
-  card_holder_name VARCHAR(100) NOT NULL,
-  card_number VARCHAR(19) NOT NULL,
-  expiration_month TINYINT NOT NULL,
-  expiration_year SMALLINT NOT NULL,
-  discount_code VARCHAR(20),
-  discounted_amount DECIMAL(10,2),
-  FOREIGN KEY (account_id) REFERENCES customers(account_id) ON DELETE CASCADE
-);
-
--- RENTALS
-CREATE TABLE rentals (
-  rentalID INT PRIMARY KEY AUTO_INCREMENT,
-  account_id INT,
-  payment_id INT,
-  rental_date DATE NOT NULL,
-  return_date DATE,
-  total_price DECIMAL(10,2) NOT NULL,
-  FOREIGN KEY (account_id) REFERENCES customers(account_id) ON DELETE CASCADE,
-  FOREIGN KEY (payment_id) REFERENCES payment(payment_id) ON DELETE CASCADE
-);
-
--- RENTAL_MOVIES
-CREATE TABLE rental_movies (
-  rental_id INT NOT NULL,
-  movie_id INT NOT NULL,
-  price DECIMAL(10,2) NOT NULL,
-  PRIMARY KEY (rental_id, movie_id),
-  FOREIGN KEY (rental_id) REFERENCES rentals(rentalID) ON DELETE CASCADE,
-  FOREIGN KEY (movie_id) REFERENCES movies(movie_id) ON DELETE CASCADE
-);
-
--- REVIEWS
-CREATE TABLE reviews (
-  review_id INT PRIMARY KEY AUTO_INCREMENT,
-  movie_id INT NOT NULL,
-  account_id INT NOT NULL,
-  review_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-  rating DECIMAL(3,1) NOT NULL,
-  review_comment TEXT,
-  FOREIGN KEY (movie_id) REFERENCES movies(movie_id),
-  FOREIGN KEY (account_id) REFERENCES customers(account_id) ON DELETE CASCADE
-);
 INSERT INTO `movies` (`movie_id`, `title`, `release_year`, `rating`, `price`, `image_path`) VALUES
 (1, 'Interstellar', 2014, 'PG-13', '13.99', 'interstellar.jpg'),
 (2, 'The Matrix', 1999, 'R', '12.99', 'the_matrix.jpg'),
