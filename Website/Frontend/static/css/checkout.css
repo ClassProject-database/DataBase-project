@@ -1,134 +1,123 @@
+
+/* Container */
 .checkout-container {
     max-width: 500px;
     margin: 50px auto;
-    background: #1e1e1e;
+    background: var(--bg-section);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    color: #b0b0b0;
-}
-
-.checkout-container h2 {
+    color: var(--text-secondary);
+  }
+  
+  .checkout-container h2 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 1.8rem;
-    color: #c0c0c0;
-}
-
-.checkout-container .form-group {
-    margin-bottom: 15px;
-}
-
-.checkout-container label {
+    color: var(--text-primary);
+  }
+  
+  .checkout-container label {
     font-weight: 600;
     display: block;
     margin-bottom: 5px;
-}
-
-.checkout-container input {
+    color: var(--text-primary);
+  }
+  
+  .checkout-container input,
+  .checkout-container textarea {
     width: 100%;
     padding: 12px;
     border-radius: 5px;
-    border: 1px solid #444;
-    background: #2c2c2c;
-    color: #a9a9a9cf;
+    border: 1px solid var(--border-light);
+    background: var(--bg-card);
+    color: var(--text-secondary);
     font-size: 1rem;
-    transition: border-color 0.3s ease;
-}
-
-.checkout-container input::placeholder,
-.checkout-container textarea::placeholder {
-  color: rgba(255, 255, 255, 0.75) !important; 
-  font-style: italic;
-  opacity: 1; 
-}
-
-
-.checkout-container input:focus {
+    transition: border-color var(--transition-medium);
+  }
+  
+  /* Placeholder */
+  .checkout-container input::placeholder,
+  .checkout-container textarea::placeholder {
+    color: var(--text-placeholder);
+    font-style: italic;
+    opacity: 1;
+  }
+  
+  .checkout-container input:focus,
+  .checkout-container textarea:focus {
     outline: none;
-    border-color: #28a745;
+    border-color: var(--accent-success);
     box-shadow: 0 0 5px rgba(40, 167, 69, 0.5);
-}
-
-.checkout-container input.is-invalid {
-    border-color: #dc35c6 !important;
-    background-color: #3b1e1e !important;
-}
-
-.checkout-container input.is-valid {
-    border-color: #28a745 !important;
-    background-color: #1e3b1e !important;
-}
-
-.checkout-container button {
+  }
+  
+  .checkout-container input.is-invalid,
+  .checkout-container textarea.is-invalid {
+    border-color: var(--accent-error) !important;
+    background-color: rgba(220, 53, 69, 0.1) !important;
+  }
+  
+  .checkout-container input.is-valid,
+  .checkout-container textarea.is-valid {
+    border-color: var(--accent-success) !important;
+    background-color: rgba(40, 167, 69, 0.1) !important;
+  }
+  
+  .checkout-container .invalid-feedback {
+    font-size: 0.9rem;
+    color: var(--accent-error);
+  }
+  
+  .checkout-container button {
     width: 100%;
     padding: 14px;
     border: none;
-    background-color: #28a745;
+    background-color: var(--accent-success);
     color: #fff;
     font-size: 1.1rem;
     border-radius: 6px;
     cursor: pointer;
     margin-top: 20px;
-    transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.checkout-container button:hover {
-    background-color: #218838;
-}
-.checkout-container button:active {
+    transition: background var(--transition-fast), transform var(--transition-fast);
+  }
+  .checkout-container button:hover {
+    background-color: #218838; 
+  }
+  .checkout-container button:active {
     transform: scale(0.98);
-}
-
-.checkout-container button:disabled {
+  }
+  .checkout-container button:disabled {
     background-color: #5a5a5a;
     cursor: not-allowed;
-}
-
-.checkout-message {
+  }
+  
+  .checkout-message {
     text-align: center;
     margin-top: 15px;
     font-weight: 500;
     font-size: 1rem;
-}
-
-.checkout-message.success {
-    color: #28a745;
-}
-
-.checkout-message.error {
-    color: #eb54e3;
-}
-
-@media (max-width: 600px) {
-    .checkout-container {
-        padding: 20px;
-        width: 90%;
-    }
-
-    .checkout-container h2 {
-        font-size: 1.5rem;
-    }
-
-    .checkout-container input {
-        padding: 10px;
-    }
-
-    .checkout-container button {
-        font-size: 1rem;
-    }
-}
-.invalid-feedback {
-    display: none;
-    color: #ccc; 
-    font-size: 0.9rem;
+  }
+  .checkout-message.success {
+    color: var(--accent-success);
+  }
+  .checkout-message.error {
+    color: var(--accent-error);
   }
   
- 
-  input.is-invalid + .invalid-feedback,
-  textarea.is-invalid + .invalid-feedback,
-  select.is-invalid + .invalid-feedback {
-    display: block;
-    color: #ff4d4d; 
+  @media (max-width: 600px) {
+    .checkout-container {
+      padding: 20px;
+      width: 90%;
+    }
+    .checkout-container h2 {
+      font-size: 1.5rem;
+    }
+    .checkout-container input,
+    .checkout-container textarea {
+      padding: 10px;
+    }
+    .checkout-container button {
+      font-size: 1rem;
+    }
   }
   

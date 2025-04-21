@@ -1,3 +1,4 @@
+
 :root {
   --list-bg: #1d1d2b;
   --list-border: #333;
@@ -11,7 +12,6 @@
   --placeholder-color: rgba(198, 198, 198, 0.6);
 }
 
-/* Cart item container */
 .list-group-item {
   background-color: var(--list-bg);
   border: 1px solid var(--list-border);
@@ -22,6 +22,9 @@
   transition:
     background-color var(--transition-speed) ease-in-out,
     transform var(--transition-speed) ease-in-out;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .list-group-item:hover {
@@ -35,12 +38,12 @@
   color: #cfcfcf;
 }
 
-/* Remove button */
+
 .remove-btn {
   font-size: 14px;
   padding: 6px 12px;
   background-color: var(--remove-btn-bg);
-  color: #bebebe;
+  color: #fff;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -54,14 +57,12 @@
   transform: translateY(-1px);
 }
 
-
 input::placeholder,
 textarea::placeholder {
   color: var(--placeholder-color);
   font-style: italic;
   opacity: 1;
 }
-
 
 input,
 textarea {
