@@ -29,6 +29,13 @@
       --acc:#16e0ff;
     }
 
+   
+    body{
+      font-family:'Inter',sans-serif;
+      background:#0d0f17;
+      color:#e5e7eb;
+    }
+
   
     .navbar-glass{
       backdrop-filter:blur(8px);
@@ -55,8 +62,7 @@
   {% block extra_css %}{% endblock %}
 </head>
 
-<body class="dark-mode {% block body_class %}{% endblock %}" data-role="{{ current_user.role }}" data-title="{{ current_user.role }}">
-
+<body class="dark-mode" data-role="{{ current_user.role }}" data-title="{{ current_user.role }}">
 
   <div id="particles-js"></div>
 <!--  NAVBAR  -->
@@ -109,19 +115,17 @@
 </nav>
 
 <!--  MAIN CONTENT  -->
-{% block main %}
 <main class="container-fluid py-5 main-content">
   <div class="mx-auto px-4" style="max-width:1300px">
     {% block content %}{% endblock %}
   </div>
 </main>
-{% endblock %}
 
 <!--  FOOTER  -->
-<footer class="py-4  text-white text-center">
+<footer class="py-4 bg-dark text-white text-center">
   <div class="container-fluid">
     <p class="fs-5 mb-0">
-      &copy; 2024 Blockboster <i class="fa fa-film"></i> All Rights Reserved
+      &copy; 2024 Movie Store <i class="fa fa-film"></i> All Rights Reserved
     </p>
   </div>
 </footer>
