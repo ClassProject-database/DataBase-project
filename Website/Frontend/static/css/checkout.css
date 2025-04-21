@@ -36,8 +36,10 @@
     transition: border-color 0.3s ease;
 }
 
-.checkout-container input::placeholder {
-    color: #e7e7e7;
+input::placeholder,
+textarea::placeholder {
+color: rgba(233, 230, 230, 0.6);
+font-style: italic;
 }
 
 .checkout-container input:focus {
