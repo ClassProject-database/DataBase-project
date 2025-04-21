@@ -11,14 +11,14 @@
   --row-hover-bg:        #232339;   
 
   --focus-border-color:  #d7d7d76e;   
-  --focus-box-shadow:    0 0 0 0.2rem rgba(78,140,255,0.25);
+  --focus-box-shadow:    0 0 0 0.2rem rgba(47, 47, 47, 0.232);
 
   --modal-overlay-bg:    rgba(0, 0, 0, 0.7);
 
 
   --btn-primary-bg:      #40dff7;   
   --btn-primary-hover-bg:#31abbe;   
-  --btn-info-bg:         #35cc38;   
+  --btn-info-bg:         #24bf27;   
   --btn-info-hover-bg:   #1fa121;  
   --btn-danger-bg:       #e0506a;   
   --btn-danger-hover-bg: #c0284c;   
