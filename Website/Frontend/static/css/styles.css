@@ -11,7 +11,7 @@
   --text-primary: #dcdcdc;
   --text-secondary: #b0b0b0;
   --text-muted: #bbbbbb;
-  --text-movie-title: #e0e0e0;
+  --text-movie-title: #c8c8c8;
   --text-placeholder:  rgba(210, 210, 210, 0.693);
 
   --border-light: #444;
@@ -131,10 +131,10 @@ textarea::placeholder {
 
 .hero {
   background: url('/static/images/dark-hero-bg.jpg') no-repeat center/cover;
-  color: #fff;
+  color: #d5d5d5;
 }
 .hero h1 {
-  color: #fff;
+  color: #d5d5d5;
 }
 
 .hero-section {

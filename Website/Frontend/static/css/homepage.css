@@ -1,6 +1,4 @@
-/* 
-   GLOBAL CONTAINER
- */
+/*  GLOBAL CONTAINER */
 .homepage-container {
     display: flex;
     flex-wrap: wrap;
@@ -12,9 +10,7 @@
     margin: auto;
   }
   
-  /* 
-     HERO SECTION
-   */
+  /*  HERO SECTION*/
   .hero-box {
     background: #1a1a2e;
     color: #fff;
@@ -37,9 +33,7 @@
     color: #bbbbbb;
   }
   
-  /* 
-     SIDEBAR: LATEST REVIEWS
-   */
+  /* SIDEBAR: LATEST REVIEWS*/
   .latest-reviews-sidebar {
     flex: 0 0 320px;
     background: #1e1e2e;
@@ -56,18 +50,14 @@
     gap: 15px;
   }
   
-  /* 
-     MAIN CONTENT AREA
-   */
+  /*  MAIN CONTENT AREA */
   .main-content {
     flex: 1;
     min-width: 650px;
     text-align: center;
   }
   
-  /* 
-     CAROUSEL + SCROLL BUTTONS
-   */
+  /*  CAROUSEL + SCROLL BUTTONS*/
   .carousel-container {
     position: relative;
     overflow: hidden;
@@ -116,9 +106,7 @@
     right: 10px;
   }
   
-  /* 
-     MOVIE CARD
-   */
+  /*  MOVIE CARD*/
   .movie-card {
     flex: 0 0 200px;
     height: 330px;
@@ -153,9 +141,7 @@
   }
   
   
-  /* 
-     RESPONSIVE
-   */
+  /*  RESPONSIVE*/
   @media (max-width: 1200px) {
     .homepage-container {
       flex-direction: column;

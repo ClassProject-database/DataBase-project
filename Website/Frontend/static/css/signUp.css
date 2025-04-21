@@ -4,7 +4,7 @@ html, body {
   margin: 0;
   padding: 0;
   background: linear-gradient(to bottom right, #1a1d21, #121416);
-  color: #f0f0f0;
+  color: #cccccc;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   scroll-behavior: smooth;
 }
