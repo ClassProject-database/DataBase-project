@@ -1,6 +1,16 @@
-
 :root {
-  --bg-card: rgba(44, 51, 49, 0.4);
+  --bg-card:            rgba(44, 51, 49, 0.4);
+  --text-primary:       #ffffff;
+  --text-secondary:     #cccccc;
+  --text-placeholder:   #aaa;
+  --input-bg:           #222;
+  --input-focus-bg:     #2c2f33;
+  --border-light:       #444;
+  --accent-primary:     #007bff;
+  --accent-success:     #28a745;
+  --accent-error:       #dc3545;
+  --button-bg:          #0056b3;
+  --button-hover-bg:    #007bff;
 }
 
 html, body {
@@ -12,7 +22,7 @@ html, body {
     var(--bg-gradient-start, #1a1d21),
     var(--bg-gradient-end,   #121416)
   );
-  color: var(--text-secondary, #cccccc);
+  color: var(--text-secondary);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   scroll-behavior: smooth;
 }
@@ -24,86 +34,74 @@ body.signup-page {
   align-items: center;
 }
 
-nav.navbar {
-  width: 100%;
-  position: relative;
-  z-index: 1000;
+#particles-js {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
 }
 
 .signup-container {
-  background: transparent;
-  width: auto;
-  padding: 0;
-  margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 2;               /* ensure it sits above particles */
+  background: transparent;
+  z-index: 2;
 }
 
 .form-signUp {
-  max-width: 400px;
   width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   padding: 2rem;
-  background: var(--bg-card, rgba(30, 30, 30, 0.4));
-  border: 1px solid rgba(255, 255, 255, 0.1); /* subtle edge */
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   transition: box-shadow 0.3s ease;
+  text-align: center;
 }
-
-
 .form-signUp:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
 }
 
 .form-signUp h1 {
-  font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: var(--text-primary, #ffffff);
+  color: var(--text-primary);
+  font-size: 1.8rem;
 }
 
 .form-signUp .form-floating {
   margin-bottom: 1rem;
 }
-
-.form-signUp .form-floating label {
-  color: var(--text-placeholder, #aaa);
-  font-size: 0.95rem;
-}
-
-.form-signUp input.form-control {
-  background-color: var(--input-bg, #222);
-  color: var(--text-primary, #fff);
-  border: 1px solid var(--border-light, #444);
+.form-signUp .form-control {
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-light);
   border-radius: 6px;
   padding: 0.6rem 0.75rem;
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-
-.form-signUp input::placeholder {
-  color: var(--text-placeholder, #888);
+.form-signUp .form-control::placeholder {
+  color: var(--text-placeholder);
   font-style: italic;
   opacity: 1;
 }
-
-.form-signUp input:focus {
-  background-color: var(--input-focus-bg, #2c2f33);
-  border-color: var(--accent-primary, #007bff);
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+.form-signUp .form-control:focus {
+  background: var(--input-focus-bg);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 5px rgba(0,123,255,0.3);
   outline: none;
 }
 
-.form-signUp input.is-invalid {
-  border-color: var(--accent-error, #dc3545);
-  background-color: rgba(220, 53, 69, 0.1);
+.form-signUp .form-control.is-invalid {
+  border-color: var(--accent-error);
+  background: rgba(220,53,69,0.1);
 }
-.form-signUp input.is-valid {
-  border-color: var(--accent-success, #28a745);
-  background-color: rgba(40, 167, 69, 0.1);
+.form-signUp .form-control.is-valid {
+  border-color: var(--accent-success);
+  background: rgba(40,167,69,0.1);
 }
 
 #flash-messages .alert {
@@ -115,24 +113,22 @@ nav.navbar {
 
 .form-signUp button {
   width: 100%;
-  background-color: var(--button-bg, #0056b3);
-  color: var(--text-primary, #fff);
+  padding: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  background: var(--button-bg);
+  color: var(--text-primary);
   font-weight: bold;
   font-size: 1.1rem;
-  border: none;
-  padding: 0.75rem;
-  border-radius: 6px;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
-
 .form-signUp button:hover {
-  background-color: var(--button-hover-bg, #007bff);
+  background: var(--button-hover-bg);
   transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
   .form-signUp {
-    width: 90%;
     padding: 1.5rem;
   }
   .form-signUp h1 {
@@ -144,12 +140,5 @@ nav.navbar {
 }
 
 body.signup-page .main-content {
-  background: transparent !important;
-
-  padding: 0 !important;
-  margin: 0 !important;
-}
-body.signup-page .main-content > .mx-auto {
-  background: transparent !important;
-  max-width: none !important;
+  display: none !important;
 }
