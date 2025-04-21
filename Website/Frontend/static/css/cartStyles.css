@@ -45,3 +45,8 @@
     transform: translateY(-1px);
   }
   
+  input::placeholder,
+  textarea::placeholder {
+  color: rgba(233, 230, 230, 0.6);
+  font-style: italic;
+}
