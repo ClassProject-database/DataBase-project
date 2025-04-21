@@ -7,8 +7,8 @@
   --remove-btn-bg: #dc3545;
   --remove-btn-hover-bg: #c82333;
   --transition-speed: 0.2s;
-  --text-light: rgba(255, 255, 255, 0.85);
-  --placeholder-color: rgba(233, 230, 230, 0.6);
+  --text-light: rgba(193, 193, 193, 0.85);
+  --placeholder-color: rgba(198, 198, 198, 0.6);
 }
 
 /* Cart item container */
@@ -16,7 +16,7 @@
   background-color: var(--list-bg);
   border: 1px solid var(--list-border);
   padding: 12px 18px;
-  color: var(--text-light) !important;
+  color: var(--text-light);
   font-style: italic;
   font-size: var(--font-size-list);
   transition:
