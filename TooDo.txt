@@ -33,7 +33,7 @@ Priorties :
 
 (Antonio)--0-- move both rental dates from rentals table to rental_movies
 
---2-- fix the name of movie not appearing in "my reviews" on myrentals
+--0-- fix the name of movie not appearing in "my reviews" on myrentals
 
 
 

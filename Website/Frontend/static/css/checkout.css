@@ -120,4 +120,34 @@
       font-size: 1rem;
     }
   }
+
+#cart-summary {
+    
+    background-color: #2a2a36 !important;
+    color: #e0e0e0;
+  }
+  
+  #cart-summary h5,
+  #cart-summary strong,
+  #cart-summary span {
+    color: #f5f5f5;
+  }
+  
+
+  #cart-summary ul#cart-items li {
+    color: #c0c0c0;
+  }
+  
+
+  #cart-summary ul#cart-items li span:first-child {
+    color: #d0d0d0;
+  }
+  #cart-summary ul#cart-items li span:last-child {
+    color: #f8f8f8;
+  }
+  
+  #cart-summary .border-secondary {
+    border-color: rgba(255,255,255,0.1) !important;
+  }
+  
   
