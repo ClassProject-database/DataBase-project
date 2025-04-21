@@ -32,7 +32,7 @@
 .list-group-item strong {
   font-size: var(--font-size-bold);
   font-weight: bold;
-  color: #ffffff;
+  color: #cfcfcf;
 }
 
 /* Remove button */
@@ -40,7 +40,7 @@
   font-size: 14px;
   padding: 6px 12px;
   background-color: var(--remove-btn-bg);
-  color: #fff;
+  color: #bebebe;
   border: none;
   border-radius: 5px;
   cursor: pointer;

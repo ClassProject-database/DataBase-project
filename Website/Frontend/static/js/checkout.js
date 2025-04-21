@@ -1,154 +1,138 @@
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("Checkout page loaded!");
-  
-    const form = document.getElementById("checkout-form");
-    const messageDiv = document.getElementById("checkout-message");
-    const submitBtn = form?.querySelector("button[type='submit']");
-    const receiptModal = new bootstrap.Modal(document.getElementById("receiptModal"));
-    const receiptDetails = document.getElementById("receiptDetails");
-    const closeReceiptBtn = document.getElementById("closeReceiptBtn");
-  
-    if (!form || !submitBtn) {
-      console.error("Missing form or submit button.");
-      return;
+  // Elements
+  const cartListEl        = document.getElementById("cart-items");
+  const subtotalEl        = document.getElementById("subtotal");
+  const discountCodeEl    = document.getElementById("discount-code-text");
+  const discountPercentEl = document.getElementById("discount-percent");
+  const taxPercentEl      = document.getElementById("tax-percent");
+  const totalPriceEl      = document.getElementById("total-price");
+  const form              = document.getElementById("checkout-form");
+  const msgDiv            = document.getElementById("checkout-message");
+  const submitBtn         = document.getElementById("submit-button");
+
+  if (!form || !submitBtn) {
+    console.error("checkout.js: missing #checkout-form or submit button");
+    return;
+  }
+
+  // Helper to show either your global toast or fallback to inline message
+  const toastMsg = (text, type = "success") => {
+    if (window.showToast) return window.showToast(text, type);
+    msgDiv.textContent = text;
+    msgDiv.className = type === "error" ? "text-danger" : "text-success";
+  };
+
+  // Clear validation state
+  const clearError = el => el.classList.remove("is-invalid");
+  // Mark invalid + show message
+  const showError = (el, message) => {
+    el.classList.add("is-invalid");
+    const fb = el.nextElementSibling;
+    if (fb) fb.textContent = message;
+  };
+
+  let isSubmitting = false;
+  const resetSubmit = () => {
+    isSubmitting = false;
+    submitBtn.disabled = false;
+  };
+
+  // ————— Populate the order summary —————
+  const populateSummary = () => {
+    const cart    = JSON.parse(localStorage.getItem("cart")           || "[]");
+    const pricing = JSON.parse(localStorage.getItem("pricing_summary") || "{}");
+
+    subtotalEl.textContent        = pricing.subtotal           || "0.00";
+    discountCodeEl.textContent    = pricing.discount_code      || "None";
+    discountPercentEl.textContent = (pricing.discount_percent || "0") + "%";
+    taxPercentEl.textContent      = (pricing.tax_percent     || "0") + "%";
+    totalPriceEl.textContent      = pricing.final_total       || "0.00";
+
+    if (cart.length) {
+      cartListEl.innerHTML = cart.map(item => `
+        <li class="list-group-item bg-transparent text-white d-flex justify-content-between">
+          <span>${item.name}</span><span>$${(+item.price).toFixed(2)}</span>
+        </li>`).join("");
+    } else {
+      cartListEl.innerHTML = `
+        <li class="list-group-item bg-transparent text-muted text-center">
+          Your cart is empty.
+        </li>`;
     }
-  
-    let isSubmitting = false;
-  
-    const clearError = (input) => input.classList.remove("is-invalid");
-  
-    const showError = (input, message) => {
-      input.classList.add("is-invalid");
-      const feedback = input.nextElementSibling;
-      if (feedback) feedback.textContent = message;
+  };
+
+  populateSummary();
+
+  // ————— Handle form submission —————
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    if (isSubmitting) return;
+    isSubmitting = true;
+    submitBtn.disabled = true;
+    msgDiv.textContent = "";
+
+    toastMsg("Processing…", "info");
+
+    // Grab inputs
+    const cardHolderEl = document.getElementById("cardHolder");
+    const cardNumberEl = document.getElementById("cardNumber");
+    const expirationEl = document.getElementById("expiration");
+    const cvvEl        = document.getElementById("cvv");
+
+    [cardHolderEl, cardNumberEl, expirationEl, cvvEl].forEach(clearError);
+
+    // Load fresh data
+    const cart    = JSON.parse(localStorage.getItem("cart")           || "[]");
+    const pricing = JSON.parse(localStorage.getItem("pricing_summary") || "{}");
+
+    if (!cart.length) {
+      toastMsg("Your cart is empty.", "error");
+      return resetSubmit();
+    }
+
+    // Validate
+    let valid = true;
+    if (!cardHolderEl.value.trim())                        { showError(cardHolderEl, "Name required");         valid = false; }
+    if (!/^\d{13,19}$/.test(cardNumberEl.value.trim()))    { showError(cardNumberEl, "13–19 digits");         valid = false; }
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expirationEl.value.trim())) {
+      showError(expirationEl, "MM/YY");                    valid = false;
+    }
+    if (!/^\d{3,4}$/.test(cvvEl.value.trim()))             { showError(cvvEl, "3–4 digits");                  valid = false; }
+
+    if (!valid) {
+      toastMsg("Please fix the highlighted fields.", "error");
+      return resetSubmit();
+    }
+
+    // Build payload
+    const payload = {
+      cart,
+      amount:            pricing.final_total,
+      discount_code:     pricing.discount_code,
+      card_holder_name:  cardHolderEl.value.trim(),
+      card_number:       cardNumberEl.value.trim(),
+      expiration:        expirationEl.value.trim()
     };
-  
-    const showMessage = (msg, type = "info") => {
-      if (window.showToast) {
-        window.showToast(msg, type);
+
+    try {
+      const res  = await fetch("/api/checkout", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        toastMsg("🎉 Purchase complete! Redirecting…", "success");
+        localStorage.clear();
+        setTimeout(() => window.location.href = "/user_Rentals", 1200);
       } else {
-        messageDiv.textContent = msg;
-        messageDiv.style.color = type === "error" ? "red" : "green";
+        throw new Error(data.error || "Checkout failed");
       }
-    };
-  
-    const resetSubmit = () => {
-      isSubmitting = false;
-      submitBtn.disabled = false;
-    };
-  
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (isSubmitting) return;
-  
-      submitBtn.disabled = true;
-      isSubmitting = true;
-  
-      showMessage("Processing checkout...", "info");
-  
-      const cardHolderEl = document.getElementById("cardHolder");
-      const cardNumberEl = document.getElementById("cardNumber");
-      const expirationEl = document.getElementById("expiration");
-      const cvvEl = document.getElementById("cvv");
-  
-      const cardHolder = cardHolderEl.value.trim();
-      const cardNumber = cardNumberEl.value.trim();
-      const expiration = expirationEl.value.trim();
-      const cvv = cvvEl.value.trim();
-  
-      [cardHolderEl, cardNumberEl, expirationEl, cvvEl].forEach(clearError);
-  
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      const pricing = JSON.parse(localStorage.getItem("pricing_summary") || "{}");
-  
-      if (!cart.length) {
-        showMessage("Your cart is empty.", "error");
-        resetSubmit();
-        return;
-      }
-  
-      let valid = true;
-  
-      if (!cardHolder) {
-        showError(cardHolderEl, "Enter the name on your card.");
-        valid = false;
-      }
-  
-      if (!/^\d{13,19}$/.test(cardNumber)) {
-        showError(cardNumberEl, "Enter a valid 13–19 digit card number.");
-        valid = false;
-      }
-  
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiration)) {
-        showError(expirationEl, "Enter a valid expiration (MM/YY).");
-        valid = false;
-      }
-  
-      if (!/^\d{3,4}$/.test(cvv)) {
-        showError(cvvEl, "Enter a valid 3 or 4-digit CVV.");
-        valid = false;
-      }
-  
-      if (!valid) {
-        showMessage("Please fix the highlighted fields.", "error");
-        resetSubmit();
-        return;
-      }
-  
-      const payload = {
-        cart,
-        amount: pricing.final_total,
-        discount_code: pricing.discount_code,
-        card_holder_name: cardHolder,
-        card_number: cardNumber,
-        expiration
-      };
-  
-      console.log("Submitting checkout payload:", payload);
-  
-      try {
-        const res = await fetch("/api/checkout", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-  
-        const data = await res.json();
-        console.log("Server response:", data);
-  
-        if (data.success) {
-          //  receipt
-          const itemList = cart.map(item => `
-            <li>${item.name} - $${(+item.price).toFixed(2)}</li>`).join("");
-  
-          receiptDetails.innerHTML = `
-            <p><strong>Items Rented:</strong></p>
-            <ul>${itemList}</ul>
-            <p><strong>Subtotal:</strong> $${pricing.subtotal}</p>
-            <p><strong>Discount Code:</strong> ${pricing.discount_code || "None"}</p>
-            <p><strong>Discount:</strong> ${pricing.discount_percent || 0}%</p>
-            <p><strong>Tax:</strong> ${pricing.tax_percent || 8}%</p>
-            <p><strong>Total Charged:</strong> <span class="text-success fw-bold">$${pricing.final_total}</span></p>
-          `;
-  
-          receiptModal.show();
-  
-          closeReceiptBtn.onclick = () => {
-            localStorage.clear();
-            receiptModal.hide();
-            window.location.href = "/user_Rentals";
-          };
-  
-        } else {
-          showMessage(data.error || "Checkout failed.", "error");
-          resetSubmit();
-        }
-  
-      } catch (err) {
-        console.error("Checkout error:", err);
-        showMessage("Something went wrong. Please try again.", "error");
-        resetSubmit();
-      }
-    });
+    } catch (err) {
+      console.error("checkout.js error:", err);
+      toastMsg(err.message || "Something went wrong.", "error");
+      resetSubmit();
+    }
   });
-  
+});
