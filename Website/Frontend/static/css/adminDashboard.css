@@ -246,3 +246,11 @@
 #movieDropdown .dropdown-item:hover {
   background: var(--dropdown-item-hover-bg);
 }
+
+.user-list-container {
+  max-height: 600px;               
+  overflow-y: auto;
+  border-top:    1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+

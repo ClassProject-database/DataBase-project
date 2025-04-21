@@ -65,34 +65,36 @@
       </div>
     </div>
 
-    <!-- User Management -->
-    <div class="col-md-8">
-      <div class="card bg-dark text-white shadow h-100">
-        <div class="card-header d-flex justify-content-between align-items-center border-bottom border-secondary">
-          <h5 class="mb-0">User Management</h5>
-          <div class="input-group" style="max-width: 300px;">
-            <input type="text" id="searchUsers" class="form-control" placeholder="Search by username or ID...">
-            <button id="searchBtn" class="btn btn-primary">Search</button>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          <table class="table table-dark table-striped table-hover mb-0">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="user-table-body"></tbody>
-          </table>
-        </div>
+   <!-- User Management -->
+<div class="col-md-8">
+  <div class="card bg-dark text-white shadow h-100">
+    <div class="card-header d-flex justify-content-between align-items-center border-bottom border-secondary">
+      <h5 class="mb-0">User Management</h5>
+      <div class="input-group" style="max-width: 300px;">
+        <input type="text" id="searchUsers" class="form-control" placeholder="Search by username or ID...">
+        <button id="searchBtn" class="btn btn-primary">Search</button>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div class="user-list-container">
+        <table id="users-table" class="table table-dark table-striped table-hover mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="user-table-body"></tbody>
+        </table>
       </div>
     </div>
   </div>
+</div>
+
 
  <!-- Movie Management -->
 <div class="row g-4 mt-4">
