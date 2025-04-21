@@ -248,7 +248,7 @@
 }
 
 .user-list-container {
-  max-height: 5ovh;               
+  max-height: 50vh;               
   overflow-y: auto;
   border-top:    1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
