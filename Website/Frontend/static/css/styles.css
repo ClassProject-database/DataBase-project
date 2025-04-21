@@ -258,8 +258,10 @@ footer {
   .how-it-works i:hover {
     transform: scale(1.2);
   }
-  #discount-code::placeholder {
-    color: rgba(220, 220, 220, 0.6); 
-    font-style: italic;
-  }
+  input::placeholder,
+  textarea::placeholder {
+  color: rgba(233, 230, 230, 0.6);
+  font-style: italic;
+}
+
   
