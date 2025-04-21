@@ -76,8 +76,7 @@
       </div>
     </div>
     <div class="card-body p-0">
-      <div class="user-list-container"
-     style="max-height:250px; overflow-y:auto; border-top:1px solid red; border-bottom:1px solid red;">
+      <div class="user-list-container">
         <table id="users-table" class="table table-dark table-striped table-hover mb-0">
           <thead>
             <tr>
@@ -231,6 +230,9 @@
   </div>
 </div>
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/adminDashboard.css') }}">
+{% endblock %}
 
 
 {% endblock %}

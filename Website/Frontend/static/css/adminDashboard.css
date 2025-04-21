@@ -4,7 +4,7 @@
   --margin-bottom: 40px;
   --header-bg: #212529;
   --row-hover-bg: #343a40;
-  --border-color: #ccc;
+  --border-color: #9f9f9f;
   --border-radius: 4px;
   --input-padding: 8px;
   --focus-border-color: #80bdff;
@@ -248,7 +248,7 @@
 }
 
 .user-list-container {
-  max-height: 600px;               
+  max-height: 75vh;               
   overflow-y: auto;
   border-top:    1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
