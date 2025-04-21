@@ -37,7 +37,7 @@
 }
 
 .checkout-container input::placeholder {
-    color: #bbb;
+    color: #e7e7e7;
 }
 
 .checkout-container input:focus {
