@@ -1,6 +1,11 @@
 
 @import url('../css/styles.css'); 
 
+/* make form background more transparent */
+:root {
+  --bg-card: rgba(44, 51, 49, 0.4);
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -40,10 +45,11 @@ nav.navbar {
   max-width: 400px;
   width: 100%;
   padding: 2rem;
-  background: var(--bg-card, rgba(44, 51, 49, 0.9));
+  background: var(--bg-card, rgba(44, 51, 49, 0.4));/**/
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   text-align: center;
   transition: box-shadow 0.3s ease;
 }
@@ -134,3 +140,4 @@ nav.navbar {
     font-size: 1rem;
   }
 }
+
