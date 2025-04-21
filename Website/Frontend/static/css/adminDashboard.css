@@ -16,8 +16,8 @@
   --btn-radius: 4px;
   --btn-primary-bg: #007bff;
   --btn-primary-hover-bg: #0056b3;
-  --btn-info-bg: #9705aab6;
-  --btn-info-hover-bg: #8b118b;
+  --btn-info-bg: #00bd1fc5;
+  --btn-info-hover-bg: #3fee32;
   --btn-danger-bg: #dc3545;
   --btn-danger-hover-bg: #c82333;
   --dropdown-bg: #333;
@@ -248,7 +248,7 @@
 }
 
 .user-list-container {
-  max-height: 75vh;               
+  max-height: 5ovh;               
   overflow-y: auto;
   border-top:    1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
