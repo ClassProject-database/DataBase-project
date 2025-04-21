@@ -59,38 +59,50 @@ def get_movies():
 
     q        = request.args.get('q', '').strip().lower()
     genre_id = request.args.get('genre_id', type=int)
+
     if q:
         cursor.execute("""
-            SELECT m.*,
-                   GROUP_CONCAT(mg.genre_id) AS genre_ids
+            SELECT 
+              m.*,
+              GROUP_CONCAT(mg.genre_id) AS genre_ids
             FROM movies m
-            LEFT JOIN moviegenres mg ON m.movie_id = mg.movie_id
+            LEFT JOIN moviegenres mg 
+              ON m.movie_id = mg.movie_id
             WHERE LOWER(m.title) LIKE %s
             GROUP BY m.movie_id
+            ORDER BY m.title ASC
         """, (f"%{q}%",))
-    #  genre filter
+
     elif genre_id:
         cursor.execute("""
-            SELECT m.*,
-                   GROUP_CONCAT(mg.genre_id) AS genre_ids
+            SELECT 
+              m.*,
+              GROUP_CONCAT(mg.genre_id) AS genre_ids
             FROM movies m
-            JOIN moviegenres mg ON m.movie_id = mg.movie_id
+            JOIN moviegenres mg 
+              ON m.movie_id = mg.movie_id
             WHERE mg.genre_id = %s
             GROUP BY m.movie_id
+            ORDER BY m.title ASC
         """, (genre_id,))
-    # all movies
+
     else:
         cursor.execute("""
-            SELECT m.*,
-                   GROUP_CONCAT(mg.genre_id) AS genre_ids
+            SELECT 
+              m.*,
+              GROUP_CONCAT(mg.genre_id) AS genre_ids
             FROM movies m
-            LEFT JOIN moviegenres mg ON m.movie_id = mg.movie_id
+            LEFT JOIN moviegenres mg 
+              ON m.movie_id = mg.movie_id
             GROUP BY m.movie_id
+            ORDER BY m.title ASC
         """)
 
     movies = cursor.fetchall()
-    cursor.close(); conn.close()
+    cursor.close()
+    conn.close()
     return jsonify(movies)
+
 
 
 
@@ -642,9 +654,6 @@ def user_rentals():
     )
 
 
-
-
-
 @views.route('/api/update_user', methods=['POST'])
 @login_required
 def update_user():
@@ -730,7 +739,7 @@ def get_random_movies():
 
     return jsonify(movies)
 
-# 18) API: all movies
+# 18) API: only all movies
 @views.route('/api/movies/all')
 def get_all_movies():
     conn = get_db_connection()
