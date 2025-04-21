@@ -1,7 +1,4 @@
 
-@import url('../css/styles.css'); 
-
-/* make form background more transparent */
 :root {
   --bg-card: rgba(44, 51, 49, 0.4);
 }
@@ -34,18 +31,22 @@ nav.navbar {
 }
 
 .signup-container {
+  background: transparent;
+  width: auto;
+  padding: 0;
+  margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  padding: 1rem;
+  z-index: 2;               /* ensure it sits above particles */
 }
 
 .form-signUp {
   max-width: 400px;
   width: 100%;
   padding: 2rem;
-  background: var(--bg-card, rgba(44, 51, 49, 0.4));/**/
+  background: var(--bg-card, rgba(30, 30, 30, 0.4));
+  border: 1px solid rgba(255, 255, 255, 0.1); /* subtle edge */
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
@@ -53,6 +54,7 @@ nav.navbar {
   text-align: center;
   transition: box-shadow 0.3s ease;
 }
+
 
 .form-signUp:hover {
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);

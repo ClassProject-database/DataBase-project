@@ -62,7 +62,8 @@
   {% block extra_css %}{% endblock %}
 </head>
 
-<body class="dark-mode" data-role="{{ current_user.role }}" data-title="{{ current_user.role }}">
+<body class="dark-mode {% block body_class %}{% endblock %}" data-role="{{ current_user.role }}" data-title="{{ current_user.role }}">
+
 
   <div id="particles-js"></div>
 <!--  NAVBAR  -->
