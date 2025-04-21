@@ -143,3 +143,13 @@ nav.navbar {
   }
 }
 
+body.signup-page .main-content {
+  background: transparent !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+}
+body.signup-page .main-content > .mx-auto {
+  background: transparent !important;
+  max-width: none !important;
+}
