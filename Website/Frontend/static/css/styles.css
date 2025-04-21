@@ -253,3 +253,15 @@ textarea::placeholder {
   color: #fff !important;
   border-color: #888;
 }
+
+html, body {
+  height:100%;
+  margin:0;
+  padding:0;
+  background: linear-gradient(
+    to bottom right,
+    var(--bg-gradient-start, #1a1d21),
+    var(--bg-gradient-end,   #121416)
+  );
+  color: var(--text-secondary, #cccccc);
+}
