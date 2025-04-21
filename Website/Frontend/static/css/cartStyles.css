@@ -9,7 +9,7 @@
   --remove-btn-hover-bg: #c82333;
   --transition-speed: 0.2s;
   --text-light: rgba(193, 193, 193, 0.85);
-  --placeholder-color: rgba(198, 198, 198, 0.6);
+  --placeholder-color: rgba(222, 222, 222, 0.6);
 }
 
 .list-group-item {
