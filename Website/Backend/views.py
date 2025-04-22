@@ -52,15 +52,16 @@ def inventory():
         genres = genres
     )
 
+# 3) get moviee on condition
 @views.route('/api/movies')
 def get_movies():
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    q        = request.args.get('q', '').strip().lower()
+    que    = request.args.get('que', '').strip().lower()
     genre_id = request.args.get('genre_id', type=int)
 
-    if q:
+    if que:
         cursor.execute("""
             SELECT 
               m.*,
@@ -97,13 +98,13 @@ def get_movies():
             GROUP BY m.movie_id
             ORDER BY m.title ASC
         """)
-
+    
     movies = cursor.fetchall()
     cursor.close()
     conn.close()
     return jsonify(movies)
 
-
+# 4) view user as admin
 @views.route("/admin/user/<int:account_id>")
 @login_required
 def admin_user_view(account_id):
@@ -147,7 +148,7 @@ def admin_user_view(account_id):
         rentals=rentals
     )
 
-# 4) Admin Dashboard
+# 5) Admin Dashboard
 @views.route('/admin', methods=['GET'])
 @login_required
 def admin_dashboard():
@@ -176,6 +177,7 @@ def admin_dashboard():
 
     return render_template("adminDashboard.html", users=users, genres=genres, search_query=search_query)
 
+# 6) (aDmin) Add user
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
@@ -236,7 +238,7 @@ def add_user():
 
     return jsonify({'success': True, 'message': 'User added successfully!'})
 
-# 7) API: Delete User..
+# 7) API:(Admin) Delete User..
 @views.route('/api/delete_user', methods=['POST'])
 @login_required
 def delete_user():
@@ -268,7 +270,7 @@ def delete_user():
 
     return jsonify({'success': True, 'message': 'User deleted successfully'})
 
-# 14) API: Add Movie
+# 8) API: (Admin)Add Movie
 @views.route('/api/add_movie', methods=['POST'])
 @login_required
 def add_movie():
@@ -317,7 +319,7 @@ def add_movie():
         "movie_id": movie_id
     }), 201
 
-# 8) API: Post Review
+# 9) API: Post Review
 @views.route('/api/post_review', methods=['POST'])
 @login_required
 def post_review():
@@ -362,7 +364,7 @@ def post_review():
     })
 
 
-# 9) Reviews Page
+# 10) Reviews Page
 @views.route('/reviews')
 def reviews_page():
     conn = get_db_connection()
@@ -381,7 +383,7 @@ def reviews_page():
 
     return render_template("reviews.html", reviews=reviews)
 
-#10) Admin search
+#11) Admin search
 @views.route('/api/search_users')
 @login_required
 def search_users():
@@ -405,14 +407,14 @@ def search_users():
     return jsonify(users)
 
 
-# 11) Checkout Page
+# 12) Checkout Page
 @views.route('/checkout', methods=['GET'])
 @login_required
 def checkout_page():
     return render_template("checkout.html")
 
 
-# 12) API: Delete Rental
+# 13) API: Delete Rental
 @views.route('/api/delete_rental', methods=['POST'])
 @login_required
 def delete_rental():
@@ -430,8 +432,7 @@ def delete_rental():
 
     return jsonify({'success': True})
 
-
-# 13) API: Get Rentals
+# 14) API: Get Rentals
 @views.route('/api/rentals', methods=['GET'])
 @login_required
 def get_rentals():
@@ -457,7 +458,7 @@ def get_rentals():
 
     return jsonify(rentals)
 
-# /api/checkout
+#15) /api/checkout
 @views.route('/api/checkout', methods=['POST'])
 @login_required
 def checkout():
@@ -548,7 +549,7 @@ def checkout():
 
     return jsonify(success=True, message="Checkout complete!", rental_id=rental_id)
 
-# 15) API: Get User
+# 16) API: Get User
 @views.route('/api/get_user', methods=['GET'])
 @login_required
 def get_user():
@@ -581,7 +582,7 @@ def get_user():
 
     return jsonify(user)
 
-# 21) User Rentals Page
+# 17) User Rentals Page
 @views.route('/user_Rentals')
 @login_required
 def user_rentals():
@@ -642,7 +643,7 @@ def user_rentals():
         reviews=reviews
     )
 
-
+# 18) Admi (update user)
 @views.route('/api/update_user', methods=['POST'])
 @login_required
 def update_user():
@@ -781,7 +782,7 @@ def movie_details(movie_id):
 
     return render_template("movieDetails.html", movie=movie, genres=genres, reviews=reviews)
 
-# Return 
+# 20) return movie 
 @views.route('/api/return_movie/<int:rental_id>/<int:movie_id>', methods=['POST'])
 @login_required
 def return_single_movie(rental_id: int, movie_id: int):
@@ -823,7 +824,6 @@ def return_single_movie(rental_id: int, movie_id: int):
     cursor.close(); conn.close()
     return jsonify({"success": True, "message": "Movie returned!"})
 
-
 #21) API : user review search 
 @views.route('/api/search_rented_movies')
 @login_required
@@ -851,7 +851,7 @@ def search_rented_movies():
 
     return jsonify(results)
 
-
+#22) add to cart redirect logic for non loggedin(not implemeted yet)
 @views.route('/add_to_cart/<int:movie_id>')
 def add_to_cart(movie_id):
     cart = session.get('cart', [])
@@ -867,6 +867,7 @@ def add_to_cart(movie_id):
         session['next'] = url_for('views.view_cart')
         return redirect(url_for('auth.login'))
     
+#23) route to usercart
 @views.route('/UserCart')
 def view_cart():
     if not current_user.is_authenticated:
@@ -875,7 +876,7 @@ def view_cart():
     
     return render_template('UserCart.html')
 
-# UPDATE Movie
+#24) UPDATE Movie
 @views.route('/api/update_movie', methods=['POST'])
 @login_required
 def update_movie():
@@ -916,8 +917,7 @@ def update_movie():
 
     return jsonify({"success": True, "message": "Movie updated successfully"})
 
-
-# DELETE Movie
+#25) DELETE Movie
 @views.route('/api/delete_movie', methods=['POST'])
 @login_required
 def delete_movie():

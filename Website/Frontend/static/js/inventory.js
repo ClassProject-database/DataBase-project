@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = new URL("/api/movies", location.origin);
 
     if (params.genreId) url.searchParams.set("genre_id", params.genreId);
-    if (params.q)       url.searchParams.set("q", params.q);
+    if (params.que)       url.searchParams.set("que", params.que);
     if (params.limit)   url.searchParams.set("limit", params.limit);
 
     const res = await fetch(url);
@@ -67,13 +67,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // search box
   async function suggest() {
-    const q = searchIn.value.trim();
+    const que = searchIn.value.trim();
     dd.innerHTML = "";
     dd.style.display = "none";
-    if (!q) return;
+    if (!que) return;
 
     try {
-      const movies = await fetchMovies({ q, limit: 8 });
+      const movies = await fetchMovies({ q: que, limit: 8 });
       if (!movies.length) return;
 
       movies.forEach(m => {
