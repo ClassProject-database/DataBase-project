@@ -1,10 +1,31 @@
+:root {
+  --bg-card: rgba(30, 30, 30, 0.6);
+  --bg-gradient-start: #1a1d21;
+  --bg-gradient-end: #121416;
 
+  --text-primary: #ffffff;
+  --text-secondary: #cccccc;
+  --text-placeholder: #aaa;
+
+  --input-bg: #222;
+  --input-focus-bg: #2c2f33;
+  --border-light: #444;
+
+  --accent-primary: #007bff;
+  --accent-error: #dc3545;
+  --accent-success: #28a745;
+
+  --button-bg: #0056b3;
+  --button-hover-bg: #007bff;
+}
+
+/* Global background and font */
 html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom right, #1a1d21, #121416);
-  color: #cccccc;
+  background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end));
+  color: var(--text-secondary);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   scroll-behavior: smooth;
 }
@@ -15,13 +36,18 @@ body.signup-page {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
+body.signup-page .main-content {
+  display: none !important;
+}
 
-nav.navbar {
-  width: 100%;
-  position: relative;
-  z-index: 1000;
+#particles-js {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .signup-container {
@@ -29,87 +55,111 @@ nav.navbar {
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 1rem;
+  padding: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
+/* Signup card */
 .form-signUp {
   max-width: 400px;
   width: 100%;
   padding: 2rem;
-  background: rgba(44, 51, 49, 0.9);
+  background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
   text-align: center;
   transition: box-shadow 0.3s ease;
 }
 
 .form-signUp:hover {
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7);
 }
 
 .form-signUp h1 {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
-.form-signUp .form-floating {
-  margin-bottom: 16px;
+.form-floating {
+  margin-bottom: 1rem;
 }
 
-.form-signUp .form-floating label {
-  color: #aaa;
+.form-floating label {
+  color: var(--text-placeholder);
   font-size: 0.95rem;
 }
 
-.form-signUp input.form-control {
-  background-color: #222 !important;
-  color: #fff !important;
-  border: 1px solid #444;
+.form-signUp .form-control {
+  background-color: var(--input-bg) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-light);
   border-radius: 6px;
-  padding: 10px;
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
-.form-signUp input::placeholder {
-  color: #888;
+.form-signUp .form-control::placeholder {
+  color: var(--text-placeholder);
+  font-style: italic;
 }
 
-.form-signUp input:focus {
-  background-color: #2c2f33 !important;
-  color: #fff !important;
-  border-color: #007bff;
-  box-shadow: none;
+.form-signUp .form-control:focus {
+  background-color: var(--input-focus-bg);
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.form-signUp .form-control.is-invalid {
+  border-color: var(--accent-error);
+  background-color: rgba(220, 53, 69, 0.1);
+}
+
+.form-signUp .form-control.is-valid {
+  border-color: var(--accent-success);
+  background-color: rgba(40, 167, 69, 0.1);
 }
 
 .form-signUp button {
   width: 100%;
-  background-color: #0056b3 !important;
-  color: #fff;
+  background-color: var(--button-bg);
+  color: var(--text-primary);
   font-weight: bold;
   font-size: 1.1rem;
   border: none;
-  padding: 12px;
+  padding: 0.75rem;
   border-radius: 6px;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 .form-signUp button:hover {
-  background-color: #007bff;
+  background-color: var(--button-hover-bg);
   transform: scale(1.05);
 }
 
-
 #flash-messages .alert {
   font-size: 0.9rem;
-  padding: 10px;
-  margin-bottom: 12px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
   border-radius: 5px;
 }
 
+/* Responsive tweaks */
 @media (max-width: 768px) {
   .form-signUp {
     width: 90%;
     padding: 1.5rem;
+  }
+  .form-signUp h1 {
+    font-size: 1.6rem;
+  }
+  .form-signUp button {
+    font-size: 1rem;
   }
 }
