@@ -20,7 +20,7 @@ tsParticles.load("tsparticles", {
         value: "#ffffff"
       },
       shape: {
-        type: "heart"
+        type: "polygon"
       },
       opacity: {
         value: 0.5
@@ -33,8 +33,8 @@ tsParticles.load("tsparticles", {
         enable: true,
         distance: 130,
         color: "#ffffff",
-        opacity: 0.25,
-        width: 1.3
+        opacity: 0.15,
+        width: 1
       },
       move: {
         enable: true,

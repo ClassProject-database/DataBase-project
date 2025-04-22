@@ -150,20 +150,9 @@
 </div>
 
 <!--  SCRIPTS  -->
-<script src="https://cdn.jsdelivr.net/npm/tsparticles-shape-heart@latest/dist/tsparticles.shape.heart.min.js"></script>
-<script src="/static/js/particles-config.js"></script>
-<script>
-  (async () => {
-    await loadHeartShape(tsParticles);      // register the heart shape
-    await tsParticles.load("tsparticles", {
-      particles: {
-        shape: { type: "heart" }           // now valid!
-      }
-    });
-  })();
-</script>
 <script src="https://cdn.jsdelivr.net/npm/tsparticles@2/tsparticles.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script src="/static/js/particles-config.js"></script>
 <script src="{{ url_for('static', filename='js/cart.js')     }}" defer></script>
 <script src="{{ url_for('static', filename='js/home.js')     }}" defer></script>
 <script src="{{ url_for('static', filename='js/toast.js') }}" defer></script>
