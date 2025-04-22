@@ -467,24 +467,29 @@ select:-webkit-autofill {
   border-bottom: 1px solid var(--border-color);
 }
 
-.input-group .form-control {
+.search-group {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1rem;
+}
+
+.search-group .form-control {
   border-radius: 6px 0 0 6px;
   background-color: #25253a;
-  color: #ffffff;
+  color: #fff;
   border: 1px solid var(--border-color);
 }
 
-.input-group .btn {
+.search-group .btn {
   border-radius: 0 6px 6px 0;
   background-color: var(--btn-info-bg);
-  color: #ffffff;
+  color: #fff;
   border: 1px solid var(--btn-info-bg);
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-.input-group .btn:hover {
+.search-group .btn:hover {
   background-color: var(--btn-info-hover-bg);
-  transform: scale(1.03);
 }
 
 
