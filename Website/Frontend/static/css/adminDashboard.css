@@ -465,7 +465,7 @@ select:-webkit-autofill {
 
 /* Scroll */
 .user-list-container {
-  max-height: 500px;
+  max-height: 75vh;
   overflow-y: auto;
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
