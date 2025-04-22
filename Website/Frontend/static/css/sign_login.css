@@ -1,128 +1,107 @@
-:root {
-    --bg-page: #0d0f17;
-    --bg-form: rgba(30, 30, 30, 0.85);
-    --input-bg: #1f1f1f;
-    --input-focus-bg: #2a2a2a;
-    --text-primary: #ffffff;
-    --text-secondary: #cccccc;
-    --text-placeholder: #999;
-    --border-color: #444;
-    --accent: #007bff;
-    --accent-hover: #339aff;
-    --error: #dc3545;
-    --success: #28a745;
-  }
-  
-  html, body {
-    height: 100%;
+/* 
+   Global Styles
+ */
+ body {
+    background: linear-gradient(to bottom right, #1a1d21, #121416);
+    color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom right, #1a1d21, #121416);
-    color: var(--text-secondary);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    scroll-behavior: smooth;
-  }
-  
-  body.signup-page,
-  body.login-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
   }
   
-  .auth-container {
-    background: var(--bg-form);
-    padding: 2rem;
-    border-radius: 12px;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    max-width: 420px;
-    width: 90%;
+  /* 
+     signUp
+      Container
+   */
+  .signUp-container {
+    max-width: 400px;
+    margin: 60px auto;
+    background: rgba(44, 47, 51, 0.95);
+    padding: 25px 20px;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+  }
+  
+  /* 
+     Heading
+   */
+  .signUp
+  -form h2 {
     text-align: center;
-    z-index: 2;
-  }
-  
-  .auth-container h1 {
-    color: var(--text-primary);
-    font-size: 1.75rem;
+    font-size: 1.8rem;
     margin-bottom: 1.5rem;
+    color: #ffffff;
   }
   
-  .auth-container .form-floating {
-    margin-bottom: 1rem;
+  /* 
+     Form Elements
+   */
+  .form-group {
+    margin-bottom: 16px;
   }
   
-  .auth-container input.form-control {
-    background-color: var(--input-bg);
-    color: var(--text-primary);
-    border: 1px solid var(--border-color);
+  .signUp-container input.form-control {
+    background-color: #222;
+    color: #fff;
+    border: 1px solid #444;
+    padding: 10px;
     border-radius: 6px;
-    padding: 0.75rem;
-    transition: background-color 0.3s, border-color 0.3s;
   }
   
-  .auth-container input.form-control:focus {
-    background-color: var(--input-focus-bg);
-    border-color: var(--accent);
-    box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
-    color: var(--text-primary);
+  .signUp-container input::placeholder {
+    color: #aaa;
+  }
+  
+  .signUp-container input:focus {
+    background-color: #2c2f33;
+    border-color: #007bff;
     outline: none;
+    color: #fff;
   }
   
-  .auth-container input::placeholder {
-    color: var(--text-placeholder);
-    font-style: italic;
-  }
-  
-  /* Submit button */
-  .auth-container button {
+  /* 
+     Buttons
+   */
+  .btn-block {
     width: 100%;
-    padding: 0.75rem;
-    border: none;
-    border-radius: 6px;
-    background-color: var(--accent);
+    background-color: #0056b3;
     color: #fff;
     font-weight: bold;
-    font-size: 1.1rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
   }
   
-  .auth-container button:hover {
-    background-color: var(--accent-hover);
+  .btn-block:hover {
+    background-color: #007bff;
     transform: scale(1.03);
   }
   
-  #flash-messages .alert {
-    font-size: 0.9rem;
-    padding: 0.75rem 1rem;
-    margin-bottom: 1rem;
+  /* 
+     Alerts
+   */
+  .alert {
+    margin-top: 12px;
     border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    transition: opacity 1s ease-out;
   }
   
-  .auth-container small,
-  .auth-container small a {
-    color: var(--text-secondary);
-  }
-  .auth-container a:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
+  .alert-success {
+    background-color: #4f915e;
+    color: #fff;
   }
   
-  /* Responsive */
-  @media (max-width: 768px) {
-    .auth-container {
-      padding: 1.5rem;
-    }
+  .alert-danger {
+    background-color: #dc3545;
+    color: #fff;
+  }
   
-    .auth-container h1 {
-      font-size: 1.5rem;
-    }
-  
-    .auth-container button {
-      font-size: 1rem;
-    }
+  .alert.fade-out {
+    opacity: 0;
   }
   
