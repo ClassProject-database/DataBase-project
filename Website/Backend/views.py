@@ -72,7 +72,7 @@ def get_movies():
             WHERE LOWER(m.title) LIKE %s
             GROUP BY m.movie_id
             ORDER BY m.title ASC
-        """, (f"%{q}%",))
+        """, (f"%{que}%",))
 
     elif genre_id:
         cursor.execute("""
