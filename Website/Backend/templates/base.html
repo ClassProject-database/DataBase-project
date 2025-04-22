@@ -39,7 +39,7 @@
   
     .navbar-glass{
       backdrop-filter:blur(8px);
-      background:rgba(13,15,23,.80)!important;
+      background:rgba(13, 15, 23, 0.75)!important;
     }
 
     .navbar-dark .nav-link{
@@ -103,13 +103,11 @@
         <li class="nav-item"><a class="nav-link fs-5" href="{{ url_for('views.reviews_page') }}">Reviews</a></li>
       </ul>
 
-      <!-- cart badge -->
-      {% if current_user.is_authenticated%}
+      <!-- cart badge v-->
         <a class="btn btn-outline-light position-relative me-lg-2" href="{{ url_for('auth.UserCart') }}">
           <i class="fa fa-shopping-cart"></i>
           <span class="badge bg-light text-dark ms-1 rounded-pill cart-badge">0</span>
         </a>
-      {% endif %}
     </div>
   </div>
 </nav>
