@@ -16,7 +16,7 @@ body.signup-page {
 }
 
 .signup-container {
-  background: rgba(30, 30, 30, 0.9); /* match login */
+  background: rgba(30, 30, 30, 0.9); 
   padding: 2rem;
   border-radius: 10px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
