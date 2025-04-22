@@ -1,5 +1,5 @@
 
-:root {
+/* :root {
   --header-bg:           #181826;   
   --modal-content-bg:    #1f1f2a;  
   --dropdown-bg:         #1b1b2f;  
@@ -16,11 +16,11 @@
   --modal-overlay-bg:    rgba(0, 0, 0, 0.7);
 
 
-    --btn-primary-bg:        #28a745;  /* View (green) */
+    --btn-primary-bg:        #28a745; 
     --btn-primary-hover-bg:  #218838;
-    --btn-info-bg:           #0d6efd;  /* Edit (blue) */
+    --btn-info-bg:           #0d6efd;  
     --btn-info-hover-bg:     #0b5ed7;
-    --btn-danger-bg:         #e0506a;  /* Delete (red) */
+    --btn-danger-bg:         #e0506a;  
     --btn-danger-hover-bg:   #c0284c;
     --dropdown-item-bg:      #212135;
     --dropdown-item-hover-bg:#4e77ff;
@@ -175,9 +175,7 @@
   transition: background-color 5000s ease-in-out;
 }
 
-/* 
-   Buttons
- */
+
 .btn {
   transition: all var(--btn-transition);
   border-radius: var(--btn-radius);
@@ -222,9 +220,7 @@
 }
 
 
-/* 
-   Movie Dropdown
- */
+
 #movieDropdown {
   position: absolute;
   background: var(--dropdown-bg);
@@ -258,6 +254,211 @@
   max-height: 50vh;               
   overflow-y: auto;
   border-top:    1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+} */
+  
+:root {
+  --header-bg:           #181826;
+  --modal-content-bg:    #1f1f2a;
+  --dropdown-bg:         #1b1b2f;
+  --dropdown-border:     #2a2a4a;
+  --dropdown-item-bg:    #212135;
+  --dropdown-item-hover-bg: #4e77ff;
+
+  --border-color:        #44445a;
+  --row-hover-bg:        #232339;
+
+  --focus-border-color:  #d7d7d76e;
+  --focus-box-shadow:    0 0 0 0.2rem rgba(47, 47, 47, 0.232);
+
+  --modal-overlay-bg:    rgba(0, 0, 0, 0.7);
+}
+
+/* General Layout */
+body {
+  background: linear-gradient(to bottom right, #0d0f17, #121416);
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Admin Layout */
+.admin-dashboard {
+  padding: 2rem;
+}
+.admin-dashboard h1,
+.admin-dashboard h2 {
+  margin-bottom: 20px;
+}
+
+/* Table */
+#users-table {
+  width: 100%;
+  margin-bottom: 20px;
+  border-collapse: collapse;
+}
+
+#users-table thead th {
+  background-color: var(--header-bg);
+  padding: 12px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--border-color);
+}
+
+#users-table td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#users-table tbody tr {
+  background-color: rgba(30, 30, 40, 0.85);
+  transition: background-color 0.3s ease;
+}
+
+#users-table tbody tr:hover {
+  background-color: var(--row-hover-bg);
+}
+
+/* Form Controls */
+input, select, textarea {
+  background-color: #25253a;
+  color: #fff;
+  border: 1px solid #3a3a52;
+  border-radius: 6px;
+  padding: 10px;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--focus-border-color);
+  box-shadow: var(--focus-box-shadow);
+}
+
+/* Autofill Fixes */
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+  background-color: #25253a !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-shadow: 0 0 0px 1000px #25253a inset !important;
+}
+
+/* Button Styles */
+.btn {
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 6px;
+  border: none;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Button Colors */
+.btn-view {
+  background: linear-gradient(to right, #2ecc71, #27ae60);
+  color: #fff;
+}
+.btn-view:hover {
+  background: linear-gradient(to right, #27ae60, #219150);
+}
+
+.btn-edit {
+  background: linear-gradient(to right, #3498db, #2980b9);
+  color: #fff;
+}
+.btn-edit:hover {
+  background: linear-gradient(to right, #2980b9, #2471a3);
+}
+
+.btn-delete {
+  background: linear-gradient(to right, #e74c3c, #c0392b);
+  color: #fff;
+}
+.btn-delete:hover {
+  background: linear-gradient(to right, #c0392b, #a93226);
+  box-shadow: 0 0 8px rgba(255, 0, 0, 0.3);
+}
+
+/* Search Bar */
+#searchUsers {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  background-color: #1e1e2e;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: #ddd;
+}
+
+/* Movie Dropdown */
+#movieDropdown {
+  position: absolute;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
+  left: 0;
+  top: 45px;
+  padding: 5px;
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#movieDropdown .dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  color: #dcdcdc;
+  background-color: var(--dropdown-item-bg);
+  border-bottom: 1px solid var(--dropdown-border);
+  transition: background 0.2s;
+}
+#movieDropdown .dropdown-item:hover {
+  background: var(--dropdown-item-hover-bg);
+  color: #fff;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--modal-overlay-bg);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-overlay.show {
+  display: flex;
+}
+
+.modal-content {
+  background-color: var(--modal-content-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  color: #dcdcdc;
+}
+
+/* Scroll */
+.user-list-container {
+  max-height: 50vh;
+  overflow-y: auto;
+  border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
 
