@@ -398,6 +398,11 @@ select:-webkit-autofill {
   color: #ddd;
 }
 
+#searchUsers::placeholder {
+  color: #bbbbbb !important; 
+  opacity: 1 !important;
+}
+
 /* Movie Dropdown */
 #movieDropdown {
   position: absolute;
