@@ -33,8 +33,8 @@ tsParticles.load("tsparticles", {
         enable: true,
         distance: 130,
         color: "#ffffff",
-        opacity: 0.15,
-        width: 1
+        opacity: 0.25,
+        width: 1.3
       },
       move: {
         enable: true,
