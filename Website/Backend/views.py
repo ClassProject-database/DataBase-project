@@ -141,9 +141,9 @@ def admin_dashboard():
 @views.route('/user_rentals', methods=['GET'])
 @login_required
 def user_rentals():
-    # if current_user.role != 'customer':
-    #     flash("Only customers can view personal rentals.", "error")
-    #     return redirect(url_for('views.HomePage'))
+    if current_user.role != 'customer':
+        flash("Only customers can view personal rentals.", "error")
+        return redirect(url_for('views.HomePage'))
 
     account_id = current_user.id
     conn = get_db_connection()

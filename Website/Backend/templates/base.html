@@ -104,10 +104,12 @@
       </ul>
 
       <!-- cart badge v-->
+      {% if current_user.is_authenticated%}
         <a class="btn btn-outline-light position-relative me-lg-2" href="{{ url_for('auth.UserCart') }}">
           <i class="fa fa-shopping-cart"></i>
           <span class="badge bg-light text-dark ms-1 rounded-pill cart-badge">0</span>
         </a>
+      {% endif %}
     </div>
   </div>
 </nav>
