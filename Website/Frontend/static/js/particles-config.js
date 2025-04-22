@@ -20,7 +20,7 @@ tsParticles.load("tsparticles", {
         value: "#ffffff"
       },
       shape: {
-        type: "polygon"
+        type: "heart"
       },
       opacity: {
         value: 0.5
