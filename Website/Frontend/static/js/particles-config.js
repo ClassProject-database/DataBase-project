@@ -38,7 +38,7 @@ tsParticles.load("tsparticles", {
       },
       move: {
         enable: true,
-        speed: .3,
+        speed: 3,
         direction: "none",
         outModes: {
           default: "out"

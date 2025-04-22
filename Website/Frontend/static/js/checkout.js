@@ -61,10 +61,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const cvvEl        = document.getElementById("cvv");
 
     let ok = true;
-    ok = validateField(cardHolderEl, /.+/,              "Enter the name on your card.")         && ok;
-    ok = validateField(cardNumberEl, /^\d{13,19}$/,      "Enter a valid 13–19 digit card number.")&& ok;
-    ok = validateField(expiryEl,     /^(0[1-9]|1[0-2])\/\d{2}$/,
-                       "Enter a valid expiration date MM/YY.")                  && ok;
+    ok = validateField(cardHolderEl, /.+/, "Enter the name on your card.")  && ok;
+    ok = validateField(cardNumberEl, /^\d{13,19}$/, "Enter a valid 13–19 digit card number.")&& ok;
+    ok = validateField(expiryEl,     /^(0[1-9]|1[0-2])\/\d{2}$/, "Enter a valid expiration date MM/YY.") && ok;
     ok = validateField(cvvEl,        /^\d{3,4}$/,        "Enter a valid 3–4 digit CVV.")        && ok;
 
     if (!ok) {
