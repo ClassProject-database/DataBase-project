@@ -264,6 +264,9 @@
   --dropdown-border:     #2a2a4a;
   --dropdown-item-bg:    #212135;
   --dropdown-item-hover-bg: #4e77ff;
+  --btn-info-bg: #0d6efd; 
+  --btn-info-hover-bg: #375fd4;
+
 
   --border-color:        #44445a;
   --row-hover-bg:        #232339;
