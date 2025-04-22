@@ -316,6 +316,7 @@ body {
 #users-table tbody tr {
   background-color: rgba(30, 30, 40, 0.85);
   transition: background-color 0.3s ease;
+  height: 50vh
 }
 
 #users-table tbody tr:hover {
