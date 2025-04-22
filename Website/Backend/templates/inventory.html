@@ -59,12 +59,14 @@
           </div>
 
           <div class="card-footer text-center border-0 bg-transparent">
+            {% if current_user.is_authenticated and current_user.role == 'customer' %}
             <button class="btn btn-outline-light add-to-cart-btn"
                     data-movie-id="{{ movie.movie_id }}"
                     data-title="{{ movie.title|e }}"
                     data-price="{{ movie.price }}">
               Add&nbsp;to&nbsp;Cart
             </button>
+            {% endif %}
           </div>
         </div>
       </div>
