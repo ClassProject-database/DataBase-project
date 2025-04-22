@@ -104,8 +104,6 @@ def get_movies():
     return jsonify(movies)
 
 
-
-
 @views.route("/admin/user/<int:account_id>")
 @login_required
 def admin_user_view(account_id):
@@ -148,7 +146,6 @@ def admin_user_view(account_id):
         user=user,
         rentals=rentals
     )
-
 
 # 4) Admin Dashboard
 @views.route('/admin', methods=['GET'])
@@ -238,8 +235,6 @@ def add_user():
     conn.close()
 
     return jsonify({'success': True, 'message': 'User added successfully!'})
-
-
 
 # 7) API: Delete User..
 @views.route('/api/delete_user', methods=['POST'])
@@ -462,8 +457,6 @@ def get_rentals():
 
     return jsonify(rentals)
 
-
-
 # /api/checkout
 @views.route('/api/checkout', methods=['POST'])
 @login_required
@@ -555,8 +548,6 @@ def checkout():
 
     return jsonify(success=True, message="Checkout complete!", rental_id=rental_id)
 
-
-
 # 15) API: Get User
 @views.route('/api/get_user', methods=['GET'])
 @login_required
@@ -589,8 +580,6 @@ def get_user():
     conn.close()
 
     return jsonify(user)
-
-
 
 # 21) User Rentals Page
 @views.route('/user_Rentals')
@@ -719,7 +708,6 @@ def update_user():
     conn.close()
 
     return jsonify({'success': True})
-
 
 # 17) API: random movue
 @views.route('/api/movies/random')
