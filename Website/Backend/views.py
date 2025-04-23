@@ -460,7 +460,7 @@ def get_rentals():
 @views.route('/api/checkout', methods=['POST'])
 @login_required
 def checkout():
-    data = request.get_json(force=True)  # force JSON
+    data = request.get_json(force=True) 
     
     cart_items    = data.get("cart", [])
     total_price   = data.get("amount")

@@ -131,11 +131,5 @@ def signUp():
     return render_template("signup.html")
 
 
-# User Cart Route
-@auth.route('/UserCart')
-@login_required
-def UserCart():
-    return render_template("UserCart.html")
-
 
 
