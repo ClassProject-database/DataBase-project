@@ -315,12 +315,15 @@ body {
 
 #users-table tbody tr {
   background-color: rgba(30, 30, 40, 0.85);
+  padding: .2 ease;
   transition: background-color 0.3s ease;
-  height: 50vh
+  height: 10vh
 }
 
 #users-table tbody tr:hover {
   background-color: var(--row-hover-bg);
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
 }
 
 /* Form Controls */
@@ -465,7 +468,7 @@ select:-webkit-autofill {
 
 /* Scroll */
 .user-list-container {
-  max-height: 500px;
+  max-height: 75vh;
   overflow-y: auto;
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);

@@ -30,7 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderGrid(movies) {
-    grid.innerHTML = "";                   
+    const spinner = document.getElementById("loading-spinner");
+    const grid = document.getElementById("movies-container");
+  
+    // Hide loading spinner
+    if (spinner) spinner.style.display = "none";
+
+    grid.style.display = "flex";
+  
+    grid.innerHTML = "";
+  
+    // Render movie cards
     movies.forEach(m => {
       grid.insertAdjacentHTML("beforeend", html`
         <div class="col movie-card" data-genre="${m.genre_ids || ""}">
@@ -56,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>`);
     });
   }
-
+  
  
   pills.forEach(btn => btn.addEventListener("click", async () => {
     pills.forEach(b => b.classList.toggle("active", b === btn));

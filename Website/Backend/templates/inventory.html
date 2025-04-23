@@ -43,35 +43,16 @@
 
 <section class="py-4">
   <div class="container">
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4" id="movies-container">
-      {% for movie in movies %}
-      <div class="col movie-card" data-genre="{{ movie.genre_ids|join(',') }}">
-        <div class="card bg-dark h-100 border-0">
-          <a href="/movie/{{ movie.movie_id }}">
-            <img src="{{ url_for('static', filename='images/' ~ (movie.image_path or 'keyboard.jpg')) }}"
-                 class="card-img-top" alt="{{ movie.title }}" loading="lazy">
-          </a>
-
-          <div class="card-body p-2 text-center">
-            <h6 class="mb-0 fw-semibold text-white">{{ movie.title }}</h6>
-            <small class="text-secondary">{{ movie.release_year }} · {{ movie.rating }}</small><br>
-            <span class="text-info">${{ '%.2f'|format(movie.price) }}</span>
-          </div>
-
-          <div class="card-footer text-center border-0 bg-transparent">
-            <button class="btn btn-outline-light add-to-cart-btn"
-                    data-movie-id="{{ movie.movie_id }}"
-                    data-title="{{ movie.title|e }}"
-                    data-price="{{ movie.price }}">
-              Add&nbsp;to&nbsp;Cart
-            </button>
-          </div>
-        </div>
+    <div id="loading-spinner" class="text-center py-5">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Loading...</span>
       </div>
-      {% endfor %}
     </div>
+
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4" id="movies-container" style="display: none;"></div>
   </div>
 </section>
+
 {% endblock %}
 
 {% block extra_css %}
