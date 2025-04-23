@@ -14,7 +14,6 @@
   --transition-speed: 0.3s;
 }
 
-/* Base Layout */
 html, body {
   margin: 0;
   padding: 0;
@@ -24,7 +23,6 @@ html, body {
   color: var(--light-text);
 }
 
-/* Container Styling */
 .rentals-container {
   max-width: 800px;
   margin: 50px auto;
@@ -43,7 +41,6 @@ html, body {
   }
 }
 
-/* Table */
 table {
   width: 100%;
   border-collapse: collapse;
@@ -73,11 +70,9 @@ tr:hover {
   background-color: var(--table-row-hover);
 }
 
-/* Text Highlight */
 .text-warning { color: #ffc107; font-weight: bold; }
 .text-success { color: #28a745; font-weight: bold; }
 
-/* Buttons */
 button,
 .btn {
   background-color: var(--primary);
@@ -104,7 +99,6 @@ button:hover,
   background-color: var(--danger-hover);
 }
 
-/* Form Inputs */
 input, textarea, select {
   width: 100%;
   padding: 10px;
@@ -118,7 +112,6 @@ input:focus, textarea:focus, select:focus {
   outline: 2px solid var(--primary);
 }
 
-/* Review Form */
 #review-form {
   margin-top: 20px;
   padding: 15px;
@@ -127,7 +120,6 @@ input:focus, textarea:focus, select:focus {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-/* Dropdown */
 #movieDropdown {
   position: absolute;
   background: #2a2c34;
@@ -152,7 +144,6 @@ input:focus, textarea:focus, select:focus {
   background: var(--primary);
 }
 
-/* Alerts */
 .alert {
   padding: 10px;
   margin: 10px 0;

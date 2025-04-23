@@ -49,7 +49,7 @@ def logout():
     flash("Logged out successfully.", "info")
     return render_template("logout_cleanup.html")
 
-
+#signup routes
 @auth.route('/signUp', methods=['GET', 'POST'])
 def signUp():
     print(" Entered signUp route. Method:", request.method)
@@ -122,7 +122,7 @@ def signUp():
         cursor.close()
         conn.close()
 
-        # Auto-login the new user
+        # login the new user
         new_user = User(account_id, username, chosen_role)
         login_user(new_user)
         flash("Sign-up successful!", "success")

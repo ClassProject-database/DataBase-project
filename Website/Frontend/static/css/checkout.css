@@ -1,5 +1,4 @@
 
-/* Container */
 .checkout-container {
     max-width: 500px;
     margin: 50px auto;
@@ -36,7 +35,6 @@
     transition: border-color var(--transition-medium);
   }
   
-  /* Placeholder */
   .checkout-container input::placeholder,
   .checkout-container textarea::placeholder {
     color: var(--text-placeholder);

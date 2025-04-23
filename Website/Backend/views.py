@@ -342,8 +342,6 @@ def post_review():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Optional: prevent duplicate review
-
     cursor.execute("""
         INSERT INTO reviews (movie_id, account_id, rating, review_comment)
         VALUES (%s, %s, %s, %s)
@@ -471,7 +469,7 @@ def checkout():
     card_name     = data.get("card_holder_name", "").strip()
     expiration    = data.get("expiration", "").strip()
 
-    # 1) Validate inputs
+# Validate inputs
     if not cart_items or not total_price or not card_number or not card_name or not expiration:
         return jsonify(success=False, error="Missing checkout fields."), 400
 
@@ -480,7 +478,6 @@ def checkout():
     except ValueError:
         return jsonify(success=False, error="Invalid amount."), 400
 
-    # parse expiration safely
     try:
         exp_month, exp_year = map(int, expiration.split("/"))
         if exp_year < 100:
@@ -528,7 +525,6 @@ def checkout():
     """, (current_user.id, payment_id, final_price))
     rental_id = cursor.lastrowid
 
-    # rental line items
     now_sql = "NOW()"
     line_rows = []
     for item in cart_items:
@@ -561,7 +557,6 @@ def get_user():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Fetch user base info
     cursor.execute("SELECT * FROM users WHERE account_id = %s", (account_id,))
     user = cursor.fetchone()
 
@@ -570,7 +565,7 @@ def get_user():
         conn.close()
         return jsonify({'error': 'User not found'}), 404
 
-    # If employee or manager, also fetch job_title and salary
+    # If employee or manager,  fetch job_title and salary
     if user['role'] in ['employee', 'manager']:
         cursor.execute("SELECT job_title, salary FROM employees WHERE account_id = %s", (account_id,))
         emp_data = cursor.fetchone()
@@ -593,7 +588,6 @@ def user_rentals():
     cursor = conn.cursor(dictionary=True)
 
     try:
-        # 1) Fetch basic user info
         cursor.execute("""
             SELECT username, first_name, last_name, phone
             FROM users
@@ -601,7 +595,6 @@ def user_rentals():
         """, (current_user.id,))
         user = cursor.fetchone()
 
-        # 2) Rental history
         cursor.execute("""
             SELECT
                 rm.rental_id    AS rentalID,
@@ -618,7 +611,6 @@ def user_rentals():
         """, (current_user.id,))
         rentals = cursor.fetchall()
 
-        # 3) Reviews left by the user
         cursor.execute("""
             SELECT
                 r.rating,
@@ -820,7 +812,6 @@ def return_single_movie(rental_id: int, movie_id: int):
         return jsonify({"success": False,
                         "message": "Not authorized to return this movie."}), 403
 
-    # 2) success
     cursor.close(); conn.close()
     return jsonify({"success": True, "message": "Movie returned!"})
 
@@ -867,6 +858,7 @@ def add_to_cart(movie_id):
         session['next'] = url_for('views.view_cart')
         return redirect(url_for('auth.login'))
     
+
 #23) route to usercart
 @views.route('/UserCart')
 def view_cart():
@@ -932,7 +924,7 @@ def delete_movie():
 
     # Remove genre relations
     cursor.execute("DELETE FROM moviegenres WHERE movie_id = %s", (movie_id,))
-    # Remove the movie itself
+    # Remove the movie
     cursor.execute("DELETE FROM movies WHERE movie_id = %s", (movie_id,))
 
     conn.commit()
