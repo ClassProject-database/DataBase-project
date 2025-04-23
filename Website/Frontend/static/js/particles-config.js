@@ -33,12 +33,12 @@ tsParticles.load("tsparticles", {
         enable: true,
         distance: 130,
         color: "#ffffff",
-        opacity: 0.25,
+        opacity: 0.15,
         width: 1
       },
       move: {
         enable: true,
-        speed: .3,
+        speed: .2,
         direction: "none",
         outModes: {
           default: "out"
@@ -59,7 +59,7 @@ tsParticles.load("tsparticles", {
       },
       modes: {
         repulse: {
-          distance: 70,
+          distance: 50,
           duration: 0.4
         },
         push: {
