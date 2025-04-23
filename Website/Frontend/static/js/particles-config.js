@@ -33,7 +33,7 @@ tsParticles.load("tsparticles", {
         enable: true,
         distance: 130,
         color: "#ffffff",
-        opacity: 0.15,
+        opacity: 0.25,
         width: 1
       },
       move: {
@@ -49,7 +49,7 @@ tsParticles.load("tsparticles", {
       events: {
         onHover: {
           enable: true,
-          mode: "attract"
+          mode: "repulse"
         },
         onClick: {
           enable: true,
@@ -58,7 +58,7 @@ tsParticles.load("tsparticles", {
         resize: true
       },
       modes: {
-        attract: {
+        repulse: {
           distance: 70,
           duration: 0.4
         },
