@@ -112,11 +112,11 @@ select:-webkit-autofill {
 }
 
 .btn-edit {
-  background: linear-gradient(to right, #3498db, #2980b9);
+  background: linear-gradient(to right, #3498db, #125079);
   color: #fff;
 }
 .btn-edit:hover {
-  background: linear-gradient(to right, #174f74, #2471a3);
+  background: linear-gradient(to right, #1e699b, #2471a3);
 }
 
 .btn-delete {
