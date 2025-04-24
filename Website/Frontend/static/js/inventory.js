@@ -17,8 +17,6 @@ async function fetchMovies(params = {}) {
   const url = new URL("/api/movies", location.origin);
   if (params.genreId) url.searchParams.set("genre_id", params.genreId);
   if (params.q)       url.searchParams.set("q", params.q);
-  if (params.limit)   url.searchParams.set("limit", params.limit);
-
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Server error: ${res.status}`);
   return res.json();
@@ -77,9 +75,9 @@ function setupGenreFilters() {
 
 
 function setupLiveSearch() {
-  const searchIn  = document.getElementById("inventory-search");
-  const searchBtn = document.getElementById("search-btn");
-  const grid      = document.getElementById("movies-container");
+  const searchIn = document.getElementById("inventory-search");
+  const grid     = document.getElementById("movies-container");
+  if (!searchIn || !grid) return; 
 
   const debounce = (fn, ms = 150) => {
     let t;
@@ -89,18 +87,14 @@ function setupLiveSearch() {
     };
   };
 
-  searchIn.addEventListener("input", debounce(() => {
-    const q = searchIn.value.trim().toLowerCase();
-    grid.querySelectorAll(".movie-card").forEach(card => {
-      const title = card.querySelector("h6").textContent.toLowerCase();
-      card.style.display = q === "" || title.includes(q) ? "" : "none";
-    });
-  }));
-
-  searchBtn.addEventListener("click", () => {
-    if (!searchIn.value.trim()) {
-      grid.querySelectorAll(".movie-card")
-          .forEach(c => c.style.display = "");
-    }
-  });
+  searchIn.addEventListener(
+    "input",
+    debounce(() => {
+      const q = searchIn.value.trim().toLowerCase();
+      grid.querySelectorAll(".movie-card").forEach(card => {
+        const title = card.querySelector("h6").textContent.toLowerCase();
+        card.style.display = !q || title.includes(q) ? "" : "none";
+      });
+    })
+  );
 }
