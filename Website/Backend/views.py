@@ -58,10 +58,10 @@ def get_movies():
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    que    = request.args.get('que', '').strip().lower()
+    q  = request.args.get('q', '').strip().lower()
     genre_id = request.args.get('genre_id', type=int)
 
-    if que:
+    if q:
         cursor.execute("""
             SELECT 
               m.*,
@@ -72,7 +72,7 @@ def get_movies():
             WHERE LOWER(m.title) LIKE %s
             GROUP BY m.movie_id
             ORDER BY m.title ASC
-        """, (f"%{que}%",))
+        """, (f"%{q}%",))
 
     elif genre_id:
         cursor.execute("""
