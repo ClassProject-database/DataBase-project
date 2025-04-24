@@ -80,7 +80,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   
-  function setupCarouselControls() {
+  function setupCarouselControls() 
+  {
     const track   = document.querySelector(".carousel-track");
     const prevBtn = document.querySelector(".carousel-btn.prev");
     const nextBtn = document.querySelector(".carousel-btn.next");
@@ -95,7 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
     track.addEventListener("scroll", updateCarouselButtons);
   }
   
-  function updateCarouselButtons() {
+  function updateCarouselButtons() 
+  {
     const track   = document.querySelector(".carousel-track");
     const prevBtn = document.querySelector(".carousel-btn.prev");
     const nextBtn = document.querySelector(".carousel-btn.next");

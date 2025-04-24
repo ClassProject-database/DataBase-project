@@ -4,6 +4,9 @@
 {% block content %}
 
 <section class="hero-box text-center mx-auto my-3 py-5">
+  <img src="{{ url_for('static', filename='images/hero-popcorn.jpg') }}"
+  class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-25"
+  alt="" loading="lazy">
   <h1 class="fw-bold display-5">Discover, Rent, Enjoy.</h1>
   <p class="lead">Stream your favorite movies anytime, anywhere.</p>
   <a href="{{ url_for('views.inventory') }}" class="btn btn-primary mt-2">Browse Movies</a>
