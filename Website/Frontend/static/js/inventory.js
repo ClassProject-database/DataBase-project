@@ -31,30 +31,34 @@ function renderGrid(movies) {
   grid.style.display = "";
 
   grid.innerHTML = "";
-  movies.forEach(m => {
-    grid.insertAdjacentHTML("beforeend", `
-      <div class="col movie-card" data-genre="${m.genre_ids || ""}">
-        <div class="card bg-dark h-100 border-0">
-          <a href="/movie/${m.movie_id}">
-            <img src="/static/images/${m.image_path || "keyboard.jpg"}"
-                 class="card-img-top" loading="lazy" alt="${m.title}">
-          </a>
-          <div class="card-body p-2 text-center">
-            <h6 class="mb-0 fw-semibold text-white">${m.title}</h6>
-            <small class="text-secondary">${m.release_year} · ${m.rating}</small><br>
-            <span class="text-info">$${(+m.price).toFixed(2)}</span>
-          </div>
-          <div class="card-footer text-center border-0 bg-transparent">
-            <button class="btn btn-outline-light add-to-cart-btn"
-                    data-movie-id="${m.movie_id}">
-              Add&nbsp;to&nbsp;Cart
-            </button>
+  
+    movies.forEach(m => {
+      grid.insertAdjacentHTML("beforeend", `
+        <div class="col movie-card" data-genre="${m.genre_ids || ""}">
+          <div class="card bg-dark h-100 border-0">
+            <a href="/movie/${m.movie_id}">
+              <img src="/static/images/${m.image_path || "keyboard.jpg"}"
+                   class="card-img-top" loading="lazy" alt="${m.title}">
+            </a>
+            <div class="card-body p-2 text-center">
+              <h6 class="mb-0 fw-semibold text-white">${m.title}</h6>
+              <small class="text-secondary">${m.release_year} · ${m.rating}</small><br>
+              <span class="text-info">$${(+m.price).toFixed(2)}</span>
+            </div>
+            <div class="card-footer text-center border-0 bg-transparent">
+              <button class="btn btn-outline-light add-to-cart-btn"
+                      data-movie-id="${m.movie_id}"
+                      data-title="${m.title.replace(/"/g, '&quot;')}"
+                      data-price="${m.price}">
+                Add&nbsp;to&nbsp;Cart
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    `);
-  });
-}
+      `);
+    });
+  }
+  
 
 
 function setupGenreFilters() {
