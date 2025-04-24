@@ -45,14 +45,16 @@ function renderGrid(movies) {
               <small class="text-secondary">${m.release_year} · ${m.rating}</small><br>
               <span class="text-info">$${(+m.price).toFixed(2)}</span>
             </div>
-            <div class="card-footer text-center border-0 bg-transparent">
-              <button class="btn btn-outline-light add-to-cart-btn"
-                      data-movie-id="${m.movie_id}"
-                      data-title="${m.title.replace(/"/g, '&quot;')}"
-                      data-price="${m.price}">
-                Add&nbsp;to&nbsp;Cart
-              </button>
-            </div>
+          <div class="card-footer text-center border-0 bg-transparent">
+          {% if current_user.is_authenticated and current_user.role == 'customer' %}
+            <button class="btn btn-outline-light add-to-cart-btn"
+                    data-movie-id="{{ m.movie_id }}"
+                    data-title="{{ m.title|e }}"
+                    data-price="{{ m.price }}">
+              Add&nbsp;to&nbsp;Cart
+            </button>
+          {% endif %}
+        </div>
           </div>
         </div>
       `);
