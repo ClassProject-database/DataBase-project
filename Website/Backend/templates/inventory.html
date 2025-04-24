@@ -1,46 +1,50 @@
 {% extends "base.html" %}
-{% block title %}inventory · Movie Store{% endblock %}
+{% block title %}Inventory · Movie Store{% endblock %}
 
 {% block content %}
-<!-- hero -->
-<section class="py-5 text-center position-relative">  
+<!-- HERO + SEARCH -->
+<section class="py-5 text-center position-relative">
   <img src="{{ url_for('static', filename='images/hero-popcorn.jpg') }}"
-       class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-25" loading="lazy"
-       alt="">
+       class="position-absolute top-0 start-0 w-100 h-100 object-fit-cover opacity-25"
+       alt="" loading="lazy">
   <div class="position-relative z-1 container">
     <h1 class="display-5 fw-bold">Rent&nbsp;·&nbsp;Stream&nbsp;·&nbsp;Enjoy</h1>
     <p class="lead text-secondary mb-4">Browse 100+ classics &amp; new releases</p>
 
-  
     <div class="row justify-content-center">
-      <div class="col-10 col-md-6 col-lg-4 position-relative">
+      <div class="col-10 col-md-6 col-lg-4">
         <div class="input-group shadow">
           <input id="inventory-search"
                  class="form-control"
                  placeholder="Search movies…"
                  autocomplete="off">
-          <button id="search-btn" class="btn btn-primary" type="button">Search</button>
+          <button id="search-btn"
+                  class="btn btn-primary"
+                  type="button">
+            Search
+          </button>
         </div>
-
-        <div id="inv-search-dd"
-             class="dropdown-menu w-100 shadow"
-             style="display:none; max-height:300px; overflow-y:auto;"></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- GENRE PILLS -->
 <div class="container text-center my-4 overflow-auto">
   <div class="d-inline-flex gap-2 flex-wrap flex-md-nowrap">
-    <button class="btn genre-btn active fw-semibold text-white-50" data-genre="">All</button>
+    <button class="btn genre-btn active fw-semibold text-white-50" data-genre="">
+      All
+    </button>
     {% for g in genres %}
       <button class="btn genre-btn fw-semibold text-white-50"
-              data-genre="{{ g.genre_id }}">{{ g.genre_name }}</button>
+              data-genre="{{ g.genre_id }}">
+        {{ g.genre_name }}
+      </button>
     {% endfor %}
   </div>
 </div>
 
-
+<!-- MOVIES GRID -->
 <section class="py-4">
   <div class="container">
     <div id="loading-spinner" class="text-center py-5">
@@ -49,13 +53,12 @@
       </div>
     </div>
 
-    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4" id="movies-container" style="display: none;"></div>
+    <div id="movies-container"
+         class="d-flex flex-wrap justify-content-start gap-4"
+         style="display: none;">
+    </div>
   </div>
 </section>
-
-{% endblock %}
-
-{% block extra_css %}
 {% endblock %}
 
 {% block extra_js %}
