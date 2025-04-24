@@ -46,3 +46,12 @@
     </form>
 </div>
 {% endblock %}
+
+{% extra_js % }
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      localStorage.removeItem("discount_code");
+    });
+  </script>
+
+{%endblock%}
