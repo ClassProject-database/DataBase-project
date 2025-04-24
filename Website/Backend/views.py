@@ -938,7 +938,7 @@ def get_random_reviews():
     conn   = get_db_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Pull 5 totally random reviews, joined to user & movie for display
+    # Pull 5  random reviews, joined to user & movie for display
     cursor.execute("""
         SELECT
           r.review_id,
@@ -951,7 +951,7 @@ def get_random_reviews():
         JOIN users  u ON r.account_id = u.account_id
         JOIN movies m ON r.movie_id   = m.movie_id
         ORDER BY RAND()
-        LIMIT 3
+        LIMIT 5
     """)
     reviews = cursor.fetchall()
 

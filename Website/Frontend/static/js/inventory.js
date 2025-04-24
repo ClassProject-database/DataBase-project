@@ -1,6 +1,4 @@
-// static/js/inventory.js
 
-// simple debounce helper
 const debounce = (fn, ms = 150) => {
   let timer;
   return (...args) => {
@@ -10,11 +8,9 @@ const debounce = (fn, ms = 150) => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  // 1) pick up the role from <meta name="user-role" content="customer|employee|...">
   const roleMeta = document.querySelector('meta[name="user-role"]');
   window.isCustomer = roleMeta?.getAttribute("content") === "customer";
 
-  // 2) kick everything off
   initializeInventory();
 });
 
