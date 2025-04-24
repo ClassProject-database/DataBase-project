@@ -150,17 +150,17 @@
   
 .checkout-container input::placeholder,
 .checkout-container textarea::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6) !important;
   opacity: 1; 
 }
 
 .checkout-container input::-webkit-input-placeholder,
 .checkout-container textarea::-webkit-input-placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 
 .checkout-container input:-ms-input-placeholder,
 .checkout-container textarea:-ms-input-placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6) !important;
 }
