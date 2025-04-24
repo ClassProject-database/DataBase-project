@@ -47,11 +47,11 @@
 </div>
 {% endblock %}
 
-{% extra_js % }
+{% block extra_js % }
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       localStorage.removeItem("discount_code");
     });
   </script>
 
-{%endblock%}
+{% endblock %}
