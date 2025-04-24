@@ -46,8 +46,9 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash("Logged out successfully.", "info")
+    flash("Logged out successfully.", "success") 
     return redirect(url_for('auth.login'))
+
 
 
 #signup routes
