@@ -28,7 +28,6 @@ def login():
 
         if user and bcrypt.check_password_hash(user['password_'], password):
             login_user(User(user['account_id'], user['username'], user['role']))
-            flash("Login successful!", "success")
 
             # Redirect based on role:
             if user['role'] in ['employee' , 'manager']:
