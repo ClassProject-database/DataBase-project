@@ -13,22 +13,15 @@
 
   <aside class="latest-reviews-sidebar mb-4">
     <h2 class="section-title text-center">Latest Reviews</h2>
-    <div class="reviews-list">
-      <div class="review-item mb-3">
-        <p><strong>User123</strong> rated <strong>Inception</strong> ⭐⭐⭐⭐⭐</p>
-        <p>"TRASH movie! Never watch!"</p>
-      </div>
-      <div class="review-item mb-3">
-        <p><strong>JohnDoe</strong> rated <strong>Interstellar</strong> ⭐⭐⭐⭐⭐</p>
-        <p>"Mind-blowing visuals and story!"</p>
-      </div>
-      <div class="review-item mb-3">
-        <p><strong>MovieFan99</strong> rated <strong>The Dark Knight</strong> ⭐⭐⭐⭐</p>
-        <p>"Heath Ledger was incredible!"</p>
-      </div>
+    <div id="reviews-list" class="reviews-list">
+      <!-- JS will inject review-item blocks here -->
     </div>
-    <a href="{{ url_for('views.reviews_page') }}" class="btn btn-outline-primary w-100 mt-3">View All Reviews</a>
+    <a href="{{ url_for('views.reviews_page') }}"
+       class="btn btn-outline-primary w-100 mt-3">
+      View All Reviews
+    </a>
   </aside>
+  
 
   <!-- MAIN CONTENT AREA -->
   <main class="main-content flex-grow-1 ps-lg-4">
