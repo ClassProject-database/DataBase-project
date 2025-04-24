@@ -136,7 +136,7 @@ input:focus, textarea:focus, select:focus {
 #movieDropdown .dropdown-item {
   padding: 10px;
   cursor: pointer;
-  color: var(--white);
+  color: var(--primary-hover);
   border-bottom: 1px solid #444;
 }
 
