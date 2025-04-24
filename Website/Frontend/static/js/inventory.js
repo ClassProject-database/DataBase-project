@@ -1,46 +1,37 @@
-
 document.addEventListener("DOMContentLoaded", () => {
-
-  const grid      = document.getElementById("movies-container");
-  const pills     = [...document.querySelectorAll(".genre-btn")];
-  const searchIn  = document.getElementById("inventory-search");
-  const searchBtn = document.getElementById("search-btn");
-  const dd        = document.getElementById("inv-search-dd");
+  const grid       = document.getElementById("movies-container");
+  const pills      = Array.from(document.querySelectorAll(".genre-btn"));
+  const searchIn   = document.getElementById("inventory-search");
+  const searchBtn  = document.getElementById("search-btn");
+  const spinner    = document.getElementById("loading-spinner");
 
   const html = (strings, ...vals) =>
     strings.reduce((out, str, i) => out + str + (vals[i] ?? ""), "");
 
-  const $ = (sel, el = document) => el.querySelector(sel);
-  const $$ = (sel, el = document) => [...el.querySelectorAll(sel)];
-
-  const debounce = (fn, ms = 250) => {
-    let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); };
+  const debounce = (fn, ms = 150) => {
+    let t;
+    return (...args) => {
+      clearTimeout(t);
+      t = setTimeout(() => fn(...args), ms);
+    };
   };
 
   async function fetchMovies(params = {}) {
     const url = new URL("/api/movies", location.origin);
-
     if (params.genreId) url.searchParams.set("genre_id", params.genreId);
-    if (params.que)       url.searchParams.set("que", params.que);
+    if (params.que)     url.searchParams.set("que", params.que);
     if (params.limit)   url.searchParams.set("limit", params.limit);
 
     const res = await fetch(url);
-    if (!res.ok) throw Error(`Server ${res.status}`);
+    if (!res.ok) throw new Error(`Server error: ${res.status}`);
     return res.json();
   }
 
   function renderGrid(movies) {
-    const spinner = document.getElementById("loading-spinner");
-    const grid = document.getElementById("movies-container");
-  
-    // Hide loading spinner
     if (spinner) spinner.style.display = "none";
-
     grid.style.display = "flex";
-  
     grid.innerHTML = "";
-  
-    // Render movie cards
+
     movies.forEach(m => {
       grid.insertAdjacentHTML("beforeend", html`
         <div class="col movie-card" data-genre="${m.genre_ids || ""}">
@@ -66,46 +57,36 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>`);
     });
   }
-  
- 
-  pills.forEach(btn => btn.addEventListener("click", async () => {
-    pills.forEach(b => b.classList.toggle("active", b === btn));
-    const id = btn.dataset.genre || "";   
-    try { renderGrid(await fetchMovies({ genreId: id || undefined })); }
-    catch (e) { console.error(e); }
+
+  pills.forEach(btn =>
+    btn.addEventListener("click", async () => {
+      pills.forEach(b => b.classList.toggle("active", b === btn));
+      const genreId = btn.dataset.genre || undefined;
+      try {
+        const movies = await fetchMovies({ genreId });
+        renderGrid(movies);
+      } catch (err) {
+        console.error(err);
+      }
+    })
+  );
+
+  searchIn.addEventListener("input", debounce(() => {
+    const q = searchIn.value.trim().toLowerCase();
+    grid.querySelectorAll(".movie-card").forEach(card => {
+      const title = card.querySelector("h6").textContent.toLowerCase();
+      card.style.display = q === "" || title.includes(q) ? "" : "none";
+    });
   }));
 
-  // search box
-  async function suggest() {
-    const que = searchIn.value.trim();
-    dd.innerHTML = "";
-    dd.style.display = "none";
-    if (!que) return;
-
-    try {
-      const movies = await fetchMovies({ q: que, limit: 8 });
-      if (!movies.length) return;
-
-      movies.forEach(m => {
-        const row = document.createElement("div");
-        row.className = "dropdown-item";
-        row.textContent = m.title;
-        row.addEventListener("click", () => location.href = `/movie/${m.movie_id}`);
-        dd.appendChild(row);
-      });
-      dd.style.display = "block";
-    } catch (e) { console.error(e); }
-  }
-  searchIn.addEventListener("input", debounce(suggest, 200));
-  searchBtn.addEventListener("click", () => suggest());
-
-  searchIn.addEventListener("keydown", e => {
-    if (e.key === "Enter") {              
-      const first = $(".dropdown-item", dd);
-      if (first) first.click();
+  searchBtn.addEventListener("click", () => {
+    if (!searchIn.value.trim()) {
+      grid.querySelectorAll(".movie-card").forEach(c => c.style.display = "");
     }
   });
 
- 
-  fetchMovies().then(renderGrid).catch(console.error);
+  // Initial load
+  fetchMovies()
+    .then(renderGrid)
+    .catch(console.error);
 });
