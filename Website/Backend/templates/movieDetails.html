@@ -107,21 +107,7 @@
 {% endblock %}
 
 {% block extra_css %}
-
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    document.addEventListener("click", e => {
-      const btn = e.target.closest(".add-to-cart-btn");
-      if (!btn) return;
-      const { movieId, title, price } = btn.dataset;
-      if (typeof addToCart === "function") {
-        addToCart(movieId, title, price);
-        showToast(`${title} added to your cart!`, "success");
-      }
-    });
-  });
-</script>
 {% endblock %}
