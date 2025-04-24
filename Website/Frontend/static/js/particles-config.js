@@ -20,7 +20,7 @@ tsParticles.load("tsparticles", {
         value: "#ffffff"
       },
       shape: {
-        type: "polygon"
+        type: "triangle"
       },
       opacity: {
         value: 0.5
@@ -49,7 +49,7 @@ tsParticles.load("tsparticles", {
       events: {
         onHover: {
           enable: true,
-          mode: "repulse"
+          mode: "attract"
         },
         onClick: {
           enable: true,
@@ -58,7 +58,7 @@ tsParticles.load("tsparticles", {
         resize: true
       },
       modes: {
-        repulse: {
+        attract: {
           distance: 50,
           duration: 0.4
         },
