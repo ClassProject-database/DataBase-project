@@ -11,13 +11,13 @@
     <form action="{{ url_for('auth.login') }}" method="POST" class="form-login">
       <h1 class="h3 mb-3 fw-normal text-center">Login</h1>
 
-      <!-- {% with messages = get_flashed_messages(with_categories=true) %}
+      {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
               {% for category, message in messages %}
                   <div class="alert alert-{{ category }}">{{ message }}</div>
               {% endfor %}
           {% endif %}
-      {% endwith %} -->
+      {% endwith %}
 
       <div class="form-floating mb-3">
         <input 
@@ -45,6 +45,4 @@
       <button class="w-50 btn-lg btn-primary" type="submit">Login</button>
     </form>
 </div>
-
 {% endblock %}
-
