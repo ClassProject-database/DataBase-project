@@ -47,7 +47,8 @@ def login():
 def logout():
     logout_user()
     flash("Logged out successfully.", "info")
-    return render_template("logout_cleanup.html")
+    return redirect(url_for('auth.login'))
+
 
 #signup routes
 @auth.route('/signUp', methods=['GET', 'POST'])
