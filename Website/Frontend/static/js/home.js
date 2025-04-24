@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <strong>${r.username}</strong>
             on <em>${r.movie_title}</em>
             <span class="text-warning">${stars}</span>
-            <small class="text-secondary ms-2">${r.review_date}</small>
+
           </p>
           ${r.review_comment
             ? `<p class="fst-italic mb-0">“${r.review_comment}”</p>`
