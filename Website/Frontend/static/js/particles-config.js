@@ -49,7 +49,7 @@ tsParticles.load("tsparticles", {
       events: {
         onHover: {
           enable: true,
-          mode: "attract"
+          mode: "repulse"
         },
         onClick: {
           enable: true,
@@ -58,7 +58,7 @@ tsParticles.load("tsparticles", {
         resize: true
       },
       modes: {
-        attract: {
+        repulse: {
           distance: 50,
           duration: 0.4
         },
