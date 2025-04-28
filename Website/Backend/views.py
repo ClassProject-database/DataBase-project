@@ -858,7 +858,6 @@ def add_to_cart(movie_id):
         session['next'] = url_for('views.view_cart')
         return redirect(url_for('auth.login'))
     
-
 #23) route to usercart
 @views.route('/UserCart')
 def view_cart():

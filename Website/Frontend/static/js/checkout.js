@@ -39,7 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitButton = document.getElementById("submit-button");
   if (!form || !submitButton) return;
 
-  function validateField(el, pattern, errMsg) {
+  function validateField(el, pattern, errMsg) 
+  {
     el.classList.remove("is-invalid");
     if (!pattern.test(el.value.trim())) {
       el.classList.add("is-invalid");
