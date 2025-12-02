@@ -321,10 +321,25 @@ def add_movie():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
+        # Check if movie already exists (same title and release year)
         cursor.execute("""
-        INSERT INTO movies (title, release_year, rating, price, image_path, description, trailer_url)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """, (title, release_year, rating, price, image_path, description, trailer_url))
+            SELECT movie_id FROM movies 
+            WHERE title = %s AND release_year = %s
+        """, (title, release_year))
+        
+        existing_movie = cursor.fetchone()
+        
+        if existing_movie:
+            cursor.close()
+            return jsonify({
+                "success": False, 
+                "error": f"Movie '{title}' ({release_year}) already exists in the database"
+            }), 409
+
+        cursor.execute("""
+            INSERT INTO movies (title, release_year, rating, price, image_path, description, trailer_url)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (title, release_year, rating, price, image_path, description, trailer_url))
 
         movie_id = cursor.lastrowid
 
