@@ -19,15 +19,19 @@ html, body {
   padding: 0;
   height: 100%;
   font-family: 'Arial', sans-serif;
-  background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-end));
+  background: transparent;
   color: var(--light-text);
+  position: relative;
+  z-index: 1;
 }
 
 .rentals-container {
   max-width: 800px;
   margin: 50px auto;
   padding: 20px;
-  background: var(--container-bg);
+  background: rgba(44, 47, 51, 0.9);
+  position: relative;
+  z-index: 2;
   border-radius: 10px;
   box-shadow: 0 6px 15px rgba(0,0,0,0.6);
   backdrop-filter: blur(12px);

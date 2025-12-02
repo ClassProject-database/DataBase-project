@@ -2,11 +2,13 @@
 .checkout-container {
     max-width: 500px;
     margin: 50px auto;
-    background: var(--bg-section);
+    background: rgba(24, 24, 40, 0.9);
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     color: var(--text-secondary);
+    position: relative;
+    z-index: 2;
   }
   
   .checkout-container h2 {

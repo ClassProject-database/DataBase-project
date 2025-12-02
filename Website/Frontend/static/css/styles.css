@@ -23,15 +23,19 @@
 }
 
 body {
-  background-color: var(--bg-page);
+  background-color: transparent;
   color: var(--text-primary);
   font-family: 'Poppins', sans-serif;
   margin: 0;
   padding: 0;
+  position: relative;
+  z-index: 1;
 }
 
 section {
-  background-color: var(--bg-section);
+  background-color: rgba(24, 24, 40, 0.85);
+  position: relative;
+  z-index: 1;
 }
 
 input::placeholder,
