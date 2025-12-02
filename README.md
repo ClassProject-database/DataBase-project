@@ -37,6 +37,35 @@ Once you have your new database, run the SQL commands in your `SQL db` file to c
 3. Copy and paste the contents of your `SQL db` file
 4. Run the queries to create all tables (users, movies, rentals, etc.)
 
+### Option 4: Run MySQL on Your PC (Advanced - Database Only)
+
+**You can run JUST the MySQL database on your PC** and host the Flask app on Render.com. Here's how:
+
+#### Set Up Local MySQL Database:
+1. **Install MySQL** on your PC (or use XAMPP/WAMP)
+2. **Create database**: `movie_rental`
+3. **Run your SQL file** to create all tables
+4. **Create a user** for remote access:
+   ```sql
+   CREATE USER 'remote_user'@'%' IDENTIFIED BY 'your_password';
+   GRANT ALL PRIVILEGES ON movie_rental.* TO 'remote_user'@'%';
+   FLUSH PRIVILEGES;
+   ```
+
+#### Make MySQL Accessible from Internet (⚠️ RISKY):
+1. **Port forward** port 3306 on your router
+2. **Find your public IP** (whatismyip.com)
+3. **Use dynamic DNS** if your IP changes (no-ip.com)
+
+#### Environment Variables for Render:
+- `DB_HOST`: your_public_ip (or dynamic DNS address)
+- `DB_USER`: remote_user
+- `DB_PASSWORD`: your_password
+- `DB_NAME`: movie_rental
+- `DB_PORT`: 3306
+
+**⚠️ WARNING**: This exposes your database to the internet. Anyone could try to hack it. Use a strong password and consider firewall rules.
+
 ### Already Pushed to GitHub ✅
 Your code is already on GitHub at `ClassProject-database/DataBase-project`, so we're good to go!
 
