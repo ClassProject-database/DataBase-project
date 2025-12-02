@@ -1,4 +1,3 @@
-from Website.Backend.main import app
+from Website.Backend import create_app
 
-if __name__ == "__main__":
-    app.run()
+app = create_app()
