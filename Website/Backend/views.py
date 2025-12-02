@@ -390,6 +390,29 @@ def post_review():
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
 
+        # Check if user already reviewed this movie
+        cursor.execute("""
+            SELECT review_id FROM reviews 
+            WHERE movie_id = %s AND account_id = %s
+        """, (movie_id, current_user.id))
+        
+        existing_review = cursor.fetchone()
+        if existing_review:
+            cursor.close()
+            return jsonify({'success': False, 'error': 'You have already reviewed this movie'}), 400
+
+        # Verify user has rented this movie
+        cursor.execute("""
+            SELECT 1 FROM rental_movies rm
+            JOIN rentals r ON rm.rental_id = r.rentalID
+            WHERE rm.movie_id = %s AND r.account_id = %s
+        """, (movie_id, current_user.id))
+        
+        has_rented = cursor.fetchone()
+        if not has_rented:
+            cursor.close()
+            return jsonify({'success': False, 'error': 'You can only review movies you have rented'}), 400
+
         cursor.execute("""
             INSERT INTO reviews (movie_id, account_id, rating, review_comment)
             VALUES (%s, %s, %s, %s)
@@ -600,18 +623,18 @@ def checkout():
         """, (current_user.id, payment_id, final_price))
         rental_id = cursor.lastrowid
 
-        now_sql = "NOW()"
+        # Insert rental movies
         line_rows = []
         for item in cart_items:
             movie_id = int(item["movie_id"])
-            orig      = float(item["price"])
+            orig = float(item["price"])
             line_price = 0.0 if discount_code == "ADMIN" else orig
             line_rows.append((rental_id, movie_id, line_price))
 
-        cursor.executemany(f"""
+        cursor.executemany("""
             INSERT INTO rental_movies (
               rental_id, movie_id, price, rental_date
-            ) VALUES (%s,%s,%s,{now_sql})
+            ) VALUES (%s, %s, %s, NOW())
         """, line_rows)
 
         conn.commit()
