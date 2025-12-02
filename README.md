@@ -8,7 +8,34 @@ Don't worry, we've got you covered. No surprise AWS charges here!
 
 ### What You'll Need
 - A GitHub account (you already have this!)
-- Your database info (it's on AWS RDS)
+- **A free database** - let's set one up!
+
+### Quick Database Setup (FREE Options)
+
+#### Option 1: Railway.app (Recommended - MySQL)
+1. Go to [railway.app](https://railway.app) and sign up
+2. Click **"New Project"** → **"Database"** → **"MySQL"**
+3. Wait for it to deploy (2-3 minutes)
+4. Go to **"Variables"** tab - copy these values:
+   - `DATABASE_URL`: `mysql://user:password@host:port/database`
+
+#### Option 2: PlanetScale (MySQL)
+1. Go to [planetscale.com](https://planetscale.com) and sign up
+2. Create a new database
+3. Get your connection details from the dashboard
+
+#### Option 3: Supabase (PostgreSQL - requires code changes)
+1. Go to [supabase.com](https://supabase.com) and sign up
+2. Create a new project
+3. Go to **Settings** → **Database** for connection details
+
+### Step 2: Set Up Your Database Schema
+Once you have your new database, run the SQL commands in your `SQL db` file to create all the tables:
+
+1. Open your database admin panel (Railway/PlanetScale/Supabase dashboard)
+2. Find the SQL query editor
+3. Copy and paste the contents of your `SQL db` file
+4. Run the queries to create all tables (users, movies, rentals, etc.)
 
 ### Already Pushed to GitHub ✅
 Your code is already on GitHub at `ClassProject-database/DataBase-project`, so we're good to go!
@@ -29,12 +56,12 @@ Your code is already on GitHub at `ClassProject-database/DataBase-project`, so w
 6. **Important part** - Add your database secrets as environment variables:
    - After connecting your repo, you'll see a section called **"Environment"** or **"Environment Variables"**
    - Click **"Add Environment Variable"** (or similar button)
-   - Add these one by one (you know what to put here):
-     - `DB_HOST`: your AWS database URL
-     - `DB_USER`: your username
-     - `DB_PASSWORD`: your password
-     - `DB_NAME`: `movie_rental`
-     - `DB_PORT`: `3306`
+   - Add these one by one (use the values from your new database):
+     - `DB_HOST`: your database host URL
+     - `DB_USER`: your database username
+     - `DB_PASSWORD`: your database password
+     - `DB_NAME`: your database name
+     - `DB_PORT`: your database port (usually 3306 for MySQL)
 7. **Hit "Create Web Service"** and grab a coffee ☕
 
 #### In About 5 Minutes...
