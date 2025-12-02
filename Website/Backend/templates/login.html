@@ -31,7 +31,7 @@
       </div>
 
       <!-- Password Field -->
-      <div class="form-floating mb-3">
+      <div class="form-floating mb-3 position-relative">
         <input 
           type="password" 
           name="password" 
@@ -40,6 +40,9 @@
           placeholder="Password" 
           required>
         <label for="floatingPassword">Password</label>
+        <button type="button" class="password-toggle-btn" id="togglePassword" aria-label="Toggle password visibility">
+          <i class="fas fa-eye" id="toggleIcon"></i>
+        </button>
       </div>
 
       <button class="w-50 btn-lg btn-primary" type="submit">Login</button>
