@@ -93,10 +93,8 @@ def create_app():
     # Register blueprints
     from .views import views
     from .auth import auth
-    from .setup_database import setup_bp
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
-    app.register_blueprint(setup_bp, url_prefix='/')
 
     return app
 
