@@ -107,6 +107,43 @@ We need:
 
 That's why Render.com is perfect - it handles all of this for free!
 
+## 🏠 Alternative: Run on Your Own PC (Not Recommended)
+
+**You CAN technically run this on your PC**, but it's not great for a class project. Here's why:
+
+### ❌ Problems with Home Hosting:
+- **Site goes down** when your PC is off/restarts
+- **Slow for others** - your home internet upload speed sucks
+- **Security risks** - exposing your home network to the internet
+- **Unreliable** - power outages, ISP issues, etc.
+- **Not professional** - professors expect hosted solutions
+
+### ✅ If You Really Want To (Advanced Users Only):
+
+#### Quick Local Setup:
+```bash
+# Install requirements
+pip install -r requirements.txt
+
+# Set environment variables (create a .env file)
+DB_HOST=your_database_host
+DB_USER=your_username
+DB_PASSWORD=your_password
+DB_NAME=movie_rental
+DB_PORT=3306
+
+# Run the app
+python Website/Backend/main.py
+```
+
+#### To Make It Public (Complex & Risky):
+1. **Port forwarding** on your router (dangerous!)
+2. **Dynamic DNS** service (like no-ip.com)
+3. **Firewall rules** to expose port 5000
+4. **Keep PC running 24/7**
+
+**⚠️ WARNING**: This exposes your home network to hackers. Don't do this unless you know what you're doing.
+
 ---
 
-**Questions?** Just ask. We'll figure it out together! 🚀
+**Much better idea**: Use Render.com like we talked about. It's actually free, always accessible, and professional-looking! 🚀
