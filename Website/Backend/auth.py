@@ -1,9 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required
 from . import bcrypt, get_db_connection, User
-import sys
-sys.stdout.reconfigure(line_buffering=True)
-
 
 auth = Blueprint('auth', __name__)
 
@@ -48,10 +45,8 @@ def logout():
     flash("Logged out successfully.", "info")
     return render_template("logout_cleanup.html")
 
-#signup routes
 @auth.route('/signUp', methods=['GET', 'POST'])
 def signUp():
-    print(" Entered signUp route. Method:", request.method)
 
     if request.method == 'POST':
         # Collect and sanitize form data

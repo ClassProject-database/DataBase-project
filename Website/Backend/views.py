@@ -1,8 +1,7 @@
 from datetime import datetime
-from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort, current_app
+from flask import Blueprint, render_template, jsonify, request, redirect, url_for, flash, abort, session
 from flask_login import login_required, current_user
 from . import get_db_connection, bcrypt
-from flask import session
 
 views = Blueprint('views', __name__)
 
