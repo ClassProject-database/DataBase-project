@@ -12,7 +12,21 @@ Don't worry, we've got you covered. No surprise AWS charges here!
 
 ### Quick Database Setup (FREE Options)
 
-#### Option 1: PlanetScale (Best Free MySQL)
+#### Option 1: Aiven MySQL (Great Free Tier!)
+1. Go to [aiven.io](https://aiven.io) and sign up (free!)
+2. Click **"Create service"** → Choose **"MySQL"**
+3. Select the **free tier** (if available) or smallest paid plan
+4. Wait for deployment (5-10 minutes)
+5. Go to **"Overview"** tab → **"Connection information"**
+6. Copy the connection details (host, port, username, password, database name)
+
+**Why Aiven?**
+- ✅ Free tier available (or very cheap)
+- ✅ MySQL compatible (no code changes)
+- ✅ Professional & reliable
+- ✅ Good for production use
+
+#### Option 2: PlanetScale (Best Free MySQL)
 1. Go to [planetscale.com](https://planetscale.com) and sign up (no credit card needed!)
 2. Click **"Create database"** → Choose **"MySQL"**
 3. Wait for it to deploy (2-3 minutes)
