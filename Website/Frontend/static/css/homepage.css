@@ -9,18 +9,18 @@
     margin: auto;
   }
   
-  .hero-box {
-    background: #1a1a2e;
-    color: #fff;
-    text-align: center;
-    padding: 40px;
-    border-radius: 10px;
-    margin: 0 auto 30px;
-    max-width: 1100px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  }
-  
-  .hero-box h1 {
+.hero-box {
+  background: #1a1a2e;
+  color: #fff;
+  text-align: center;
+  padding: 40px;
+  border-radius: 10px;
+  margin: 0 auto 30px;
+  max-width: 1100px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 10;
+}  .hero-box h1 {
     font-size: 2.8rem;
     font-weight: bold;
     margin-bottom: 0.75rem;
@@ -31,29 +31,31 @@
     color: #bbbbbb;
   }
   
-  .latest-reviews-sidebar {
-    flex: 0 0 320px;
-    background: #1e1e2e;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    max-height: 600px;
-    overflow-y: auto;
-  }
-  
-  .reviews-list {
+.latest-reviews-sidebar {
+  flex: 0 0 320px;
+  background: #1e1e2e;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  max-height: 600px;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+}  .reviews-list {
     display: flex;
     flex-direction: column;
     gap: 15px;
   }
   
-  .main-content {
-    flex: 1;
-    min-width: 650px;
-    text-align: center;
-  }
-  
-  .carousel-container {
+.main-content {
+  flex: 1;
+  min-width: 650px;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+.carousel-container {
     position: relative;
     overflow: hidden;
     width: 100%;
