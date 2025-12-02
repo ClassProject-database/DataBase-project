@@ -10,47 +10,42 @@ views = Blueprint('views', __name__)
 @views.route('/')
 def HomePage():
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
-
-    cursor.execute("SELECT movie_id, title, image_path FROM movies ORDER BY RAND() LIMIT 10")
-    featured_movies = cursor.fetchall()
-
-    cursor.close()
-    conn.close()
-
-    return render_template('home.html', featured_movies=featured_movies)
+    try:
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT movie_id, title, image_path FROM movies ORDER BY RAND() LIMIT 10")
+        featured_movies = cursor.fetchall()
+        cursor.close()
+        return render_template('home.html', featured_movies=featured_movies)
+    finally:
+        conn.close()
 
 # 2)  Inventory Page
 @views.route('/inventory')
 def inventory():
-    
-    conn   = get_db_connection()
-    cursor = conn.cursor(dictionary=True)
+    conn = get_db_connection()
+    try:
+        cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("SELECT * FROM genres ORDER BY genre_name;")
-    genres = cursor.fetchall()
+        cursor.execute("SELECT * FROM genres ORDER BY genre_name;")
+        genres = cursor.fetchall()
 
+        cursor.execute("""
+            SELECT 
+                m.*,
+                COALESCE(GROUP_CONCAT(mg.genre_id), '') AS genre_ids
+            FROM movies           AS m
+            LEFT JOIN moviegenres AS mg ON m.movie_id = mg.movie_id
+            GROUP BY m.movie_id
+        """)
+        rows = cursor.fetchall()
 
-    cursor.execute("""
-        SELECT 
-            m.*,
-            COALESCE(GROUP_CONCAT(mg.genre_id), '') AS genre_ids
-        FROM movies           AS m
-        LEFT JOIN moviegenres AS mg ON m.movie_id = mg.movie_id
-        GROUP BY m.movie_id
-    """)
-    rows = cursor.fetchall()
+        for r in rows:
+            r["genre_ids"] = r["genre_ids"].split(',') if r["genre_ids"] else []
 
-  
-    for r in rows:
-        r["genre_ids"] = r["genre_ids"].split(',') if r["genre_ids"] else []
-
-    cursor.close(); conn.close()
-    return render_template(
-        "inventory.html",
-        movies = rows,
-        genres = genres
-    )
+        cursor.close()
+        return render_template("inventory.html", movies=rows, genres=genres)
+    finally:
+        conn.close()
 
 # 3) get moviee on condition
 @views.route('/api/movies')

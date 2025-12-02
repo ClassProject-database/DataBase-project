@@ -18,24 +18,24 @@ def login():
         password = request.form['password']
 
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        try:
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+            user = cursor.fetchone()
+            cursor.close()
 
-        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-        user = cursor.fetchone()
+            if user and bcrypt.check_password_hash(user['password_'], password):
+                login_user(User(user['account_id'], user['username'], user['role']))
 
-        cursor.close()
-        conn.close()
-
-        if user and bcrypt.check_password_hash(user['password_'], password):
-            login_user(User(user['account_id'], user['username'], user['role']))
-
-            # Redirect based on role:
-            if user['role'] in ['employee' , 'manager']:
-                return redirect(url_for('views.admin_dashboard'))
+                # Redirect based on role:
+                if user['role'] in ['employee', 'manager']:
+                    return redirect(url_for('views.admin_dashboard'))
+                else:
+                    return redirect(url_for('views.user_rentals'))
             else:
-                return redirect(url_for('views.user_rentals'))
-        else:
-            flash("Invalid username or password.", "danger")
+                flash("Invalid username or password.", "danger")
+        finally:
+            conn.close()
 
     return render_template('login.html')
 
@@ -77,55 +77,54 @@ def signUp():
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
+        try:
+            cursor = conn.cursor(dictionary=True)
 
-        # Check for existing username
-        cursor.execute("SELECT account_id FROM users WHERE username = %s", (username,))
-        if cursor.fetchone():
-            flash("Username already exists. Please choose a different one.", "warning")
-            cursor.close()
-            conn.close()
-            return redirect(url_for('auth.signUp'))
+            # Check for existing username
+            cursor.execute("SELECT account_id FROM users WHERE username = %s", (username,))
+            if cursor.fetchone():
+                flash("Username already exists. Please choose a different one.", "warning")
+                cursor.close()
+                return redirect(url_for('auth.signUp'))
 
-        # Check for existing email or phone
-        cursor.execute("SELECT account_id FROM users WHERE email = %s OR phone = %s", (email, phone))
-        if cursor.fetchone():
-            flash("Email or phone number already in use.", "warning")
-            cursor.close()
-            conn.close()
-            return redirect(url_for('auth.signUp'))
+            # Check for existing email or phone
+            cursor.execute("SELECT account_id FROM users WHERE email = %s OR phone = %s", (email, phone))
+            if cursor.fetchone():
+                flash("Email or phone number already in use.", "warning")
+                cursor.close()
+                return redirect(url_for('auth.signUp'))
 
-        # Insert user into users table
-        cursor.execute("""
-            INSERT INTO users (username, password_, role, first_name, last_name, email, phone)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """, (username, hashed_password, chosen_role, first_name, last_name, email, phone))
-        conn.commit()
-
-        account_id = cursor.lastrowid
-
-        # Role-specific insert
-        if chosen_role == 'customer':
+            # Insert user into users table
             cursor.execute("""
-                INSERT INTO customers (account_id, address)
-                VALUES (%s, %s)
-            """, (account_id, 'N/A'))
-        elif chosen_role == 'employee':
-            cursor.execute("""
-                INSERT INTO employees (account_id, job_title, salary)
-                VALUES (%s, %s, %s)
-            """, (account_id, 'Unknown Title', 0.00))
+                INSERT INTO users (username, password_, role, first_name, last_name, email, phone)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (username, hashed_password, chosen_role, first_name, last_name, email, phone))
+            conn.commit()
 
-        conn.commit()
+            account_id = cursor.lastrowid
 
-        cursor.close()
-        conn.close()
+            # Role-specific insert
+            if chosen_role == 'customer':
+                cursor.execute("""
+                    INSERT INTO customers (account_id, address)
+                    VALUES (%s, %s)
+                """, (account_id, 'N/A'))
+            elif chosen_role == 'employee':
+                cursor.execute("""
+                    INSERT INTO employees (account_id, job_title, salary)
+                    VALUES (%s, %s, %s)
+                """, (account_id, 'Unknown Title', 0.00))
 
-        # login the new user
-        new_user = User(account_id, username, chosen_role)
-        login_user(new_user)
-        flash("Sign-up successful!", "success")
-        return redirect(url_for('views.HomePage'))
+            conn.commit()
+            cursor.close()
+
+            # login the new user
+            new_user = User(account_id, username, chosen_role)
+            login_user(new_user)
+            flash("Sign-up successful!", "success")
+            return redirect(url_for('views.HomePage'))
+        finally:
+            conn.close()
 
     return render_template("signup.html")
 
