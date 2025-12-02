@@ -9,8 +9,14 @@ from datetime import datetime
 
 bcrypt = Bcrypt()
 login_manager = LoginManager()
+
+# Get database host and strip any port if included
+db_host = os.environ.get("DB_HOST", "movierental.c9wwqmsm68mt.us-east-2.rds.amazonaws.com")
+if ":" in db_host:
+    db_host = db_host.split(":")[0]
+
 db_config = {
-    "host": os.environ.get("DB_HOST", "movierental.c9wwqmsm68mt.us-east-2.rds.amazonaws.com"),
+    "host": db_host,
     "user": os.environ.get("DB_USER", "Matthew1225"),
     "password": os.environ.get("DB_PASSWORD", "Gallifrey1225"),
     "database": os.environ.get("DB_NAME", "movie_rental"),
