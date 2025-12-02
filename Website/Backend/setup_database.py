@@ -8,6 +8,34 @@ from Website.Backend import get_db_connection
 
 setup_bp = Blueprint('setup', __name__)
 
+@setup_bp.route('/check-tables')
+def check_tables():
+    """View current database tables and row counts"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute("SHOW TABLES")
+        tables = cursor.fetchall()
+        
+        results = ["<h2>Database Tables</h2><pre>"]
+        results.append(f"Database: defaultdb")
+        results.append(f"Total tables: {len(tables)}\n")
+        
+        for (table_name,) in tables:
+            cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
+            count = cursor.fetchone()[0]
+            results.append(f"  ✓ {table_name}: {count} rows")
+        
+        cursor.close()
+        conn.close()
+        
+        results.append("</pre>")
+        return "\n".join(results)
+        
+    except Exception as e:
+        return f"<h2>Error</h2><pre>{str(e)}</pre>", 500
+
 @setup_bp.route('/setup-database-now')
 def setup_database():
     """Initialize database with all tables and sample data"""
