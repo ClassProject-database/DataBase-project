@@ -589,8 +589,8 @@ def checkout():
         final_price = total_price
         discount_code = None
 
-    from flask_bcrypt import generate_password_hash
-    hashed_card = generate_password_hash(card_number).decode()
+    # Only store last 4 digits of card for security
+    last_four = card_number[-4:] if len(card_number) >= 4 else card_number
 
     conn = None
     try:
@@ -610,7 +610,7 @@ def checkout():
               discount_code, discounted_amount
             ) VALUES (%s,%s,%s,%s,%s,%s,%s)
         """, (
-            current_user.id, card_name, hashed_card,
+            current_user.id, card_name, last_four,
             exp_month, exp_year,
             discount_code, final_price
         ))
