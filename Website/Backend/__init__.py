@@ -11,17 +11,23 @@ bcrypt = Bcrypt()
 login_manager = LoginManager()
 
 # Get database host and strip any port if included
-db_host = os.environ.get("DB_HOST", "movierental.c9wwqmsm68mt.us-east-2.rds.amazonaws.com")
-if ":" in db_host:
+db_host = os.environ.get("DB_HOST")
+if db_host and ":" in db_host:
     db_host = db_host.split(":")[0]
 
 db_config = {
     "host": db_host,
-    "user": os.environ.get("DB_USER", "Matthew1225"),
-    "password": os.environ.get("DB_PASSWORD", "Gallifrey1225"),
-    "database": os.environ.get("DB_NAME", "movie_rental"),
+    "user": os.environ.get("DB_USER"),
+    "password": os.environ.get("DB_PASSWORD"),
+    "database": os.environ.get("DB_NAME"),
     "port": int(os.environ.get("DB_PORT", 3306))
 }
+
+# Validate required environment variables
+required_vars = ["DB_HOST", "DB_USER", "DB_PASSWORD", "DB_NAME"]
+missing_vars = [var for var in required_vars if not os.environ.get(var)]
+if missing_vars:
+    raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
 
 
 connection_pool = pooling.MySQLConnectionPool(
