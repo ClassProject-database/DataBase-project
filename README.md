@@ -12,22 +12,28 @@ Don't worry, we've got you covered. No surprise AWS charges here!
 
 ### Quick Database Setup (FREE Options)
 
-#### Option 1: Railway.app (Recommended - MySQL)
-1. Go to [railway.app](https://railway.app) and sign up
-2. Click **"New Project"** → **"Database"** → **"MySQL"**
+#### Option 1: PlanetScale (Best Free MySQL)
+1. Go to [planetscale.com](https://planetscale.com) and sign up (no credit card needed!)
+2. Click **"Create database"** → Choose **"MySQL"**
 3. Wait for it to deploy (2-3 minutes)
-4. Go to **"Variables"** tab - copy these values:
-   - `DATABASE_URL`: `mysql://user:password@host:port/database`
+4. Go to **"Connect"** tab → **"General"** → Copy connection details:
+   - Host, Username, Password, Database name
 
-#### Option 2: PlanetScale (MySQL)
-1. Go to [planetscale.com](https://planetscale.com) and sign up
-2. Create a new database
-3. Get your connection details from the dashboard
+**Why PlanetScale?** 
+- ✅ Truly free (no credit card)
+- ✅ MySQL compatible (no code changes)
+- ✅ 1GB storage free
+- ✅ Professional & reliable
 
-#### Option 3: Supabase (PostgreSQL - requires code changes)
+#### Option 2: Supabase (PostgreSQL - Free Alternative)
 1. Go to [supabase.com](https://supabase.com) and sign up
 2. Create a new project
 3. Go to **Settings** → **Database** for connection details
+
+**Note**: Requires changing your code from MySQL to PostgreSQL (more work)
+
+#### Option 3: Railway.app (If you have a credit card)
+Railway offers a free tier but requires credit card verification. If you have one, it's a good option.
 
 ### Step 2: Set Up Your Database Schema
 Once you have your new database, run the SQL commands in your `SQL db` file to create all the tables:
