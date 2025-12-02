@@ -3,7 +3,7 @@ services:
     name: movie-rental-app
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -b 0.0.0.0:$PORT Website.Backend.main:app
+    startCommand: gunicorn -b 0.0.0.0:$PORT -w 2 --threads 4 --timeout 120 --max-requests 1000 --max-requests-jitter 50 Website.Backend.main:app
     envVars:
       - key: FLASK_ENV
         value: production

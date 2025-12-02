@@ -32,12 +32,18 @@ if missing_vars:
 
 connection_pool = pooling.MySQLConnectionPool(
     pool_name="mypool",
-    pool_size=10,
-    **db_config
+    pool_size=20,  # Increased for better concurrency
+    pool_reset_session=True,  # Reset session variables between uses
+    **db_config,
+    connect_timeout=10,  # Connection timeout in seconds
+    autocommit=False,  # Explicit transaction control
+    use_pure=False  # Use C extension for better performance
 )
 
 
 def get_db_connection():
+    """Get connection from pool with timeout"""
+    return connection_pool.get_connection()
     return connection_pool.get_connection()
 
 class User(UserMixin):
