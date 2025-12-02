@@ -97,7 +97,7 @@ def check_tables():
 
 @setup_bp.route('/setup-database-now')
 def setup_database():
-    """Initialize database with all tables and 100 movies"""
+    """Initialize database with all tables and movies (preserves existing user data)"""
     
     # SQL commands to execute
     sql_commands = """
@@ -110,11 +110,8 @@ DROP TABLE IF EXISTS payment;
 DROP TABLE IF EXISTS moviegenres;
 DROP TABLE IF EXISTS movies;
 DROP TABLE IF EXISTS genres;
-DROP TABLE IF EXISTS employees;
-DROP TABLE IF EXISTS customers;
-DROP TABLE IF EXISTS users;
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   account_id int(11) NOT NULL AUTO_INCREMENT,
   username varchar(50) NOT NULL,
   password_ varchar(255) NOT NULL,
@@ -129,14 +126,14 @@ CREATE TABLE users (
   UNIQUE KEY phone (phone)
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
   account_id int(11) NOT NULL,
   address varchar(100) NOT NULL,
   PRIMARY KEY (account_id),
   CONSTRAINT customers_ibfk_1 FOREIGN KEY (account_id) REFERENCES users (account_id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE employees (
+CREATE TABLE IF NOT EXISTS employees (
   account_id int(11) NOT NULL,
   job_title varchar(100) NOT NULL,
   salary decimal(10,2) NOT NULL,
@@ -160,7 +157,8 @@ CREATE TABLE movies (
   image_path varchar(255) DEFAULT 'default.jpg',
   description text,
   trailer_url varchar(255) DEFAULT NULL,
-  PRIMARY KEY (movie_id)
+  PRIMARY KEY (movie_id),
+  UNIQUE KEY unique_movie (title, release_year)
 ) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE moviegenres (
@@ -226,14 +224,14 @@ CREATE TABLE reviews (
 
 INSERT INTO genres (genre_id, genre_name) VALUES (1, 'Sci-Fi'), (2, 'Action'), (3, 'Family'), (4, 'Romance'), (5, 'Comedy'), (6, 'Fantasy');
 
-INSERT INTO users (username, password_, role, first_name, last_name, email, phone) VALUES ('Admin', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrwW', 'employee', 'Matt', 'Huckman', 'matt@example.com', '111-111-1111');
-INSERT INTO users (username, password_, role, first_name, last_name, email, phone) VALUES ('TestUser', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrwW', 'customer', 'Tom', 'West', 'west@example.com', '222-222-2222');
+INSERT IGNORE INTO users (username, password_, role, first_name, last_name, email, phone) VALUES ('Admin', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrwW', 'employee', 'Matt', 'Huckman', 'matt@example.com', '111-111-1111');
+INSERT IGNORE INTO users (username, password_, role, first_name, last_name, email, phone) VALUES ('TestUser', '$2b$12$wa4KemzvpKcGZZBtDVbMW.wdpg3RGLsGyl8aSKwdelSzH97rGQrwW', 'customer', 'Tom', 'West', 'west@example.com', '222-222-2222');
 
-INSERT INTO employees (account_id, job_title, salary) SELECT account_id, 'Administrator', 50000.00 FROM users WHERE username = 'Admin';
-INSERT INTO customers (account_id, address) SELECT account_id, 'N/A' FROM users WHERE username = 'TestUser';
+INSERT IGNORE INTO employees (account_id, job_title, salary) SELECT account_id, 'Administrator', 50000.00 FROM users WHERE username = 'Admin' AND NOT EXISTS (SELECT 1 FROM employees WHERE employees.account_id = users.account_id);
+INSERT IGNORE INTO customers (account_id, address) SELECT account_id, 'N/A' FROM users WHERE username = 'TestUser' AND NOT EXISTS (SELECT 1 FROM customers WHERE customers.account_id = users.account_id);
 """
     
-    # Insert all 100 movies from SQL database
+    # Insert all 94 unique movies (removed duplicates: Interstellar, Frozen, Tangled, Forrest Gump, Pulp Fiction, Harry Potter Half-Blood Prince)
     movies_sql = """
 INSERT INTO movies (movie_id, title, release_year, rating, price, image_path) VALUES
 (1, 'Interstellar', 2014, 'PG-13', 13.99, 'interstellar.jpg'),
@@ -278,14 +276,11 @@ INSERT INTO movies (movie_id, title, release_year, rating, price, image_path) VA
 (40, 'Toy Story 3', 2010, 'G', 10.49, 'toy_story_3.jpg'),
 (41, 'Finding Nemo', 2003, 'G', 9.49, 'finding_nemo.jpg'),
 (42, 'Shrek', 2001, 'PG', 8.99, 'shrek.jpg'),
-(43, 'Harry Potter and the Half-Blood Prince', 2009, 'PG-13', 13.99, 'harry_potter_and_the_half_blood_prince.jpg'),
 (44, 'The Godfather Part II', 1974, 'R', 17.49, 'the_godfather_part_ii.jpg'),
 (45, 'The Departed', 2006, 'R', 14.29, 'the_departed.jpg'),
 (46, 'Inglourious Basterds', 2009, 'R', 16.99, 'inglourious_basterds.jpg'),
 (47, 'The Big Lebowski', 1998, 'R', 8.49, 'the_big_lebowski.jpg'),
-(48, 'Forrest Gump', 1994, 'PG-13', 13.49, 'forrest_gump.jpg'),
 (49, 'The Prestige', 2006, 'PG-13', 12.19, 'the_prestige.jpg'),
-(50, 'Interstellar', 2014, 'PG-13', 13.99, 'interstellar.jpg'),
 (51, '12 Angry Men', 1957, 'NR', 7.99, '12_angry_men.jpg'),
 (52, 'Goodfellas', 1990, 'R', 15.79, 'goodfellas.jpg'),
 (53, 'The Silence of the Lambs', 1991, 'R', 14.29, 'the_silence_of_the_lambs.jpg'),
@@ -298,7 +293,6 @@ INSERT INTO movies (movie_id, title, release_year, rating, price, image_path) VA
 (60, 'Citizen Kane', 1941, 'PG', 6.49, 'citizen_kane.jpg'),
 (61, 'The Exorcist', 1973, 'R', 10.99, 'the_exorcist.jpg'),
 (62, 'The Wizard of Oz', 1939, 'G', 5.99, 'the_wizard_of_oz.jpg'),
-(63, 'Pulp Fiction', 1994, 'R', 13.79, 'pulp_fiction.jpg'),
 (64, 'A Clockwork Orange', 1971, 'R', 12.59, 'a_clockwork_orange.jpg'),
 (65, 'Jaws', 1975, 'PG', 10.29, 'jaws.jpg'),
 (66, 'The Shining', 1980, 'R', 14.19, 'the_shining.jpg'),
@@ -333,9 +327,7 @@ INSERT INTO movies (movie_id, title, release_year, rating, price, image_path) VA
 (95, 'The Incredibles 2', 2018, 'PG', 10.99, 'the_incredibles_2.jpg'),
 (96, 'The Lego Movie', 2014, 'PG', 8.99, 'the_lego_movie.jpg'),
 (97, 'Zootopia', 2016, 'PG', 9.49, 'zootopia.jpg'),
-(98, 'Moana', 2016, 'PG', 10.69, 'moana.jpg'),
-(99, 'Frozen', 2013, 'PG', 11.29, 'frozen.jpg'),
-(100, 'Tangled', 2010, 'PG', 12.29, 'tangled.jpg');
+(98, 'Moana', 2016, 'PG', 10.69, 'moana.jpg');
 """
     
     genres_mapping_sql = """
@@ -350,11 +342,11 @@ INSERT INTO moviegenres (movie_id, genre_id) VALUES
 (30, 1), (30, 2), (31, 3), (31, 2), (32, 2), (32, 6), (33, 2), (33, 6),
 (34, 1), (34, 2), (35, 1), (35, 2), (36, 1), (36, 2), (37, 2), (37, 6),
 (38, 3), (38, 6), (39, 3), (39, 6), (40, 3), (40, 6), (41, 3), (41, 6),
-(42, 3), (42, 5), (43, 6), (43, 2), (44, 2), (45, 2), (46, 2), (46, 5),
-(47, 5), (47, 4), (48, 4), (49, 2), (49, 6), (50, 1), (50, 6),
+(42, 3), (42, 5), (44, 2), (45, 2), (46, 2), (46, 5),
+(47, 5), (47, 4), (49, 2), (49, 6),
 (51, 2), (52, 2), (53, 2), (54, 2), (55, 2), (56, 2),
 (57, 1), (57, 2), (58, 2), (59, 4), (60, 2), (61, 2), (61, 6),
-(62, 3), (62, 6), (63, 2), (63, 5), (64, 2), (65, 2), (65, 1),
+(62, 3), (62, 6), (64, 2), (65, 2), (65, 1),
 (66, 6), (66, 2), (67, 2), (68, 2), (68, 1), (69, 4), (70, 4),
 (71, 2), (71, 5), (72, 2), (72, 1), (73, 2), (73, 5), (74, 2),
 (75, 2), (76, 1), (76, 6), (77, 2), (77, 6), (78, 2), (78, 6),
@@ -362,8 +354,7 @@ INSERT INTO moviegenres (movie_id, genre_id) VALUES
 (83, 2), (83, 1), (84, 1), (84, 2), (85, 1), (85, 2), (86, 1), (86, 2),
 (87, 1), (87, 2), (88, 1), (88, 2), (89, 1), (89, 2), (90, 1), (90, 2),
 (91, 1), (91, 2), (92, 1), (92, 2), (93, 1), (93, 2), (94, 1), (94, 2),
-(95, 3), (95, 2), (96, 3), (96, 5), (97, 3), (97, 5), (98, 3), (98, 6),
-(99, 3), (99, 6), (100, 3), (100, 4);
+(95, 3), (95, 2), (96, 3), (96, 5), (97, 3), (97, 5), (98, 3), (98, 6);
 """
     
     try:
@@ -371,6 +362,7 @@ INSERT INTO moviegenres (movie_id, genre_id) VALUES
         cursor = conn.cursor()
         
         results = ["<h2>Database Setup Started...</h2><pre>"]
+        results.append("NOTE: Existing user accounts are preserved!")
         
         # Execute main schema
         for statement in sql_commands.split(';'):
@@ -379,13 +371,16 @@ INSERT INTO moviegenres (movie_id, genre_id) VALUES
                 try:
                     cursor.execute(statement)
                     conn.commit()
-                    if 'CREATE TABLE' in statement.upper():
+                    if 'CREATE TABLE IF NOT EXISTS' in statement.upper():
+                        table = statement.split('(')[0].split()[-1]
+                        results.append(f"✓ Verified table: {table}")
+                    elif 'CREATE TABLE' in statement.upper():
                         table = statement.split('(')[0].split()[-1]
                         results.append(f"✓ Created table: {table}")
                     elif 'DROP TABLE' in statement.upper():
-                        results.append(f"✓ Dropped old tables")
-                    elif 'INSERT INTO users' in statement:
-                        results.append(f"✓ Added users")
+                        results.append(f"✓ Dropped old movie/rental tables")
+                    elif 'INSERT IGNORE INTO users' in statement or 'INSERT INTO users' in statement:
+                        results.append(f"✓ Added/verified default users")
                     elif 'INSERT INTO genres' in statement:
                         results.append(f"✓ Added genres")
                 except Exception as e:
@@ -395,7 +390,7 @@ INSERT INTO moviegenres (movie_id, genre_id) VALUES
         try:
             cursor.execute(movies_sql)
             conn.commit()
-            results.append(f"✓ Added 10 sample movies")
+            results.append(f"✓ Added 94 unique movies (removed 6 duplicates)")
         except Exception as e:
             results.append(f"✗ Movies error: {str(e)[:200]}")
         
@@ -411,7 +406,8 @@ INSERT INTO moviegenres (movie_id, genre_id) VALUES
         conn.close()
         
         results.append("\n\n=== DATABASE READY! ===")
-        results.append("\nLogin credentials:")
+        results.append("\n⚠️  USER DATA PRESERVED: All existing user accounts remain intact!")
+        results.append("\nDefault login credentials (only added if not already present):")
         results.append("  Admin:    username='Admin'    password='password'")
         results.append("  Customer: username='TestUser' password='password'")
         results.append("\nYour site should now work at: https://blockboster-rentals.onrender.com")
