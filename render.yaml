@@ -8,12 +8,12 @@ services:
       - key: FLASK_ENV
         value: production
       - key: DB_HOST
-        value: movierental.c9wwqmsm68mt.us-east-2.rds.amazonaws.com
+        sync: false
       - key: DB_USER
-        value: Matthew1225
+        sync: false
       - key: DB_PASSWORD
-        value: Gallifrey1225
+        sync: false
       - key: DB_NAME
-        value: movie_rental
+        sync: false
       - key: DB_PORT
         value: 3306

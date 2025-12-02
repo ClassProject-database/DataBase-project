@@ -60,7 +60,7 @@ def create_app():
                 return value
         return value.strftime(format) if isinstance(value, datetime) else value
 
-    # Flask-Login user loader
+    # login user 
     @login_manager.user_loader
     def load_user(user_id):
         conn = get_db_connection()
