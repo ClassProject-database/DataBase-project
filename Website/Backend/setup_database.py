@@ -10,27 +10,86 @@ setup_bp = Blueprint('setup', __name__)
 
 @setup_bp.route('/check-tables')
 def check_tables():
-    """View current database tables and row counts"""
+    """View current database tables with detailed schema and row counts"""
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
         
         cursor.execute("SHOW TABLES")
         tables = cursor.fetchall()
         
-        results = ["<h2>Database Tables</h2><pre>"]
-        results.append(f"Database: defaultdb")
-        results.append(f"Total tables: {len(tables)}\n")
+        results = ["<html><head><style>"]
+        results.append("body { font-family: monospace; background: #1e1e1e; color: #d4d4d4; padding: 20px; }")
+        results.append("h2 { color: #4ec9b0; }")
+        results.append("h3 { color: #569cd6; margin-top: 20px; }")
+        results.append("table { border-collapse: collapse; margin: 10px 0; background: #2d2d2d; }")
+        results.append("th { background: #0e639c; color: white; padding: 8px; text-align: left; }")
+        results.append("td { padding: 8px; border-bottom: 1px solid #3e3e3e; }")
+        results.append(".count { color: #ce9178; font-weight: bold; }")
+        results.append(".sample { color: #9cdcfe; }")
+        results.append("</style></head><body>")
         
-        for (table_name,) in tables:
-            cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
-            count = cursor.fetchone()[0]
-            results.append(f"  ✓ {table_name}: {count} rows")
+        results.append(f"<h2>Database: defaultdb</h2>")
+        results.append(f"<p>Total tables: <span class='count'>{len(tables)}</span></p>")
+        
+        db_name = list(tables[0].values())[0] if tables else None
+        table_key = f'Tables_in_{db_name}' if db_name else list(tables[0].keys())[0] if tables else None
+        
+        for table_row in tables:
+            table_name = table_row[table_key]
+            
+            # Get row count
+            cursor.execute(f"SELECT COUNT(*) as count FROM `{table_name}`")
+            count = cursor.fetchone()['count']
+            
+            results.append(f"<h3>📋 {table_name} <span class='count'>({count} rows)</span></h3>")
+            
+            # Get table structure
+            cursor.execute(f"DESCRIBE `{table_name}`")
+            columns = cursor.fetchall()
+            
+            results.append("<table>")
+            results.append("<tr><th>Column</th><th>Type</th><th>Null</th><th>Key</th><th>Default</th><th>Extra</th></tr>")
+            for col in columns:
+                results.append(f"<tr>")
+                results.append(f"<td>{col['Field']}</td>")
+                results.append(f"<td>{col['Type']}</td>")
+                results.append(f"<td>{col['Null']}</td>")
+                results.append(f"<td>{col['Key']}</td>")
+                results.append(f"<td>{col['Default']}</td>")
+                results.append(f"<td>{col['Extra']}</td>")
+                results.append(f"</tr>")
+            results.append("</table>")
+            
+            # Show sample data if table has rows
+            if count > 0:
+                cursor.execute(f"SELECT * FROM `{table_name}` LIMIT 3")
+                sample_data = cursor.fetchall()
+                
+                if sample_data:
+                    results.append("<p class='sample'>Sample data (first 3 rows):</p>")
+                    results.append("<table>")
+                    
+                    # Header
+                    results.append("<tr>")
+                    for key in sample_data[0].keys():
+                        results.append(f"<th>{key}</th>")
+                    results.append("</tr>")
+                    
+                    # Data rows
+                    for row in sample_data:
+                        results.append("<tr>")
+                        for value in row.values():
+                            display_val = str(value)[:50] if value is not None else "NULL"
+                            results.append(f"<td>{display_val}</td>")
+                        results.append("</tr>")
+                    
+                    results.append("</table>")
         
         cursor.close()
         conn.close()
         
-        results.append("</pre>")
+        results.append("</body></html>")
         return "\n".join(results)
         
     except Exception as e:
