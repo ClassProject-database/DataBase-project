@@ -33,7 +33,7 @@ body {
   }
   
 .login-container input.form-control {
-  background-color: rgba(2, 236, 72, 0.95);
+  background-color: rgba(2, 236, 72, 0);
   color: #ffffff;
   border: 2px solid rgba(248, 5, 167, 0.6);
   padding: 10px;
