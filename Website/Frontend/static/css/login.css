@@ -10,10 +10,10 @@ body {
   .login-container {
     max-width: 400px;
     margin: 60px auto;
-    background: linear-gradient(135deg, rgba(40, 40, 80, 0.98), rgba(45, 35, 75, 0.95));
+    background: linear-gradient(135deg, rgba(168, 33, 134, 0.98), rgba(22, 233, 3, 0.95));
     padding: 25px 20px;
     border-radius: 10px;
-    box-shadow: 0 8px 32px rgba(74, 90, 255, 0.4), 0 0 60px rgba(74, 90, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(235, 2, 2, 0.829), 0 0 60px rgba(231, 255, 11, 0.829);
     backdrop-filter: blur(12px);
     border: 2px solid rgba(200, 200, 255, 0.4);
     position: relative;
