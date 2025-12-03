@@ -394,6 +394,15 @@ def add_movie():
     description = data.get("description", "")
     trailer_url = data.get("trailer_url", "")
     genre_ids = data.get("genre_ids", [])
+    
+    # Validate genre IDs (must be 1-10, and 1-3 genres per movie)
+    if not genre_ids or len(genre_ids) < 1:
+        return jsonify({"success": False, "error": "At least 1 genre is required"}), 400
+    if len(genre_ids) > 3:
+        return jsonify({"success": False, "error": "Maximum 3 genres allowed per movie"}), 400
+    for gid in genre_ids:
+        if not isinstance(gid, int) or gid < 1 or gid > 10:
+            return jsonify({"success": False, "error": f"Invalid genre ID: {gid}. Must be between 1-10"}), 400
 
     release_year = int(data.get("release_year", 0))
     if release_year > 9999:
@@ -1128,6 +1137,15 @@ def update_movie():
     description = data.get("description") or None
     trailer_url = data.get("trailer_url") or None
     genre_ids = data.get("genre_ids", [])
+    
+    # Validate genre IDs (must be 1-10, and 1-3 genres per movie)
+    if not genre_ids or len(genre_ids) < 1:
+        return jsonify({"success": False, "error": "At least 1 genre is required"}), 400
+    if len(genre_ids) > 3:
+        return jsonify({"success": False, "error": "Maximum 3 genres allowed per movie"}), 400
+    for gid in genre_ids:
+        if not isinstance(gid, int) or gid < 1 or gid > 10:
+            return jsonify({"success": False, "error": f"Invalid genre ID: {gid}. Must be between 1-10"}), 400
 
     conn = None
     try:
