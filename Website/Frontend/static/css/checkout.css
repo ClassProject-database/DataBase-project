@@ -2,10 +2,12 @@
 .checkout-container {
     max-width: 500px;
     margin: 50px auto;
-    background: rgba(24, 24, 40, 0.9);
+    background: linear-gradient(135deg, rgba(25, 25, 60, 0.95), rgba(30, 20, 55, 0.92));
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 40px rgba(74, 90, 255, 0.15);
+    border: 1px solid rgba(74, 90, 255, 0.2);
+    backdrop-filter: blur(12px);
     color: var(--text-secondary);
     position: relative;
     z-index: 2;
@@ -123,8 +125,10 @@
 
 #cart-summary {
     
-    background-color: #2a2a36 !important;
-    color: #e0e0e0;
+    background: linear-gradient(135deg, rgba(25, 25, 55, 0.9), rgba(30, 20, 50, 0.85)) !important;
+    border: 1px solid rgba(74, 90, 255, 0.2);
+    border-radius: 8px;
+    color: #e8e8f5;
   }
   
   #cart-summary h5,

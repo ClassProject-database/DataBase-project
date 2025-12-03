@@ -1,21 +1,21 @@
 :root {
-  --header-bg:           #181826;
-  --modal-content-bg:    #1f1f2a;
-  --dropdown-bg:         #1b1b2f;
-  --dropdown-border:     #2a2a4a;
-  --dropdown-item-bg:    #212135;
-  --dropdown-item-hover-bg: #4e77ff;
-  --btn-info-bg: #0d6efd; 
-  --btn-info-hover-bg: #375fd4;
+  --header-bg:           rgba(20, 20, 50, 0.95);
+  --modal-content-bg:    rgba(25, 25, 55, 0.98);
+  --dropdown-bg:         rgba(22, 22, 50, 0.95);
+  --dropdown-border:     rgba(74, 90, 255, 0.3);
+  --dropdown-item-bg:    rgba(25, 25, 50, 0.9);
+  --dropdown-item-hover-bg: #4a5aff;
+  --btn-info-bg: #4a5aff; 
+  --btn-info-hover-bg: #6a7aff;
 
 
-  --border-color:        #44445a;
-  --row-hover-bg:        #232339;
+  --border-color:        rgba(74, 90, 255, 0.25);
+  --row-hover-bg:        rgba(74, 90, 255, 0.15);
 
-  --focus-border-color:  #d7d7d76e;
-  --focus-box-shadow:    0 0 0 0.2rem rgba(47, 47, 47, 0.232);
+  --focus-border-color:  rgba(74, 90, 255, 0.5);
+  --focus-box-shadow:    0 0 0 0.2rem rgba(74, 90, 255, 0.3);
 
-  --modal-overlay-bg:    rgba(0, 0, 0, 0.7);
+  --modal-overlay-bg:    rgba(10, 10, 30, 0.8);
 }
 
 body {
@@ -54,7 +54,7 @@ body {
 }
 
 #users-table tbody tr {
-  background-color: rgba(30, 30, 40, 0.85);
+  background: linear-gradient(135deg, rgba(20, 20, 50, 0.85), rgba(25, 20, 45, 0.8));
   padding: .2 ease;
   transition: background-color 0.3s ease;
   height: 10vh
@@ -67,9 +67,9 @@ body {
 }
 
 input, select, textarea {
-  background-color: #25253a;
-  color: #fff;
-  border: 1px solid #3a3a52;
+  background-color: rgba(20, 20, 45, 0.8);
+  color: #e8e8f5;
+  border: 1px solid rgba(74, 90, 255, 0.3);
   border-radius: 6px;
   padding: 10px;
   width: 100%;
@@ -84,9 +84,9 @@ input:focus, select:focus, textarea:focus {
 input:-webkit-autofill,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-  background-color: #25253a !important;
-  -webkit-text-fill-color: #ffffff !important;
-  box-shadow: 0 0 0px 1000px #25253a inset !important;
+  background-color: rgba(20, 20, 45, 0.8) !important;
+  -webkit-text-fill-color: #e8e8f5 !important;
+  box-shadow: 0 0 0px 1000px rgba(20, 20, 45, 0.9) inset !important;
 }
 
 .btn {
@@ -134,10 +134,10 @@ select:-webkit-autofill {
   width: 100%;
   padding: 10px;
   margin-bottom: 1rem;
-  background-color: #1e1e2e;
+  background-color: rgba(20, 20, 45, 0.8);
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  color: #ddd;
+  color: #e8e8f5;
 }
 
 #searchUsers::placeholder {
