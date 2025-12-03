@@ -10,28 +10,18 @@
   }
   
 .hero-box {
-  background: linear-gradient(135deg, rgba(20, 20, 50, 0.95), rgba(15, 15, 45, 0.92));
-  border: 2px solid rgba(74, 90, 255, 0.4);
+  background: linear-gradient(135deg, rgba(15, 15, 40, 0.95), rgba(10, 10, 35, 0.92));
+  border: 1px solid rgba(74, 90, 255, 0.2);
   color: #fff;
   text-align: center;
   padding: 60px 40px;
   border-radius: 12px;
   margin: 0 auto 40px;
   max-width: 1200px;
-  box-shadow: 0 8px 24px rgba(74, 90, 255, 0.5), 0 0 50px rgba(74, 90, 255, 0.25);
+  box-shadow: 0 4px 15px rgba(74, 90, 255, 0.2), 0 0 25px rgba(74, 90, 255, 0.1);
   position: relative;
   z-index: 10;
   overflow: hidden;
-  animation: heroGlow 3s ease-in-out infinite;
-}
-
-@keyframes heroGlow {
-  0%, 100% {
-    box-shadow: 0 8px 24px rgba(74, 90, 255, 0.5), 0 0 50px rgba(74, 90, 255, 0.25);
-  }
-  50% {
-    box-shadow: 0 8px 30px rgba(74, 90, 255, 0.6), 0 0 60px rgba(74, 90, 255, 0.35);
-  }
 }
 
 .hero-box::before {
@@ -53,17 +43,6 @@
     color: #e8e8f5;
     position: relative;
     z-index: 2;
-    text-shadow: 0 0 20px rgba(74, 90, 255, 0.5), 0 0 40px rgba(74, 90, 255, 0.3);
-    animation: textGlow 2s ease-in-out infinite;
-  }
-  
-  @keyframes textGlow {
-    0%, 100% {
-      text-shadow: 0 0 20px rgba(74, 90, 255, 0.5), 0 0 40px rgba(74, 90, 255, 0.3);
-    }
-    50% {
-      text-shadow: 0 0 25px rgba(74, 90, 255, 0.7), 0 0 50px rgba(74, 90, 255, 0.4);
-    }
   }
   
   .hero-box p {
@@ -80,11 +59,11 @@
   
 .latest-reviews-sidebar {
   flex: 0 0 340px;
-  background: linear-gradient(135deg, rgba(18, 18, 45, 0.95), rgba(12, 12, 40, 0.92));
-  border: 2px solid rgba(74, 90, 255, 0.3);
+  background: linear-gradient(135deg, rgba(12, 12, 35, 0.95), rgba(8, 8, 30, 0.92));
+  border: 1px solid rgba(74, 90, 255, 0.2);
   padding: 24px;
   border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(74, 90, 255, 0.4), 0 0 30px rgba(74, 90, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(74, 90, 255, 0.2), 0 0 20px rgba(74, 90, 255, 0.1);
   max-height: 650px;
   overflow-y: auto;
   position: relative;
@@ -111,8 +90,8 @@
   }
   
   .review-item {
-    background: linear-gradient(135deg, rgba(25, 25, 55, 0.8), rgba(20, 20, 50, 0.7));
-    border: 1px solid rgba(74, 90, 255, 0.2);
+    background: linear-gradient(135deg, rgba(18, 18, 45, 0.8), rgba(12, 12, 38, 0.7));
+    border: 1px solid rgba(74, 90, 255, 0.15);
     padding: 12px;
     border-radius: 8px;
     transition: all 0.3s ease;
@@ -120,8 +99,8 @@
   
   .review-item:hover {
     transform: translateX(5px);
-    border-color: rgba(74, 90, 255, 0.5);
-    box-shadow: 0 4px 12px rgba(74, 90, 255, 0.3);
+    border-color: rgba(74, 90, 255, 0.3);
+    box-shadow: 0 3px 10px rgba(74, 90, 255, 0.2);
   }
   
 .main-content {
@@ -185,9 +164,9 @@
   .movie-card {
     flex: 0 0 220px;
     height: 360px;
-    background: linear-gradient(135deg, rgba(20, 20, 50, 0.95), rgba(15, 15, 45, 0.92));
+    background: linear-gradient(135deg, rgba(15, 15, 40, 0.95), rgba(10, 10, 35, 0.92));
     border-radius: 12px;
-    border: 2px solid rgba(74, 90, 255, 0.35);
+    border: 1px solid rgba(74, 90, 255, 0.25);
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -233,9 +212,9 @@
   }
   
   .movie-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 10px 30px rgba(74, 90, 255, 0.6), 0 0 40px rgba(74, 90, 255, 0.35);
-    border-color: rgba(74, 90, 255, 0.7);
+    transform: scale(1.03);
+    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 25px rgba(74, 90, 255, 0.15);
+    border-color: rgba(74, 90, 255, 0.5);
   }
   
   .movie-card img {
@@ -266,20 +245,20 @@
   }
 
   .step-card {
-    background: linear-gradient(135deg, rgba(20, 20, 50, 0.95), rgba(15, 15, 45, 0.92));
-    border: 2px solid rgba(74, 90, 255, 0.3);
+    background: linear-gradient(135deg, rgba(15, 15, 40, 0.95), rgba(10, 10, 35, 0.92));
+    border: 1px solid rgba(74, 90, 255, 0.2);
     border-radius: 12px;
     padding: 30px 25px;
     min-width: 220px;
     max-width: 280px;
-    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.35), 0 0 30px rgba(74, 90, 255, 0.15);
+    box-shadow: 0 4px 15px rgba(74, 90, 255, 0.2), 0 0 20px rgba(74, 90, 255, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   }
 
   .step-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 10px 30px rgba(74, 90, 255, 0.5), 0 0 45px rgba(74, 90, 255, 0.25);
-    border-color: rgba(74, 90, 255, 0.6);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 30px rgba(74, 90, 255, 0.15);
+    border-color: rgba(74, 90, 255, 0.4);
   }
 
   .step-icon {
