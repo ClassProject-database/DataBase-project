@@ -5,6 +5,28 @@ from . import get_db_connection, bcrypt
 
 views = Blueprint('views', __name__)
 
+# Helper function to check role hierarchy permissions
+def can_modify_user(editor_role, target_role):
+    """
+    Check if a user with editor_role can modify a user with target_role.
+    Hierarchy: manager > employee > customer
+    - manager can modify anyone (including other managers) - highest role
+    - employee can only modify customer
+    - customer cannot modify anyone except themselves (handled elsewhere)
+    
+    Note: Database schema only has 'employee', 'customer', 'manager' roles.
+    Manager is the highest role with full administrative access.
+    """
+    editor_role = (editor_role or '').lower()
+    target_role = (target_role or '').lower()
+    
+    if editor_role == 'manager':
+        return True  # Manager can modify/add anyone including other managers
+    elif editor_role == 'employee':
+        return target_role == 'customer'  # Employee can only modify customers
+    
+    return False
+
 # 1) Home Page
 @views.route('/')
 def HomePage():
@@ -155,7 +177,7 @@ def admin_user_view(account_id):
 @login_required
 def admin_dashboard():
     if current_user.role not in ['employee', 'manager']:
-        abort(403, description="Only employees and managers can access the admin dashboard.")
+        abort(403, description="Only employees and managers can access the dashboard.")
 
     conn = None
     try:
@@ -182,11 +204,64 @@ def admin_dashboard():
         if conn:
             conn.close()
 
-# 6) (aDmin) Add user
+# 6) Change Password
+@views.route('/api/change_password', methods=['POST'])
+@login_required
+def change_password():
+    data = request.get_json()
+    current_password = data.get('current_password', '').strip()
+    new_password = data.get('new_password', '').strip()
+    confirm_password = data.get('confirm_password', '').strip()
+
+    if not current_password or not new_password or not confirm_password:
+        return jsonify({'success': False, 'error': 'All fields are required.'}), 400
+
+    if new_password != confirm_password:
+        return jsonify({'success': False, 'error': 'New passwords do not match.'}), 400
+
+    if len(new_password) < 8:
+        return jsonify({'success': False, 'error': 'New password must be at least 8 characters.'}), 400
+
+    conn = None
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        # Get current user's password hash
+        cursor.execute("SELECT password_ FROM users WHERE account_id = %s", (current_user.account_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            cursor.close()
+            return jsonify({'success': False, 'error': 'User not found.'}), 404
+
+        # Verify current password
+        if not bcrypt.check_password_hash(user['password_'], current_password):
+            cursor.close()
+            return jsonify({'success': False, 'error': 'Current password is incorrect.'}), 400
+
+        # Hash and update new password
+        hashed_password = bcrypt.generate_password_hash(new_password).decode('utf-8')
+        cursor.execute("UPDATE users SET password_ = %s WHERE account_id = %s", (hashed_password, current_user.account_id))
+        conn.commit()
+        cursor.close()
+
+        return jsonify({'success': True, 'message': 'Password changed successfully!'})
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        print(f"Error changing password: {e}")
+        return jsonify({'success': False, 'error': 'Failed to change password'}), 500
+    finally:
+        if conn:
+            conn.close()
+
+
+# 7) (aDmin) Add user
 @views.route('/api/add_user', methods=['POST'])
 @login_required
 def add_user():
-    # Only employees and managers can access this route
+    # Allow manager and employee to add users (with restrictions)
     if current_user.role not in ['employee', 'manager']:
         return '', 403
 
@@ -205,9 +280,10 @@ def add_user():
     if not password or len(password) < 2:
         return jsonify({'success': False, 'error': 'Password must be at least 2 characters.'}), 400
 
-    # Only managers can add employees or managers
-    if role in ['employee', 'manager'] and (current_user.role or '').lower() != 'manager':
-        return jsonify({'success': False, 'error': 'Only managers can add employees or managers.'}), 403
+    # Check if current user has permission to create a user with the specified role
+    # Using hierarchy: admin can add anyone, manager can add employee/manager/customer, employee can only add customer
+    if not can_modify_user(current_user.role, role):
+        return jsonify({'success': False, 'error': f'You do not have permission to add users with the {role} role.'}), 403
 
     conn = None
     try:
@@ -255,6 +331,7 @@ def add_user():
 @views.route('/api/delete_user', methods=['POST'])
 @login_required
 def delete_user():
+    # Allow manager and employee to access this route
     if current_user.role not in ['employee', 'manager']:
         return '', 403
 
@@ -273,10 +350,12 @@ def delete_user():
             cursor.close()
             return jsonify({'success': False, 'error': 'User not found'}), 404
 
-        # Only allow deleting customers unless you're a manager
-        if target['role'] in ['employee', 'manager'] and (current_user.role or '').lower() != 'manager':
+        target_role = target['role']
+
+        # Check if current user has permission to delete this user based on hierarchy
+        if not can_modify_user(current_user.role, target_role):
             cursor.close()
-            return jsonify({'success': False, 'error': 'Only managers can delete employees or managers.'}), 403
+            return jsonify({'success': False, 'error': 'You do not have permission to delete this user.'}), 403
 
         cursor.execute("DELETE FROM users WHERE account_id = %s", (account_id,))
         conn.commit()
@@ -296,6 +375,7 @@ def delete_user():
 @views.route('/api/add_movie', methods=['POST'])
 @login_required
 def add_movie():
+    # Allow manager and employee to manage movies
     if current_user.role not in ['employee', 'manager']:
         return '', 403
 
@@ -747,6 +827,7 @@ def user_rentals():
 @views.route('/api/update_user', methods=['POST'])
 @login_required
 def update_user():
+    # Allow manager and employee to access this route
     if current_user.role not in ['employee', 'manager']:
         return '', 403
 
@@ -764,14 +845,30 @@ def update_user():
     job_title = data.get('job_title', None)
     salary = data.get('salary', None)
 
-    # Restrict employee/manager updates to only managers
-    if role in ['employee', 'manager'] and current_user.role.lower() != 'manager':
-        return jsonify({'success': False, 'error': 'Only managers can assign employee or manager roles.'}), 403
-
     conn = None
     try:
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
+
+        # Fetch the target user's current role
+        cursor.execute("SELECT role FROM users WHERE account_id = %s", (account_id,))
+        target = cursor.fetchone()
+        if not target:
+            cursor.close()
+            return jsonify({'success': False, 'error': 'User not found'}), 404
+
+        target_role = target['role']
+
+        # Check if current user has permission to modify this user based on hierarchy
+        if not can_modify_user(current_user.role, target_role):
+            cursor.close()
+            return jsonify({'success': False, 'error': 'You do not have permission to modify this user.'}), 403
+
+        # If trying to change the role, verify permission to assign the new role
+        if role and role != target_role:
+            if not can_modify_user(current_user.role, role):
+                cursor.close()
+                return jsonify({'success': False, 'error': f'You do not have permission to assign the {role} role.'}), 403
 
         if password:
             hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -1009,6 +1106,7 @@ def view_cart():
 @views.route('/api/update_movie', methods=['POST'])
 @login_required
 def update_movie():
+    # Allow manager and employee to manage movies
     if current_user.role not in ['employee', 'manager']:
         return '', 403
 
@@ -1059,6 +1157,7 @@ def update_movie():
 @views.route('/api/delete_movie', methods=['POST'])
 @login_required
 def delete_movie():
+    # Allow manager and employee to manage movies
     if current_user.role not in ['employee', 'manager']:
         return '', 403
 

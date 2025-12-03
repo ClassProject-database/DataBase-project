@@ -16,7 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
 
   const roleEl = document.querySelector("[data-role]");
-  const isManager = (roleEl?.dataset.title || "").toLowerCase() === "manager";
+  const userRole = (roleEl?.dataset.title || "").toLowerCase();
+  const isManager = userRole === "manager";
   const isEmployee = (roleEl?.dataset.role || "").toLowerCase() === "employee";
 
   const userTable = document.getElementById("user-table-body");
@@ -84,6 +85,34 @@ document.addEventListener("DOMContentLoaded", async () => {
         fetchUsers();
       } else {
         toast(result.error || "Error adding user", "error");
+      }
+    });
+  }
+
+  // Handle password change form
+  const changePasswordForm = document.getElementById("change-password-form");
+  if (changePasswordForm) {
+    changePasswordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(changePasswordForm).entries());
+      
+      if (data.new_password !== data.confirm_password) {
+        toast("New passwords do not match.", "error");
+        return;
+      }
+
+      const res = await fetch("/api/change_password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await safeJson(res);
+      if (result.success) {
+        toast("Password changed successfully!");
+        changePasswordForm.reset();
+      } else {
+        toast(result.error || "Error changing password", "error");
       }
     });
   }

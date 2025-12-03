@@ -144,7 +144,7 @@ input, textarea, select, button, a, .btn, .form-control, .input-group, .containe
 
 
 .hero {
-  background: url('/static/images/dark-hero-bg.jpg') no-repeat center/cover;
+  background: url('/static/images/hero-popcorn.png') no-repeat center/cover;
   color: #d5d5d5;
 }
 .hero h1 {
@@ -152,7 +152,7 @@ input, textarea, select, button, a, .btn, .form-control, .input-group, .containe
 }
 
 .hero-section {
-  background: url('/static/images/hero-banner.jpg') no-repeat center/cover;
+  background: url('/static/images/hero-popcorn.png') no-repeat center/cover;
   min-height: 80vh;
   position: relative;
   padding: 60px 0;
