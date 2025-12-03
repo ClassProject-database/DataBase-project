@@ -245,8 +245,8 @@
   }
 
   .step-card {
-    background: linear-gradient(135deg, rgba(15, 15, 40, 0.95), rgba(10, 10, 35, 0.92));
-    border: 1px solid rgba(74, 90, 255, 0.2);
+    background: linear-gradient(135deg, rgb(4, 247, 4), rgba(10, 10, 35, 0.92));
+    border: 1px solid rgba(104, 255, 74, 0.2);
     border-radius: 12px;
     padding: 30px 25px;
     min-width: 220px;
