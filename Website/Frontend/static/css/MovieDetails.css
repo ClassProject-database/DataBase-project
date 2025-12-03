@@ -15,30 +15,53 @@
   }
 
   .description-box {
-    background: linear-gradient(135deg, rgba(25, 25, 55, 0.7), rgba(20, 20, 50, 0.6));
-    border: 1px solid rgba(74, 90, 255, 0.2);
-    padding: 1rem;
-    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(25, 25, 55, 0.85), rgba(20, 20, 50, 0.8));
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(74, 90, 255, 0.3);
+    padding: 1.5rem;
+    border-radius: 10px;
     font-size: 1rem;
-    line-height: 1.5;
+    line-height: 1.7;
     margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(74, 90, 255, 0.2), 0 0 20px rgba(74, 90, 255, 0.1);
+    transition: all 0.3s ease;
+  }
+  
+  .description-box:hover {
+    border-color: rgba(74, 90, 255, 0.5);
+    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 30px rgba(74, 90, 255, 0.15);
   }
 
   .trailer-box {
-    border-radius: 6px;
+    border-radius: 10px;
     overflow: hidden;
     margin-bottom: 1rem;
-    border: 1px solid rgba(74, 90, 255, 0.2);
+    border: 2px solid rgba(74, 90, 255, 0.4);
+    box-shadow: 0 4px 20px rgba(74, 90, 255, 0.3), 0 0 30px rgba(74, 90, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  .trailer-box:hover {
+    border-color: rgba(74, 90, 255, 0.7);
+    box-shadow: 0 6px 30px rgba(74, 90, 255, 0.5), 0 0 45px rgba(74, 90, 255, 0.25);
+    transform: scale(1.01);
   }
 
   .latest-reviews-sidebar {
-    background: linear-gradient(135deg, rgba(20, 20, 50, 0.9), rgba(15, 15, 45, 0.85));
-    border: 1px solid rgba(74, 90, 255, 0.2);
-    border-radius: 8px;
-    flex-grow: 1;                  
+    background: linear-gradient(135deg, rgba(20, 20, 50, 0.95), rgba(15, 15, 45, 0.9));
+    border: 2px solid rgba(74, 90, 255, 0.3);
+    border-radius: 12px;
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
-    padding: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 30px rgba(74, 90, 255, 0.15);
+    transition: all 0.3s ease;
+  }
+  
+  .latest-reviews-sidebar:hover {
+    border-color: rgba(74, 90, 255, 0.5);
+    box-shadow: 0 8px 25px rgba(74, 90, 255, 0.4), 0 0 40px rgba(74, 90, 255, 0.2);
   }
 
   .reviews-list {
@@ -48,18 +71,61 @@
   }
 
   .review-item {
-    background: linear-gradient(135deg, rgba(25, 25, 55, 0.7), rgba(20, 20, 50, 0.6));
-    border: 1px solid rgba(74, 90, 255, 0.15);
-    padding: 0.75rem;
-    border-radius: 6px;
+    background: linear-gradient(135deg, rgba(25, 25, 55, 0.85), rgba(20, 20, 50, 0.8));
+    border: 2px solid rgba(74, 90, 255, 0.2);
+    padding: 1rem;
+    border-radius: 10px;
     margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .review-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: linear-gradient(180deg, #4a5aff, #6a7aff);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .review-item:hover {
+    transform: translateX(8px);
+    border-color: rgba(74, 90, 255, 0.5);
+    box-shadow: 0 4px 15px rgba(74, 90, 255, 0.3);
+  }
+  
+  .review-item:hover::before {
+    opacity: 1;
   }
   .review-item p {
     line-height: 1.3;
     margin-bottom: 0.5rem;
   }
 
+  .add-to-cart-btn {
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(74, 90, 255, 0.3);
+  }
+  
+  .add-to-cart-btn:hover {
+    animation: pulse 1s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 4px 15px rgba(74, 90, 255, 0.3);
+    }
+    50% {
+      box-shadow: 0 6px 25px rgba(74, 90, 255, 0.6), 0 0 30px rgba(74, 90, 255, 0.3);
+    }
+  }
+  
   .add-to-cart-btn:active {
-    transform: scale(0.97);
-    box-shadow: 0 0 10px limegreen;
+    transform: scale(0.95);
+    box-shadow: 0 2px 10px rgba(40, 167, 69, 0.5), 0 0 20px rgba(40, 167, 69, 0.3);
   }
