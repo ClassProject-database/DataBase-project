@@ -41,7 +41,7 @@ h1, h2, h3 {
 }
 
 section {
-  background: linear-gradient(135deg, rgba(15, 15, 40, 0.92), rgba(25, 20, 50, 0.88));
+  background: linear-gradient(135deg, rgba(15, 15, 40, 0.4), rgba(25, 20, 50, 0.4));
   position: relative;
   z-index: 5;
   animation: fadeInUp 0.8s ease-out;

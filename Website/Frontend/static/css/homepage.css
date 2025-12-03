@@ -235,6 +235,7 @@
   /* How It Works Section */
   .how-it-works {
     margin-top: 50px;
+    background: transparent !important;
   }
 
   .section-title {
