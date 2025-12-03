@@ -10,12 +10,12 @@
   .signUp-container {
     max-width: 400px;
     margin: 60px auto;
-    background: linear-gradient(135deg, rgba(25, 25, 60, 0.95), rgba(30, 20, 55, 0.92));
+    background: linear-gradient(135deg, rgba(40, 40, 80, 0.98), rgba(45, 35, 75, 0.95));
     padding: 25px 20px;
     border-radius: 10px;
-    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 40px rgba(74, 90, 255, 0.15);
+    box-shadow: 0 8px 32px rgba(74, 90, 255, 0.4), 0 0 60px rgba(74, 90, 255, 0.2);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(74, 90, 255, 0.2);
+    border: 2px solid rgba(200, 200, 255, 0.4);
     position: relative;
     z-index: 10;
   }
@@ -34,16 +34,16 @@
   }
   
 .signUp-container input.form-control {
-  background-color: rgba(35, 35, 70, 0.9);
-  color: #e8e8f5;
-  border: 1px solid rgba(74, 90, 255, 0.5);
+  background-color: rgba(50, 50, 90, 0.95);
+  color: #ffffff;
+  border: 2px solid rgba(150, 150, 255, 0.6);
   padding: 10px;
   border-radius: 6px;
 }
 
 /* Floating label styles */
 .signUp-container .form-floating > label {
-  color: #b8b8d4;
+  color: #d0d0f0;
   padding: 1rem 0.75rem;
   position: absolute;
   top: 0;
@@ -59,9 +59,9 @@
 /* When input has focus or value, move label up */
 .signUp-container .form-floating > .form-control:focus ~ label,
 .signUp-container .form-floating > .form-control:not(:placeholder-shown) ~ label {
-  opacity: 0.85;
+  opacity: 0.9;
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-  color: #9090ff;
+  color: #b0b0ff;
 }
 
 .signUp-container input::placeholder {
