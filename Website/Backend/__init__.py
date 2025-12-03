@@ -44,7 +44,6 @@ connection_pool = pooling.MySQLConnectionPool(
 def get_db_connection():
     """Get connection from pool with timeout"""
     return connection_pool.get_connection()
-    return connection_pool.get_connection()
 
 class User(UserMixin):
     def __init__(self, account_id, username, role):
