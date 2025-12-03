@@ -31,9 +31,13 @@ async function fetchMovies(params = {}) {
   if (params.genreId) url.searchParams.set("genre_id", params.genreId);
   if (params.q)       url.searchParams.set("q", params.q);
 
+  console.log('Fetching movies from:', url.toString());
+  
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Server error ${res.status}`);
-  return res.json();
+  const data = await res.json();
+  console.log('Received data:', data);
+  return data;
 }
 
 function renderGrid(movies) {
@@ -85,9 +89,12 @@ function setupGenreFilters() {
     btn.addEventListener("click", async () => {
       pills.forEach(b => b.classList.toggle("active", b === btn));
       const genreId = btn.dataset.genre || undefined;
+      
+      console.log('Genre button clicked:', genreId);
 
       try {
         const movies = await fetchMovies({ genreId });
+        console.log('Movies fetched for genre:', movies.length, 'movies');
         renderGrid(movies);
       } catch (err) {
         console.error("Failed to filter by genre:", err);

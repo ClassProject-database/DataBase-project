@@ -118,6 +118,14 @@ def get_movies():
             """)
         
         movies = cursor.fetchall()
+        
+        # Convert genre_ids to list for consistency
+        for movie in movies:
+            if movie.get('genre_ids'):
+                movie['genre_ids'] = movie['genre_ids'].split(',')
+            else:
+                movie['genre_ids'] = []
+        
         cursor.close()
         return jsonify(movies)
     finally:
