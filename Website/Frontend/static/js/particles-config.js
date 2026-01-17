@@ -49,7 +49,7 @@ tsParticles.load("tsparticles", {
       events: {
         onHover: {
           enable: true,
-          mode: "repulse"
+          mode: "attract"
         },
         onClick: {
           enable: true,
