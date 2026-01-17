@@ -1,15 +1,15 @@
 
 :root {
-  --list-bg: #1d1d2b;
-  --list-border: #333;
-  --list-hover-bg: #2a2a3a;
+  --list-bg: rgba(20, 20, 50, 0.85);
+  --list-border: rgba(74, 90, 255, 0.3);
+  --list-hover-bg: rgba(74, 90, 255, 0.15);
   --font-size-list: 15px;
   --font-size-bold: 16px;
   --remove-btn-bg: #dc3545;
   --remove-btn-hover-bg: #c82333;
   --transition-speed: 0.2s;
-  --text-light: rgba(193, 193, 193, 0.85);
-  --placeholder-color: rgba(222, 222, 222, 0.6);
+  --text-light: rgba(230, 230, 245, 0.9);
+  --placeholder-color: rgba(180, 180, 220, 0.7);
 }
 
 .list-group-item {

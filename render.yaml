@@ -3,17 +3,17 @@ services:
     name: movie-rental-app
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn -b 0.0.0.0:$PORT Website.Backend.main:app
+    startCommand: gunicorn -b 0.0.0.0:$PORT -w 2 --threads 4 --timeout 120 --max-requests 1000 --max-requests-jitter 50 Website.Backend.main:app
     envVars:
       - key: FLASK_ENV
         value: production
       - key: DB_HOST
-        value: movierental.c9wwqmsm68mt.us-east-2.rds.amazonaws.com
+        sync: false
       - key: DB_USER
-        value: Matthew1225
+        sync: false
       - key: DB_PASSWORD
-        value: Gallifrey1225
+        sync: false
       - key: DB_NAME
-        value: movie_rental
+        sync: false
       - key: DB_PORT
         value: 3306

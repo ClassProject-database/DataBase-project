@@ -7,6 +7,32 @@
   <h1 class="text-white mb-4"></h1>
 
   <div class="row g-4">
+    <!-- Change Password -->
+    <div class="col-md-4">
+      <div class="card bg-dark text-white shadow h-100">
+        <div class="card-header text-center border-bottom border-secondary">
+          <h5 class="mb-0">Change My Password</h5>
+        </div>
+        <div class="card-body">
+          <form id="change-password-form">
+            <div class="mb-3">
+              <label class="form-label">Current Password</label>
+              <input type="password" id="current_password" name="current_password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">New Password</label>
+              <input type="password" id="new_password" name="new_password" class="form-control" required minlength="8">
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Confirm New Password</label>
+              <input type="password" id="confirm_password" name="confirm_password" class="form-control" required minlength="8">
+            </div>
+            <button type="submit" class="btn btn-warning w-100 mt-2">Change Password</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
     <!-- Add New User -->
     <div class="col-md-4">
       <div class="card bg-dark text-white shadow h-100">
@@ -205,7 +231,7 @@
             <label class="form-label">Role</label>
             <select id="editRole" name="role" class="form-select">
               <option value="customer">Customer</option>
-              {% if current_user.role.lower() == 'manager' %}
+              {% if current_user.role.lower() in ['manager', 'admin'] %}
                 <option value="employee">Employee</option>
                 <option value="manager">Manager</option>
               {% endif %}

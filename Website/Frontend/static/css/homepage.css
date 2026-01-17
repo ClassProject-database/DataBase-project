@@ -3,57 +3,115 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    gap: 40px;
-    padding: 30px 5%;
-    max-width: 1400px;
+    gap: 45px;
+    padding: 40px 5%;
+    max-width: 1500px;
     margin: auto;
   }
   
-  .hero-box {
-    background: #1a1a2e;
-    color: #fff;
-    text-align: center;
-    padding: 40px;
-    border-radius: 10px;
-    margin: 0 auto 30px;
-    max-width: 1100px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-  }
-  
-  .hero-box h1 {
-    font-size: 2.8rem;
+.hero-box {
+  background: linear-gradient(135deg, rgba(15, 15, 40, 0.95), rgba(10, 10, 35, 0.92));
+  border: 1px solid rgba(74, 90, 255, 0.2);
+  color: #fff;
+  text-align: center;
+  padding: 60px 40px;
+  border-radius: 12px;
+  margin: 0 auto 40px;
+  max-width: 1200px;
+  box-shadow: 0 4px 15px rgba(74, 90, 255, 0.2), 0 0 25px rgba(74, 90, 255, 0.1);
+  position: relative;
+  z-index: 10;
+  overflow: hidden;
+}
+
+.hero-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/static/images/hero-popcorn.png');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.15;
+  z-index: -1;
+}  .hero-box h1 {
+    font-size: 3.2rem;
     font-weight: bold;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    color: #e8e8f5;
+    position: relative;
+    z-index: 2;
   }
   
   .hero-box p {
-    font-size: 1.3rem;
-    color: #bbbbbb;
+    font-size: 1.4rem;
+    color: #b8b8d4;
+    position: relative;
+    z-index: 2;
   }
   
-  .latest-reviews-sidebar {
-    flex: 0 0 320px;
-    background: #1e1e2e;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    max-height: 600px;
-    overflow-y: auto;
+  .hero-box .btn {
+    position: relative;
+    z-index: 2;
   }
   
-  .reviews-list {
+.latest-reviews-sidebar {
+  flex: 0 0 340px;
+  background: linear-gradient(135deg, rgba(12, 12, 35, 0.95), rgba(8, 8, 30, 0.92));
+  border: 1px solid rgba(74, 90, 255, 0.2);
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(74, 90, 255, 0.2), 0 0 20px rgba(74, 90, 255, 0.1);
+  max-height: 650px;
+  overflow-y: auto;
+  position: relative;
+  z-index: 10;
+  scroll-behavior: smooth;
+}
+
+.latest-reviews-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.latest-reviews-sidebar::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #4a5aff, #6a7aff);
+  border-radius: 10px;
+}
+
+.latest-reviews-sidebar::-webkit-scrollbar-track {
+  background: rgba(10, 10, 30, 0.5);
+  border-radius: 10px;
+}  .reviews-list {
     display: flex;
     flex-direction: column;
     gap: 15px;
   }
   
-  .main-content {
-    flex: 1;
-    min-width: 650px;
-    text-align: center;
+  .review-item {
+    background: linear-gradient(135deg, rgba(18, 18, 45, 0.8), rgba(12, 12, 38, 0.7));
+    border: 1px solid rgba(74, 90, 255, 0.15);
+    padding: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
   }
   
-  .carousel-container {
+  .review-item:hover {
+    transform: translateX(5px);
+    border-color: rgba(74, 90, 255, 0.3);
+    box-shadow: 0 3px 10px rgba(74, 90, 255, 0.2);
+  }
+  
+.main-content {
+  flex: 1;
+  min-width: 700px;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+.carousel-container {
     position: relative;
     overflow: hidden;
     width: 100%;
@@ -81,6 +139,11 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 10;
+    background: rgba(74, 90, 255, 0.6);
+    border: 2px solid rgba(74, 90, 255, 0.7);
+    color: #e8e8f5;
+    padding: 12px 16px;
     z-index: 2;
     background: rgba(0, 0, 0, 0.7);
     border: none;
@@ -89,12 +152,16 @@
     border-radius: 50%;
     font-size: 1.5rem;
     cursor: pointer;
+    transition: all 0.3s ease;
     transition: background 0.3s ease, transform 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     pointer-events: auto;
   }
   
   .carousel-btn:hover {
+    background: rgba(74, 90, 255, 0.95);
+    box-shadow: 0 6px 16px rgba(74, 90, 255, 0.7), 0 0 20px rgba(74, 90, 255, 0.4);
+    transform: translateY(-50%) scale(1.12);
     background: rgba(0, 123, 255, 0.9);
     transform: translateY(-50%) scale(1.1);
   }
@@ -108,31 +175,69 @@
   }
   
   .movie-card {
-    flex: 0 0 200px;
-    height: 330px;
-    background: #25253a;
+    flex: 0 0 220px;
+    height: 360px;
+    background: linear-gradient(135deg, rgba(15, 15, 40, 0.95), rgba(10, 10, 35, 0.92));
     border-radius: 12px;
-    border: 1px solid #3a3a52;
+    border: 1px solid rgba(74, 90, 255, 0.25);
     text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: slideInUp 0.6s ease-out backwards;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .movie-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(74, 90, 255, 0.1), transparent);
+    transform: rotate(45deg);
+    transition: all 0.5s;
+  }
+  
+  .movie-card:hover::after {
+    animation: shine 1s forwards;
+  }
+  
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes shine {
+    to {
+      left: 100%;
+      top: 100%;
+    }
     position: relative;
     z-index: 1;
   }
   
   .movie-card:hover {
     transform: scale(1.03);
-    box-shadow: 0 6px 18px rgba(0, 123, 255, 0.3);
+    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 25px rgba(74, 90, 255, 0.15);
+    border-color: rgba(74, 90, 255, 0.5);
   }
   
   .movie-card img {
     width: 100%;
-    height: 250px;
+    height: 280px;
     object-fit: cover;
     border-radius: 12px 12px 0 0;
-    background-color: #111;
+    background-color: #0a0a1a;
   }
   .movie-card h5 {
     margin: 0.5rem 0;
@@ -140,6 +245,55 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  /* How It Works Section */
+  .how-it-works {
+    margin-top: 50px;
+    background: transparent !important;
+  }
+
+  .section-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #e8e8f5;
+    margin-bottom: 1.5rem;
+  }
+
+  .step-card {
+    background: linear-gradient(135deg, rgba(19, 19, 66, 0.92), rgba(10, 10, 35, 0.92));
+    border: 1px solid rgba(104, 255, 74, 0.2);
+    border-radius: 12px;
+    padding: 30px 25px;
+    min-width: 220px;
+    max-width: 280px;
+    box-shadow: 0 4px 15px rgba(74, 90, 255, 0.2), 0 0 20px rgba(74, 90, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(74, 90, 255, 0.3), 0 0 30px rgba(74, 90, 255, 0.15);
+    border-color: rgba(74, 90, 255, 0.4);
+  }
+
+  .step-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .step-card h4 {
+    color: #e8e8f5;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 0.8rem 0;
+  }
+
+  .step-card p {
+    color: #b8b8d4;
+    font-size: 1rem;
+    margin: 0;
   }
   
   
